@@ -655,7 +655,7 @@
             <div class="sync-dot"></div>
             <span id="sync-text">Live sync on</span>
         </div>
-        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v9</span>
+        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v10</span>
     </div>
 
     <!-- ── Scrollable content ── -->
@@ -1276,6 +1276,17 @@ function openSheet(key) {
                 { trip_id: TRIP.id, item_key: ck, done: next, updated_at: new Date().toISOString() },
                 { onConflict: 'trip_id,item_key' }
             );
+            // Auto-mark parent done when all checklist items are ticked
+            if (next && _sheetKey && !_doneState[_sheetKey]) {
+                const parentItem = ITEM_MAP[_sheetKey];
+                if (parentItem && parentItem.checklist) {
+                    const allDone = parentItem.checklist.every(c => !!_doneState[c.key]);
+                    if (allDone) {
+                        const parentEl = document.querySelector(`.it-item[data-key="${_sheetKey}"]`);
+                        if (parentEl) toggleDone(parentEl);
+                    }
+                }
+            }
         });
     });
 
