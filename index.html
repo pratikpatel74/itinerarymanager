@@ -173,9 +173,7 @@
     .tc-slide-gradient {
         position: absolute; inset: 0; z-index: 1;
         background:
-            linear-gradient(180deg, rgba(8,14,35,0.15) 0%, rgba(8,14,35,0.88) 62%, #080E23 100%),
-            radial-gradient(ellipse at 68% 28%, rgba(50,70,130,0.55) 0%, transparent 58%),
-            radial-gradient(ellipse at 25% 65%, rgba(201,162,39,0.06) 0%, transparent 48%);
+            linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.82) 70%, rgba(0,0,0,0.94) 100%);
     }
     .tc-photo.past-generic {
         background:
@@ -235,13 +233,14 @@
         color: white;
         line-height: 1.1;
         letter-spacing: -0.8px;
-        text-shadow: 0 1px 10px rgba(0,0,0,0.5);
+        text-shadow: 0 1px 12px rgba(0,0,0,0.8), 0 2px 24px rgba(0,0,0,0.6);
     }
     .tc-dates {
         font-size: 13px;
-        color: rgba(255,255,255,0.6);
+        color: rgba(255,255,255,0.85);
         margin-top: 4px;
         font-weight: 400;
+        text-shadow: 0 1px 8px rgba(0,0,0,0.7);
     }
     .tc-footer {
         display: flex;
@@ -268,9 +267,10 @@
     .tc-av:last-child { margin-right: 0; }
     .tc-group-name {
         font-size: 13px;
-        color: rgba(255,255,255,0.65);
+        color: rgba(255,255,255,0.9);
         margin-left: 14px;
         font-weight: 500;
+        text-shadow: 0 1px 8px rgba(0,0,0,0.7);
     }
 
     /* FAB on card */
