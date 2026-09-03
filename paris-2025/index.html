@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <title>Paris 2025 · Trip Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap">
+    <style>
+    /* ── Tokens ── */
+    :root {
+        --gold:       #C9A227;
+        --gold-lt:    rgba(201,162,39,0.15);
+        --gold-md:    rgba(201,162,39,0.3);
+        --bg:         #0A0A0A;
+        --surface:    #1C1C1E;
+        --surface2:   #242426;
+        --border:     rgba(255,255,255,0.08);
+        --text:       #F2F2F2;
+        --sub:        #8E8E93;
+        --sub2:       #48484A;
+        --green:      #2A7A52;
+        --green-lt:   rgba(42,122,82,0.14);
+        --green-text: #4ADE80;
+        --blue-dot:   #3B82F6;
+        --gold-dot:   #C9A227;
+        --orange-dot: #F97316;
+        --purple-dot: #818CF8;
+        --radius:     14px;
+        --tab-h:      60px;
+
+        --navy:    #C9A227;
+        --parch:   #242426;
+        --slate:   #8E8E93;
+        --sub-old: #8E8E93;
+        --border-old: rgba(255,255,255,0.08);
+        --card-bg: #1C1C1E;
+        --mist:    #48484A;
+        --text-old:#F2F2F2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+        height: 100%;
+        overflow: hidden;
+        background: #0A0A0A;
+        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .app-shell {
+        max-width: 480px;
+        margin: 0 auto;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--bg);
+        box-shadow: 0 0 80px rgba(0,0,0,0.8);
+        position: relative;
+    }
+
+    /* ── Hero header ── */
+    .app-hero {
+        flex-shrink: 0;
+        position: relative;
+        height: 186px;
+        overflow: hidden;
+        background: #0D0A18;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: max(14px, env(safe-area-inset-top)) 16px 16px;
+    }
+    .hero-slide {
+        position: absolute; inset: 0;
+        background-size: cover; background-position: center;
+        opacity: 0; transition: opacity 1.2s ease; z-index: 0;
+    }
+    .hero-slide.active { opacity: 1; }
+    .hero-gradient {
+        position: absolute; inset: 0; z-index: 1;
+        background:
+            linear-gradient(180deg, rgba(13,10,24,0.18) 0%, rgba(13,10,24,0.86) 58%, #0D0A18 100%),
+            radial-gradient(ellipse at 65% 30%, rgba(100,80,180,0.35) 0%, transparent 55%),
+            radial-gradient(ellipse at 28% 70%, rgba(201,162,39,0.06) 0%, transparent 48%);
+    }
+    .hero-top-row, .hero-mid { position: relative; z-index: 2; }
+
+    .hero-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .hero-back {
+        font-size: 13px;
+        font-weight: 600;
+        color: white;
+        text-decoration: none;
+        letter-spacing: -0.1px;
+        -webkit-tap-highlight-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(0,0,0,0.35);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.18);
+        padding: 6px 12px 6px 8px;
+        border-radius: 20px;
+    }
+
+    .hero-pill {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.09);
+        color: rgba(255,255,255,0.55);
+        border: 1px solid rgba(255,255,255,0.12);
+    }
+    .hero-pill.upcoming {
+        background: rgba(0,0,0,0.35);
+        color: white;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .hero-mid {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .hero-flag-badge {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid rgba(255,255,255,0.22);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+        background: #111;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .hero-body { }
+
+    .hero-city {
+        font-family: 'DM Sans', system-ui, sans-serif;
+        font-size: 30px;
+        font-weight: 700;
+        color: white;
+        line-height: 1.1;
+        letter-spacing: -1px;
+        text-shadow: 0 1px 10px rgba(0,0,0,0.5);
+    }
+
+    .hero-dates {
+        font-size: 15px;
+        color: rgba(255,255,255,0.65);
+        margin-top: 3px;
+        font-weight: 400;
+    }
+
+    /* ── Top tab bar ── */
+    .tab-bar-top {
+        flex-shrink: 0;
+        background: var(--surface);
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .tab-bar-top::-webkit-scrollbar { display: none; }
+
+    .tab-btn-top {
+        font-size: 12px; font-weight: 600;
+        padding: 12px 14px 10px;
+        white-space: nowrap;
+        color: var(--sub);
+        border-bottom: 3px solid transparent;
+        flex-shrink: 0;
+        background: none;
+        border-top: none; border-left: none; border-right: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: color 0.15s, border-color 0.15s;
+        letter-spacing: 0.3px;
+    }
+    .tab-btn-top.active {
+        color: var(--text);
+        border-bottom-color: var(--gold);
+    }
+
+    /* ── Sync indicator ── */
+    .sync-bar {
+        flex-shrink: 0;
+        background: var(--surface);
+        padding: 6px 16px;
+        display: flex; align-items: center; gap: 6px;
+        font-size: 10px; color: var(--green-text); font-weight: 600;
+        border-bottom: 1px solid var(--border);
+    }
+    .sync-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--green-text); flex-shrink: 0;
+        animation: blink 2s infinite;
+    }
+    .sync-bar.error { color: #F87171; }
+    .sync-bar.error .sync-dot { background: #F87171; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+    /* ── Scrollable content ── */
+    .content-area {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 12px 12px 8px;
+        background: var(--bg);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Generic card ── */
+    .card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 14px; margin-bottom: 14px;
+        border: 1px solid var(--border);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    .card-title {
+        font-size: 13px; font-weight: 700;
+        color: var(--gold);
+        text-transform: uppercase; letter-spacing: 0.7px;
+        margin-bottom: 10px;
+        display: flex; align-items: center; gap: 6px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 8px;
+    }
+    .card-title svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* ── Day cards ── */
+    .day-card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        margin-bottom: 10px; overflow: hidden;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+        border: 1px solid var(--border);
+    }
+    .day-header {
+        border-left: 4px solid var(--gold);
+        padding: 12px 14px;
+        cursor: pointer;
+        display: flex; justify-content: space-between; align-items: center;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        background: var(--surface);
+    }
+    .day-date {
+        font-family: 'DM Sans', system-ui, sans-serif;
+        font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.2;
+        letter-spacing: -0.5px;
+    }
+    .day-label { font-size: 12px; color: var(--sub); margin-top: 2px; }
+    .day-chevron { color: var(--sub); font-size: 24px; transition: transform 0.2s; margin-left: 8px; flex-shrink: 0; line-height: 1; }
+    .day-card.open .day-chevron { transform: rotate(180deg); }
+    .day-body { display: none; }
+    .day-card.open .day-body { display: block; }
+
+    .day-empty {
+        font-size: 12px; color: var(--sub); font-style: italic;
+        padding: 12px 14px;
+        border-top: 1px solid var(--border);
+    }
+    .day-section-label {
+        font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+        color: var(--sub2); padding: 9px 14px 3px;
+        border-top: 1px solid var(--border);
+    }
+
+    /* ── Itinerary rows ── */
+    .it-item {
+        display: flex; align-items: flex-start; gap: 0;
+        padding: 9px 14px;
+        border-top: 1px solid var(--border);
+        cursor: pointer; user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.13s;
+    }
+    .it-item:first-child { border-top: none; }
+    .it-item:active { background: rgba(255,255,255,0.04); }
+
+    .it-item.done { background: var(--green-lt); }
+    .it-item.done .it-name { text-decoration: line-through; color: var(--sub); opacity: 0.65; }
+    .it-item.done .it-detail { opacity: 0.45; }
+    .it-item.done .it-time { color: var(--green-text); opacity: 0.7; }
+    .it-item.done .it-dot { background: var(--green-text) !important; }
+    .it-item.done .it-dot::after { content: '✓'; display: block; font-size: 9px; color: #0A0A0A; font-weight: 800; line-height: 1; text-align: center; }
+
+    .it-time {
+        font-size: 12px; font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        color: var(--gold); width: 42px; flex-shrink: 0;
+        padding-top: 3px; line-height: 1;
+    }
+    .it-dot-wrap {
+        width: 44px; flex-shrink: 0; margin-left: -8px;
+        display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+        padding-top: 2px; min-height: 44px;
+        cursor: pointer;
+    }
+    .it-dot {
+        width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+        transition: background 0.15s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .dot-travel   { background: var(--blue-dot); }
+    .dot-activity { background: var(--gold-dot); }
+    .dot-food     { background: var(--orange-dot); }
+    .dot-sight    { background: var(--purple-dot); }
+
+    .it-content { flex: 1; min-width: 0; }
+    .it-name {
+        font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.35;
+    }
+    .it-name a { color: var(--gold); text-decoration: underline; }
+    .it-detail {
+        font-size: 12px; font-weight: 300; color: var(--sub);
+        margin-top: 2px; line-height: 1.4;
+    }
+
+    /* ── Legend ── */
+    .type-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--sub); font-weight: 400; }
+    .legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Journey timeline ── */
+    .timeline { position: relative; padding-left: 20px; margin-top: 6px; }
+    .timeline::before { content: ''; position: absolute; left: 6px; top: 4px; bottom: 4px; width: 2px; background: var(--border); }
+    .timeline-event { position: relative; margin-bottom: 13px; font-size: 13px; color: var(--text); }
+    .timeline-event:last-child { margin-bottom: 0; }
+    .timeline-event::before {
+        content: ''; position: absolute; left: -18px; top: 4px;
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--blue-dot); border: 2px solid var(--surface);
+        box-shadow: 0 0 0 1px var(--blue-dot);
+    }
+    .t-time { font-weight: 600; color: var(--gold); display: inline-block; width: 42px; font-size: 12px; font-variant-numeric: tabular-nums; }
+    .badge { background: var(--gold-lt); color: var(--gold); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+
+    /* ── Attractions ── */
+    .attraction-item {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; gap: 8px;
+    }
+    .attraction-item:last-child { border-bottom: none; }
+    .attraction-info { flex: 1; min-width: 0; }
+    .attraction-name-link { font-weight: 600; color: var(--gold); text-decoration: underline; }
+    .attraction-dist { font-size: 11px; color: var(--sub); margin-top: 2px; }
+    .map-link {
+        color: #60A5FA; text-decoration: none; font-weight: 600;
+        font-size: 12px; background: rgba(59,130,246,0.12); padding: 4px 9px; border-radius: 7px;
+        white-space: nowrap; flex-shrink: 0;
+        border: 1px solid rgba(59,130,246,0.2);
+    }
+
+    /* ── Cost table ── */
+    table.cost-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+    table.cost-table th, table.cost-table td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); color: var(--text); }
+    table.cost-table th { background: var(--surface2); color: var(--sub); font-weight: 700; font-size: 11px; }
+    table.cost-table tr.total-row td {
+        font-weight: 700; font-size: 13px;
+        background: rgba(59,130,246,0.1); border-top: 2px solid var(--blue-dot); border-bottom: none;
+    }
+    .badge-paid { background: rgba(42,122,82,0.2); color: var(--green-text); font-size: 10px; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
+
+    /* ── Passenger grid ── */
+    .passenger-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .passenger-item { background: var(--surface2); padding: 9px; border-radius: 9px; font-size: 13px; font-weight: 600; text-align: center; color: var(--text); }
+
+    /* ── Ref codes ── */
+    .ref-grid { display: grid; gap: 7px; }
+    .ref-item {
+        display: flex; justify-content: space-between; align-items: center;
+        background: var(--surface2); padding: 9px 10px; border-radius: 9px;
+        border: 1px dashed var(--border); font-size: 13px; gap: 8px;
+    }
+    .ref-label { color: var(--sub); font-size: 12px; font-weight: 300; }
+    .ref-code {
+        font-family: monospace; font-weight: 700;
+        background: rgba(14,165,233,0.15); color: #38BDF8;
+        padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        width: 100%; background: var(--gold); color: #0A0A0A;
+        text-decoration: none; padding: 10px 14px; border-radius: 9px;
+        font-size: 13px; font-weight: 700; margin-top: 8px;
+    }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); font-weight: 600; }
+
+    /* ── Restaurants ── */
+    .resto-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.3); margin-bottom: 12px; overflow: hidden; }
+    .resto-header { padding: 12px 14px 8px; border-bottom: 1px solid var(--border); }
+    .resto-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .resto-name a { color: var(--gold); text-decoration: underline; }
+    .resto-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+    .resto-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--surface2); color: var(--sub); }
+    .resto-tag.price { background: rgba(42,122,82,0.2); color: var(--green-text); }
+    .resto-body { padding: 10px 14px; display: grid; gap: 7px; }
+    .resto-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; }
+    .resto-row-icon { width: 16px; flex-shrink: 0; text-align: center; margin-top: 1px; }
+    .resto-row-text { flex: 1; color: var(--sub); line-height: 1.4; }
+    .resto-row-text strong { color: var(--text); }
+    .resto-row-text a { color: var(--gold); }
+    .resto-actions { display: flex; gap: 8px; padding: 0 14px 12px; }
+    .resto-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 8px 6px; border-radius: 9px; font-size: 12px; font-weight: 600; text-decoration: none; text-align: center; }
+    .resto-btn-primary { background: var(--gold); color: #0A0A0A; font-weight: 700; }
+    .resto-btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+    /* ── Sync toast ── */
+    #sync-toast {
+        position: absolute; top: 8px; right: 12px;
+        font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 10px;
+        z-index: 200; transition: opacity 0.4s; opacity: 0; pointer-events: none;
+        display: flex; align-items: center; gap: 4px;
+    }
+    #sync-toast.show { opacity: 1; }
+    #sync-toast.synced { background: rgba(42,122,82,0.25); color: var(--green-text); }
+    #sync-toast.error  { background: rgba(239,68,68,0.2); color: #F87171; }
+
+    .card p { color: var(--sub); }
+    .card p strong { color: var(--text); }
+    ul li { color: var(--sub); }
+    ul li strong { color: var(--text); }
+
+    /* ── Drilldown indicator ── */
+    .it-item.has-detail { cursor: pointer; }
+    .it-chevron {
+        display: flex; align-items: center;
+        color: var(--sub); margin-left: 8px; flex-shrink: 0;
+        align-self: center; line-height: 1;
+    }
+
+    /* ── Bottom sheet backdrop ── */
+    .sheet-backdrop {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+        z-index: 300;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.28s ease;
+    }
+    .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    /* ── Bottom sheet panel ── */
+    .sheet {
+        position: absolute; left: 0; right: 0; bottom: 0;
+        background: var(--surface);
+        border-radius: 20px 20px 0 0;
+        border-top: 1px solid var(--border);
+        max-height: 87%;
+        display: flex; flex-direction: column;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+        z-index: 301;
+    }
+    .sheet.open { transform: translateY(0); }
+
+    .sheet-handle {
+        width: 36px; height: 4px; border-radius: 2px;
+        background: var(--sub2);
+        margin: 12px auto 0;
+        flex-shrink: 0;
+    }
+
+    .sheet-header {
+        flex-shrink: 0;
+        padding: 14px 16px 12px;
+        border-bottom: 1px solid var(--border);
+        display: flex; align-items: flex-start; gap: 10px;
+    }
+    .sheet-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        flex-shrink: 0; margin-top: 5px;
+    }
+    .sheet-hbody { flex: 1; min-width: 0; }
+    .sheet-time {
+        font-size: 12px; font-weight: 600; color: var(--gold);
+        font-variant-numeric: tabular-nums; margin-bottom: 2px;
+    }
+    .sheet-name {
+        font-family: 'DM Sans', system-ui, sans-serif;
+        font-size: 18px; font-weight: 700; color: var(--text);
+        line-height: 1.25; text-wrap: balance; letter-spacing: -0.2px;
+    }
+    .sheet-meta {
+        font-size: 12px; color: var(--sub); margin-top: 4px;
+        display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .sheet-meta-item { display: flex; align-items: center; gap: 4px; }
+    .sheet-close {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--surface2); border: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 16px; color: var(--sub); cursor: pointer;
+        flex-shrink: 0; line-height: 1;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .sheet-body {
+        flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+        padding: 14px 16px 32px;
+        display: flex; flex-direction: column; gap: 14px;
+    }
+
+    .sheet-section-label {
+        font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+        text-transform: uppercase; color: var(--sub2);
+        margin-bottom: 8px;
+    }
+
+    /* checklist */
+    .checklist { display: flex; flex-direction: column; gap: 1px; }
+    .cl-item {
+        display: flex; align-items: center; gap: 10px;
+        padding: 10px 12px;
+        background: var(--surface2); border-radius: 10px;
+        cursor: pointer; user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.13s;
+        margin-bottom: 4px;
+    }
+    .cl-item:active { background: rgba(255,255,255,0.06); }
+    .cl-item.done .cl-label {
+        text-decoration: line-through; color: var(--sub); opacity: 0.6;
+    }
+    .cl-box {
+        width: 20px; height: 20px; border-radius: 6px;
+        border: 2px solid var(--sub2);
+        background: transparent; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.15s, border-color 0.15s;
+    }
+    .cl-item.done .cl-box {
+        background: var(--green); border-color: var(--green);
+    }
+    .cl-tick { display: none; align-items: center; justify-content: center; color: white; }
+    .cl-item.done .cl-tick { display: flex; }
+    .cl-label { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; line-height: 1.35; }
+
+    /* location block */
+    .sheet-location {
+        background: var(--surface2); border-radius: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        display: flex; flex-direction: column; gap: 6px;
+    }
+    .sheet-loc-name { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 5px; }
+    .sheet-loc-addr { font-size: 11px; color: var(--sub); line-height: 1.4; }
+    .sheet-loc-btn {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        margin-top: 6px;
+        background: rgba(59,130,246,0.14); color: #60A5FA;
+        border: 1px solid rgba(59,130,246,0.22);
+        padding: 9px 14px; border-radius: 9px;
+        font-size: 12px; font-weight: 700; text-decoration: none;
+    }
+
+    .sheet-cta {
+        display: flex; align-items: center; justify-content: center;
+        gap: 6px; width: 100%;
+        background: var(--gold); color: #0A0A0A;
+        padding: 12px 14px; border-radius: 10px;
+        font-size: 14px; font-weight: 700; text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .sheet-notes {
+        background: var(--surface2); border-radius: 12px;
+        padding: 11px 14px; font-size: 12px; color: var(--sub);
+        border: 1px solid var(--border); line-height: 1.6;
+    }
+    .sheet-notes strong { color: var(--text); }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+
+    <div id="sync-toast"></div>
+
+    <!-- ── Hero header ── -->
+    <div class="app-hero" id="app-hero">
+        <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1431274172761-fca41d930114?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-top-row">
+            <a class="hero-back" href="../"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg> Our Trips</a>
+            <div class="hero-pill">Past</div>
+        </div>
+        <div class="hero-mid">
+            <div class="hero-flag-badge">
+                <!-- France: blue / white / red vertical thirds -->
+                <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
+                    <clipPath id="cl-fr"><circle cx="20" cy="20" r="20"/></clipPath>
+                    <g clip-path="url(#cl-fr)">
+                        <rect width="40" height="40" fill="#FFFFFF"/>
+                        <rect x="0" y="0" width="13.33" height="40" fill="#002395"/>
+                        <rect x="26.67" y="0" width="13.33" height="40" fill="#ED2939"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="hero-body">
+                <div class="hero-city" id="app-title">Paris Guide</div>
+                <div class="hero-dates" id="app-subtitle">7–10 August · The Patels</div>
+            </div>
+        </div>
+    </div>
+    <div id="app-flag" hidden></div>
+
+    <!-- ── Top tabs ── -->
+    <div class="tab-bar-top">
+        <button class="tab-btn-top active" id="tab-days"    onclick="switchTab('days')">Days</button>
+        <button class="tab-btn-top"        id="tab-journey" onclick="switchTab('journey')">Journey</button>
+        <button class="tab-btn-top"        id="tab-explore" onclick="switchTab('explore')">Explore</button>
+        <button class="tab-btn-top"        id="tab-eat"     onclick="switchTab('eat')">Eat</button>
+        <button class="tab-btn-top"        id="tab-info"    onclick="switchTab('info')">Info</button>
+    </div>
+
+    <!-- ── Sync bar ── -->
+    <div class="sync-bar" id="sync-bar" style="justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:6px;">
+            <div class="sync-dot"></div>
+            <span id="sync-text">Live sync on</span>
+        </div>
+        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v1</span>
+    </div>
+
+    <!-- ── Scrollable content ── -->
+    <div class="content-area">
+
+        <!-- ══ DAYS TAB ══ -->
+        <div class="tab-panel active" id="panel-days">
+            <!-- Rendered by JS -->
+        </div>
+
+        <!-- ══ JOURNEY TAB ══ -->
+        <div class="tab-panel" id="panel-journey">
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19L19 5"/><polyline points="9 5 19 5 19 15"/></svg>Outbound — Thursday 7th Aug</div>
+                <div class="timeline">
+                    <div class="timeline-event"><span class="t-time">09:12</span> Departs <strong>Leicester</strong></div>
+                    <div class="timeline-event"><span class="t-time">10:27</span> Arrive <strong>London St Pancras</strong></div>
+                    <div class="timeline-event"><span class="t-time">11:30</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
+                    <div class="timeline-event"><span class="t-time">12:31</span> Eurostar Departs St Pancras</div>
+                    <div class="timeline-event"><span class="t-time">15:49</span> Arrive <strong>Paris Gare du Nord</strong> <span class="badge">+1 hr CET</span></div>
+                    <div class="timeline-event"><span class="t-time">~16:30</span> Check-in Hôtel du Bois Champs-Elysées</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5L5 19"/><polyline points="15 19 5 19 5 9"/></svg>Return — Sunday 10th Aug</div>
+                <div class="timeline">
+                    <div class="timeline-event"><span class="t-time">~11:00</span> Hotel Check-out &amp; depart for Gare du Nord</div>
+                    <div class="timeline-event"><span class="t-time">11:30</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
+                    <div class="timeline-event"><span class="t-time">12:42</span> Eurostar Departs <strong>Paris Gare du Nord</strong></div>
+                    <div class="timeline-event"><span class="t-time">14:00</span> Arrive <strong>London St Pancras</strong> <span class="badge">UK Time</span></div>
+                    <div class="timeline-event"><span class="t-time">15:05</span> Train Departs St Pancras</div>
+                    <div class="timeline-event"><span class="t-time">16:15</span> Arrive <strong>Leicester</strong></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="13" rx="3"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="9" y1="3" x2="9" y2="9"/><line x1="15" y1="3" x2="15" y2="9"/><path d="M7 16l-2 4"/><path d="M17 16l2 4"/><line x1="5" y1="20" x2="19" y2="20"/></svg>Gare du Nord → Hotel</div>
+                <div style="font-size: 13px; display: grid; gap: 10px; color: var(--text);">
+                    <div><strong>Metro (Fastest)</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">Metro line 2: Gare du Nord → Charles de Gaulle-Étoile (20 mins). Hotel is 5 min walk from the Arc de Triomphe.</p></div>
+                    <div><strong>Taxi / Uber</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">Available outside Gare du Nord. ~30 mins, €25–€35 depending on traffic.</p></div>
+                    <div><strong>RER B + Metro</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">Not recommended for this hotel — Metro line 2 is the quickest option.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ EXPLORE TAB ══ -->
+        <div class="tab-panel" id="panel-explore">
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><line x1="3" y1="9" x2="3" y2="20"/><line x1="21" y1="9" x2="21" y2="20"/><rect x="3" y="19" width="18" height="2" rx="0.5"/><line x1="7" y1="9" x2="7" y2="19"/><line x1="12" y1="9" x2="12" y2="19"/><line x1="17" y1="9" x2="17" y2="19"/></svg>Nearby Attractions</div>
+                <p style="font-size: 11px; color: var(--sub); margin-bottom: 10px;">Tap name for website · Tap Map for walking directions from hotel.</p>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://www.paris-arc-de-triomphe.fr/en/" target="_blank" class="attraction-name-link">Arc de Triomphe</a></div><div class="attraction-dist">🚶 200m · 3 min walk · €13 adult</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Arc+de+Triomphe+Paris&travelmode=walking" target="_blank" class="map-link">Map</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://en.parisinfo.com/paris-museum-monument/71478/Avenue-des-Champs-Elysees" target="_blank" class="attraction-name-link">Avenue des Champs-Élysées</a></div><div class="attraction-dist">🚶 200m · 3 min walk · Free to stroll</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Avenue+des+Champs-Elysees+Paris&travelmode=walking" target="_blank" class="map-link">Map</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://www.toureiffel.paris/en" target="_blank" class="attraction-name-link">Eiffel Tower</a></div><div class="attraction-dist">🚶 1.5km · 18 min walk or Metro · From €19.40 adult</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Eiffel+Tower+Paris&travelmode=walking" target="_blank" class="map-link">Map</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://www.trocadero.com/" target="_blank" class="attraction-name-link">Trocadéro &amp; Best Eiffel View</a></div><div class="attraction-dist">🚶 1.2km · 15 min walk · Free · Best photo spot</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Trocadero+Paris&travelmode=walking" target="_blank" class="map-link">Map</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://www.musee-orsay.fr/en" target="_blank" class="attraction-name-link">Musée d'Orsay</a></div><div class="attraction-dist">🚶 3.5km · Metro line 9 → Solférino · €16 adult</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Musee+d%27Orsay+Paris&travelmode=transit" target="_blank" class="map-link">Transit</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://www.louvre.fr/en" target="_blank" class="attraction-name-link">The Louvre</a></div><div class="attraction-dist">🚶 4km · Metro line 1 → Palais Royal · €22 adult</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Louvre+Museum+Paris&travelmode=transit" target="_blank" class="map-link">Transit</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://www.sacre-coeur-montmartre.com/english/" target="_blank" class="attraction-name-link">Sacré-Cœur &amp; Montmartre</a></div><div class="attraction-dist">🚇 ~25 min · Metro line 2 → Anvers · Free entry</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Sacre-Coeur+Paris&travelmode=transit" target="_blank" class="map-link">Transit</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ EAT TAB ══ -->
+        <div class="tab-panel" id="panel-eat">
+            <div class="card">
+                <p style="font-size: 13px; color: var(--sub); line-height: 1.7;">
+                    Restaurant recommendations coming soon — this section will be filled in for future Paris visits. For now, explore <strong style="color:var(--text);">Rue de Longchamp</strong> and <strong style="color:var(--text);">Avenue Kléber</strong> just steps from the hotel — both are lined with excellent cafés and brasseries.
+                </p>
+            </div>
+        </div>
+
+        <!-- ══ INFO TAB ══ -->
+        <div class="tab-panel" id="panel-info">
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a6 6 0 0 1 12 0v2"/><circle cx="17" cy="7" r="2.5"/><path d="M21 21v-1.5a4 4 0 0 0-3-3.87"/></svg>Passengers</div>
+                <div class="passenger-list">
+                    <div class="passenger-item">Pratik Patel</div>
+                    <div class="passenger-item">Nisha Patel</div>
+                    <div class="passenger-item">Maya Patel</div>
+                    <div class="passenger-item">Aarjan Patel</div>
+                    <div class="passenger-item">Harendra Patel</div>
+                    <div class="passenger-item">Ilaben Patel</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2" fill="currentColor" stroke="none"/></svg>Confirmation Codes</div>
+                <div class="ref-grid">
+                    <div class="ref-item"><span class="ref-label">Hotel (Expedia)</span><span class="ref-code">72076823141769</span></div>
+                    <div class="ref-item"><span class="ref-label">Hotel Confirmation</span><span class="ref-code">1BRFN5</span></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="19" rx="1"/><path d="M9 22V13h6v9"/><rect x="8.5" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="13" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="8.5" y="10" width="2.5" height="2.5" rx=".5"/><rect x="13" y="10" width="2.5" height="2.5" rx=".5"/></svg>Hotel</div>
+                <p style="font-family:'DM Sans',system-ui,sans-serif; font-weight:700; font-size:15px; color:var(--text);">Hôtel du Bois Champs-Elysées</p>
+                <p style="font-size: 12px; color: var(--sub); margin: 4px 0 10px;">11 Rue du Dôme, 75116 Paris</p>
+                <div style="font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; color: var(--text);">
+                    <div><strong>Nights:</strong> 3 (7–10 Aug)</div><div><strong>Rooms:</strong> 2 rooms</div>
+                    <div><strong>Guests:</strong> 4 adults</div><div><strong>Total:</strong> £807.20</div>
+                    <div><strong>Check-in:</strong> From 15:00</div><div><strong>Check-out:</strong> By 12:00</div>
+                </div>
+                <a href="https://www.hoteldubois.com" target="_blank" class="btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Hotel Website</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Hotel+du+Bois+11+Rue+du+Dome+Paris" target="_blank" class="btn btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Google Maps</a>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 1 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"/></svg>Travel Notes</div>
+                <ul style="font-size: 12px; padding-left: 18px; line-height: 1.9; color: var(--sub);">
+                    <li>France is <strong style="color:var(--text);">1 hour ahead</strong> of UK time (CEST in August).</li>
+                    <li>Arrive at St Pancras by <strong style="color:var(--text);">11:30</strong> for Eurostar security.</li>
+                    <li>All 6 passports required for Eurostar boarding.</li>
+                    <li>Paris Metro: buy a <strong style="color:var(--text);">carnet</strong> (10 tickets) — more economical for a group.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div><!-- /content-area -->
+
+    <!-- ── Bottom sheet ── -->
+    <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeSheet()"></div>
+    <div class="sheet" id="event-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+            <div class="sheet-dot" id="sh-dot"></div>
+            <div class="sheet-hbody">
+                <div class="sheet-time" id="sh-time"></div>
+                <div class="sheet-name" id="sh-name"></div>
+                <div class="sheet-meta" id="sh-meta"></div>
+            </div>
+            <div class="sheet-close" onclick="closeSheet()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+        </div>
+        <div class="sheet-body" id="sh-body"></div>
+    </div>
+
+</div><!-- /app-shell -->
+
+<script>
+const TRIP = {
+    id:       'paris-aug-2025',
+    name:     'Paris Guide',
+    flag:     '🇫🇷',
+    subtitle: '7–10 August · The Patels',
+
+    days: [
+        {
+            id: 'day1', open: true,
+            date:  'Thursday 7th August',
+            label: 'Travel Day — Arrive Paris ~16:30',
+            rows: [
+                { type:'item', key:'d1-train-out', cls:'travel', time:'09:12', name:'Train — Leicester → London St Pancras',
+                  detail:'Arrives 10:27. Eurostar check-in by 11:30.',
+                  duration: '1h 15min',
+                  location: { name:'Leicester Station', address:'London Road, Leicester LE2 0QB', mapsUrl:'https://www.google.com/maps/search/?api=1&query=Leicester+Railway+Station' },
+                  checklist: [
+                      { key:'d1-train-ck1', label:'Train tickets downloaded / printed' },
+                      { key:'d1-train-ck2', label:'All 6 passports & travel documents ready' },
+                      { key:'d1-train-ck3', label:'All luggage ready at the door' },
+                  ]
+                },
+                { type:'item', key:'d1-eurostar-out', cls:'travel', time:'12:31', name:'Eurostar — London St Pancras → Paris Gare du Nord',
+                  detail:'Arrives Paris 15:49 (French time). Journey ~2h 15min.',
+                  duration: '~2h 15min',
+                  location: { name:'London St Pancras International', address:'Euston Road, London N1C 4QP', mapsUrl:'https://www.google.com/maps/search/?api=1&query=St+Pancras+International+Station' },
+                  cta: { label:'Open Eurostar Tickets', url:'https://www.eurostar.com' },
+                  checklist: [
+                      { key:'d1-eurostar-ck1', label:'At St Pancras by 11:30 for security' },
+                      { key:'d1-eurostar-ck2', label:'All 6 passports in hand' },
+                      { key:'d1-eurostar-ck3', label:'Eurostar e-tickets on phones' },
+                  ]
+                },
+                { type:'item', key:'d1-checkin', cls:'travel', time:'~16:30', name:'Check-in — Hôtel du Bois Champs-Elysées',
+                  detail:'Check-in from 15:00. Expedia ref: 72076823141769.',
+                  location: { name:'Hôtel du Bois Champs-Elysées', address:'11 Rue du Dôme, 75116 Paris', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Gare+du+Nord+Paris&destination=Hotel+du+Bois+Paris+11+Rue+du+Dome&travelmode=transit' },
+                  cta: { label:'Hotel Website', url:'https://www.hoteldubois.com' },
+                  checklist: [
+                      { key:'d1-checkin-ck1', label:'Expedia ref noted (72076823141769)' },
+                      { key:'d1-checkin-ck2', label:'Hotel conf 1BRFN5 confirmed at desk' },
+                      { key:'d1-checkin-ck3', label:'Room allocation confirmed (2 rooms)' },
+                  ]
+                },
+            ]
+        },
+        {
+            id: 'day2', open: false,
+            date:  'Friday 8th August',
+            label: 'Full Day in Paris',
+            rows: [
+                { type:'empty', note:'Nothing planned — free day in Paris. Explore!' },
+            ]
+        },
+        {
+            id: 'day3', open: false,
+            date:  'Saturday 9th August',
+            label: 'Full Day in Paris',
+            rows: [
+                { type:'empty', note:'Nothing planned — free day in Paris. Explore!' },
+            ]
+        },
+        {
+            id: 'day4', open: false,
+            date:  'Sunday 10th August',
+            label: 'Departure Day',
+            rows: [
+                { type:'item', key:'d4-checkout', cls:'travel', time:'~11:00', name:'Hotel check-out',
+                  detail:'Check-out by 12:00. Allow time to get to Gare du Nord.',
+                  checklist: [
+                      { key:'d4-checkout-ck1', label:'All rooms cleared & luggage ready' },
+                      { key:'d4-checkout-ck2', label:'Room keys returned at desk' },
+                      { key:'d4-checkout-ck3', label:'Nothing left in hotel safe' },
+                  ]
+                },
+                { type:'item', key:'d4-eurostar-return', cls:'travel', time:'12:42', name:'Eurostar — Paris Gare du Nord → London St Pancras',
+                  detail:'Arrives London 14:00 UK time. Check-in by ~11:30.',
+                  duration: '~2h 15min',
+                  location: { name:'Paris Gare du Nord', address:'18 Rue de Dunkerque, 75010 Paris', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris&destination=Gare+du+Nord+Paris&travelmode=transit' },
+                  cta: { label:'Open Eurostar Tickets', url:'https://www.eurostar.com' },
+                  checklist: [
+                      { key:'d4-eurostar-ck1', label:'At Gare du Nord by 11:30 for check-in' },
+                      { key:'d4-eurostar-ck2', label:'All 6 passports in hand' },
+                      { key:'d4-eurostar-ck3', label:'Eurostar e-tickets on phones' },
+                  ]
+                },
+                { type:'item', key:'d4-train-home', cls:'travel', time:'15:05', name:'Train — London St Pancras → Leicester',
+                  detail:'Arrives 16:15. Check platform on departure boards.',
+                  duration: '~1h 10min',
+                  location: { name:'London St Pancras International', address:'Euston Road, London N1C 4QP', mapsUrl:'https://www.google.com/maps/search/?api=1&query=St+Pancras+International+Station' },
+                },
+            ]
+        },
+    ]
+};
+
+const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
+
+document.getElementById('app-flag').textContent    = TRIP.flag || '';
+document.getElementById('app-title').textContent   = TRIP.name;
+document.getElementById('app-subtitle').textContent = TRIP.subtitle;
+document.title = TRIP.flag + ' ' + TRIP.name + ' · Trip Guide';
+
+const DOT_CLASS = { travel:'dot-travel', activity:'dot-activity', food:'dot-food', sight:'dot-sight' };
+const DOT_COLOR = { travel:'#3B82F6', activity:'#C9A227', food:'#F97316', sight:'#818CF8' };
+
+const ITEM_MAP = {};
+const DAY_FOR_KEY = {};
+
+function hasDetail(row) {
+    return !!(row.location || row.cta || (row.checklist && row.checklist.length) || row.notes);
+}
+
+function renderDays() {
+    TRIP.days.forEach(day => {
+        (day.rows || []).forEach(row => {
+            if (row.type === 'item') {
+                ITEM_MAP[row.key] = row;
+                DAY_FOR_KEY[row.key] = day;
+            }
+            (row.checklist || []).forEach(ck => { DAY_FOR_KEY[ck.key] = day; });
+        });
+    });
+
+    let html = `
+    <div class="card" style="margin-bottom:10px;">
+        <div class="type-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#3B82F6;"></div> Travel</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#C9A227;"></div> Activity</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#F97316;"></div> Food</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#818CF8;"></div> Sight</div>
+        </div>
+        <p style="font-size:11px;color:var(--sub);">Tap dot to mark done · Tap row to see details &amp; checklist.</p>
+    </div>`;
+
+    TRIP.days.forEach(day => {
+        html += `<div class="day-card${day.open ? ' open' : ''}" id="${day.id}">
+            <div class="day-header" onclick="toggleDay('${day.id}')">
+                <div>
+                    <div class="day-date">${day.date}</div>
+                    <div class="day-label">${day.label}</div>
+                </div>
+                <span class="day-chevron"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </div>
+            <div class="day-body">`;
+
+        day.rows.forEach(row => {
+            if (row.type === 'item') {
+                const dotCls = DOT_CLASS[row.cls] || 'dot-travel';
+                const rich   = hasDetail(row);
+                const nameHtml = row.nameUrl
+                    ? `<a href="${row.nameUrl}" target="_blank">${row.name}</a>`
+                    : row.name;
+                html += `<div class="it-item${rich ? ' has-detail' : ''}" data-key="${row.key}" onclick="void 0">
+                    <div class="it-time">${row.time}</div>
+                    <div class="it-dot-wrap"><div class="it-dot ${dotCls}" data-done-target="${row.key}"></div></div>
+                    <div class="it-content">
+                        <div class="it-name">${nameHtml}</div>
+                        ${row.detail ? `<div class="it-detail">${row.detail}</div>` : ''}
+                    </div>
+                    ${rich ? `<div class="it-chevron"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>` : ''}
+                </div>`;
+            } else if (row.type === 'empty') {
+                html += `<div class="day-empty">${row.note}</div>`;
+            } else if (row.type === 'section') {
+                html += `<div class="day-section-label">${row.label}</div>`;
+            }
+        });
+
+        html += `</div></div>`;
+    });
+
+    document.getElementById('panel-days').innerHTML = html;
+
+    document.getElementById('panel-days').addEventListener('click', function(e) {
+        const el = e.target.closest('.it-item[data-key]');
+        if (!el) return;
+        const key  = el.dataset.key;
+        const rich = el.classList.contains('has-detail');
+        if (e.target.closest('.it-dot-wrap')) { toggleDone(el); return; }
+        if (e.target.closest('a')) return;
+        if (rich) { openSheet(key); return; }
+        toggleDone(el);
+    });
+}
+
+let _sheetKey = null;
+
+function openSheet(key) {
+    const item = ITEM_MAP[key];
+    const day  = DAY_FOR_KEY[key];
+    if (!item) return;
+    _sheetKey = key;
+
+    const dotColor = DOT_COLOR[item.cls] || '#3B82F6';
+    document.getElementById('sh-dot').style.background = dotColor;
+
+    const timeStr = item.duration ? `${item.time}  ·  ${item.duration}` : item.time;
+    document.getElementById('sh-time').textContent = timeStr;
+    document.getElementById('sh-name').textContent = item.name.replace(/^\p{Emoji}\s*/u, '');
+
+    const meta = document.getElementById('sh-meta');
+    meta.innerHTML = day
+        ? `<span class="sheet-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${day.date}</span>`
+        : '';
+
+    const body = document.getElementById('sh-body');
+    let html = '';
+
+    if (item.cta) {
+        html += `<a href="${item.cta.url}" target="_blank" class="sheet-cta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> ${item.cta.label}</a>`;
+    }
+
+    if (item.location) {
+        const loc = item.location;
+        html += `<div>
+            <div class="sheet-section-label">Location</div>
+            <div class="sheet-location">
+                <div class="sheet-loc-name"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${loc.name}</div>
+                <div class="sheet-loc-addr">${loc.address}</div>
+                ${loc.mapsUrl ? `<a href="${loc.mapsUrl}" target="_blank" class="sheet-loc-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg> Get Directions</a>` : ''}
+            </div>
+        </div>`;
+    }
+
+    if (item.checklist && item.checklist.length) {
+        html += `<div>
+            <div class="sheet-section-label">Checklist</div>
+            <div class="checklist" id="sh-checklist">`;
+        item.checklist.forEach(ck => {
+            const done = !!_doneState[ck.key];
+            html += `<div class="cl-item${done ? ' done' : ''}" data-ck="${ck.key}">
+                <div class="cl-box"><span class="cl-tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+                <div class="cl-label">${ck.label}</div>
+            </div>`;
+        });
+        html += `</div></div>`;
+    }
+
+    if (item.notes) {
+        html += `<div>
+            <div class="sheet-section-label">Notes</div>
+            <div class="sheet-notes">${item.notes}</div>
+        </div>`;
+    }
+
+    body.innerHTML = html;
+
+    body.querySelectorAll('.cl-item[data-ck]').forEach(el => {
+        el.addEventListener('click', async function() {
+            const ck  = el.dataset.ck;
+            const next = !_doneState[ck];
+            _doneState[ck] = next;
+            el.classList.toggle('done', next);
+            await sb.from('itinerary_done').upsert(
+                { trip_id: TRIP.id, item_key: ck, done: next, updated_at: new Date().toISOString() },
+                { onConflict: 'trip_id,item_key' }
+            );
+            if (_sheetKey) {
+                const parentItem = ITEM_MAP[_sheetKey];
+                if (parentItem && parentItem.checklist) {
+                    const parentEl = document.querySelector(`.it-item[data-key="${_sheetKey}"]`);
+                    if (next) {
+                        const allDone = parentItem.checklist.every(c => !!_doneState[c.key]);
+                        if (allDone && !_doneState[_sheetKey] && parentEl) toggleDone(parentEl);
+                    } else {
+                        if (_doneState[_sheetKey] && parentEl) toggleDone(parentEl);
+                    }
+                }
+            }
+        });
+    });
+
+    document.getElementById('sheet-backdrop').classList.add('open');
+    document.getElementById('event-sheet').classList.add('open');
+}
+
+function closeSheet() {
+    document.getElementById('sheet-backdrop').classList.remove('open');
+    document.getElementById('event-sheet').classList.remove('open');
+    _sheetKey = null;
+}
+
+function refreshSheetChecklist() {
+    if (!_sheetKey) return;
+    const item = ITEM_MAP[_sheetKey];
+    if (!item || !item.checklist) return;
+    item.checklist.forEach(ck => {
+        const el = document.querySelector(`.cl-item[data-ck="${ck.key}"]`);
+        if (el) el.classList.toggle('done', !!_doneState[ck.key]);
+    });
+}
+
+function switchTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn-top').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+    document.querySelector('.content-area').scrollTop = 0;
+}
+
+function toggleDay(id) { document.getElementById(id).classList.toggle('open'); }
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let _doneState = {};
+
+function showToast(type) {
+    const el = document.getElementById('sync-toast');
+    el.innerHTML = type === 'synced'
+        ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Synced'
+        : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Offline';
+    el.className = 'show ' + type;
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+function applyDoneState() {
+    document.querySelectorAll('.it-item[data-key]').forEach(el => {
+        el.classList.toggle('done', !!_doneState[el.dataset.key]);
+    });
+    refreshSheetChecklist();
+}
+
+async function loadDone() {
+    const fetchStart = Date.now();
+    const { data } = await sb
+        .from('itinerary_done')
+        .select('item_key, done')
+        .eq('trip_id', TRIP.id);
+    if (data) {
+        data.forEach(row => {
+            if ((_localWriteAt[row.item_key] || 0) < fetchStart) {
+                _doneState[row.item_key] = row.done;
+            }
+        });
+        applyDoneState();
+    }
+}
+
+const _localWriteAt = {};
+
+sb.channel('itinerary-sync-' + TRIP.id)
+    .on('postgres_changes', {
+        event: '*', schema: 'public', table: 'itinerary_done',
+        filter: 'trip_id=eq.' + TRIP.id
+    }, payload => {
+        if (payload.new && payload.new.item_key !== undefined) {
+            const key = payload.new.item_key;
+            const age = Date.now() - (_localWriteAt[key] || 0);
+            if (age < 5000) return;
+            _doneState[key] = payload.new.done;
+            applyDoneState();
+        }
+    })
+    .subscribe();
+
+async function toggleDone(el) {
+    const key = el.dataset.key;
+    if (!key) return;
+    const next = !_doneState[key];
+    _doneState[key]    = next;
+    _localWriteAt[key] = Date.now();
+    el.classList.toggle('done', next);
+
+    const item = ITEM_MAP[key];
+    const upserts = [{ trip_id: TRIP.id, item_key: key, done: next }];
+    if (next && item && item.checklist) {
+        item.checklist.forEach(ck => {
+            _doneState[ck.key]    = next;
+            _localWriteAt[ck.key] = Date.now();
+            upserts.push({ trip_id: TRIP.id, item_key: ck.key, done: next });
+        });
+        refreshSheetChecklist();
+    }
+
+    const { error } = await sb.from('itinerary_done').upsert(upserts, { onConflict: 'trip_id,item_key' });
+    showToast(error ? 'error' : 'synced');
+}
+
+renderDays();
+loadDone();
+
+(function() {
+    const slides = document.querySelectorAll('#app-hero .hero-slide');
+    if (!slides.length) return;
+    let cur = 0;
+    setInterval(() => {
+        slides[cur].classList.remove('active');
+        cur = (cur + 1) % slides.length;
+        slides[cur].classList.add('active');
+    }, 3000);
+})();
+</script>
+</body>
+</html>
