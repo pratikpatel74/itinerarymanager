@@ -616,6 +616,51 @@
         border: 1px solid var(--border); line-height: 1.6;
     }
     .sheet-notes strong { color: var(--text); }
+
+    /* ── Edit mode / form styles ── */
+    .day-edit-toggle { padding:4px 10px; border-radius:8px; font-size:12px; font-weight:700; background:none; border:1px solid var(--border); color:var(--sub); cursor:pointer; font-family:inherit; transition:all 0.15s; flex-shrink:0; }
+    .day-edit-toggle.active { background:rgba(59,130,246,0.1); border-color:var(--blue); color:var(--blue); }
+    .it-edit-btns { display:flex; gap:1px; flex-shrink:0; align-items:center; }
+    .it-edit-btn { width:28px; height:28px; border-radius:7px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--sub); transition:all 0.15s; flex-shrink:0; }
+    .it-edit-btn:hover { background:var(--surface2); }
+    .it-edit-btn.edit:hover { color:var(--blue); }
+    .it-edit-btn.del:hover { color:#EF4444; }
+    .it-edit-btn:disabled { opacity:0.25; cursor:default; }
+    .day-add-btn { display:flex; align-items:center; gap:8px; width:100%; padding:10px 14px; margin-top:8px; background:rgba(59,130,246,0.07); border:1.5px dashed rgba(59,130,246,0.3); border-radius:10px; color:var(--blue); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:background 0.15s; }
+    .day-add-btn:hover { background:rgba(59,130,246,0.13); }
+    .ef-field { margin-bottom:14px; }
+    .ef-label { font-size:11px; font-weight:700; color:var(--sub); letter-spacing:0.5px; text-transform:uppercase; margin-bottom:6px; }
+    .ef-input { width:100%; padding:9px 12px; background:var(--surface2); border:1.5px solid var(--border); border-radius:10px; color:var(--text); font-size:14px; font-family:inherit; outline:none; transition:border-color 0.15s; box-sizing:border-box; }
+    .ef-input:focus { border-color:var(--blue); }
+    .ef-textarea { resize:vertical; min-height:60px; line-height:1.5; }
+    .ef-row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .ef-type-tabs { display:flex; gap:6px; }
+    .ef-type-tab { flex:1; padding:8px 4px; background:var(--surface2); border:1.5px solid var(--border); border-radius:9px; font-size:12px; font-weight:600; color:var(--sub); cursor:pointer; text-align:center; transition:all 0.15s; }
+    .ef-type-tab.active { background:rgba(59,130,246,0.1); border-color:var(--blue); color:var(--blue); }
+    .ef-cls-chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .ef-chip { padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; border:1.5px solid transparent; transition:all 0.15s; opacity:0.4; }
+    .ef-chip.active { opacity:1; }
+    .ef-chip.travel   { background:rgba(59,130,246,0.12);  color:#3B82F6; border-color:rgba(59,130,246,0.35); }
+    .ef-chip.activity { background:rgba(201,162,39,0.12);  color:#C9A227; border-color:rgba(201,162,39,0.35); }
+    .ef-chip.food     { background:rgba(249,115,22,0.12);  color:#F97316; border-color:rgba(249,115,22,0.35); }
+    .ef-chip.sight    { background:rgba(129,140,248,0.12); color:#818CF8; border-color:rgba(129,140,248,0.35); }
+    .ef-expander { border-top:1px solid var(--border); }
+    .ef-exp-head { display:flex; align-items:center; justify-content:space-between; padding:10px 0; cursor:pointer; user-select:none; }
+    .ef-exp-head span { font-size:13px; font-weight:600; color:var(--sub); }
+    .ef-exp-arrow { font-size:12px; color:var(--sub); transition:transform 0.2s; }
+    .ef-exp-head.open .ef-exp-arrow { transform:rotate(90deg); }
+    .ef-exp-body { display:none; padding-bottom:12px; }
+    .ef-exp-body.open { display:block; }
+    .ef-cl-row { display:flex; gap:6px; margin-bottom:6px; align-items:center; }
+    .ef-cl-row input { flex:1; padding:8px 10px; background:var(--surface2); border:1.5px solid var(--border); border-radius:9px; color:var(--text); font-size:13px; font-family:inherit; outline:none; box-sizing:border-box; }
+    .ef-cl-row input:focus { border-color:var(--blue); }
+    .ef-cl-del { background:none; border:none; color:var(--sub); cursor:pointer; padding:4px 6px; font-size:18px; line-height:1; flex-shrink:0; }
+    .ef-cl-add { font-size:13px; font-weight:600; color:var(--blue); background:none; border:none; cursor:pointer; padding:2px 0; }
+    .ef-footer { padding:12px 16px 24px; border-top:1px solid var(--border); display:flex; gap:10px; flex-shrink:0; }
+    .ef-btn-cancel { flex:1; padding:12px; background:var(--surface2); border:1.5px solid var(--border); border-radius:12px; color:var(--sub); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
+    .ef-btn-save { flex:2; padding:12px; background:var(--blue); border:none; border-radius:12px; color:#fff; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .ef-btn-save:disabled { opacity:0.5; cursor:wait; }
+    .ef-btn-del { flex:1; padding:12px; background:#EF4444; border:none; border-radius:12px; color:#fff; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
     </style>
 </head>
 <body>
@@ -938,6 +983,28 @@
         <div class="sheet-body" id="sh-body"></div>
     </div>
 
+
+<!-- Edit / Add item sheet -->
+<div class="sheet-backdrop" id="edit-backdrop" onclick="closeEditSheet()"></div>
+<div class="sheet" id="edit-sheet" style="display:flex;flex-direction:column;">
+    <div class="sheet-handle"></div>
+    <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <div id="edit-sheet-title" style="font-family:'DM Sans',system-ui,sans-serif;font-size:18px;font-weight:700;">Add Item</div>
+        <div onclick="closeEditSheet()" style="cursor:pointer;color:var(--sub);padding:4px 8px;line-height:1;font-size:18px;">✕</div>
+    </div>
+    <div id="edit-body" style="padding:16px 16px 0;overflow-y:auto;flex:1;"></div>
+    <div class="ef-footer">
+        <button class="ef-btn-cancel" onclick="closeEditSheet()">Cancel</button>
+        <button class="ef-btn-save" id="ef-save-btn" onclick="saveItem()">Save</button>
+    </div>
+</div>
+<!-- Delete confirm sheet -->
+<div class="sheet-backdrop" id="del-backdrop" onclick="closeDelSheet()"></div>
+<div class="sheet" id="del-sheet">
+    <div class="sheet-handle"></div>
+    <div id="del-body" style="padding:24px 20px 32px;"></div>
+</div>
+
 </div><!-- /app-shell -->
 
 <script>
@@ -959,14 +1026,15 @@ function formatDate(dateStr) {
 }
 
 function rowFromDb(r) {
-    if (r.type === 'empty')   return { type: 'empty',   note: r.detail || '' };
-    if (r.type === 'section') return { type: 'section',  label: r.name  || '' };
+    if (r.type === 'empty')   return { type: 'empty',   note: r.detail || '', dbId: r.id, sort_order: r.sort_order };
+    if (r.type === 'section') return { type: 'section', label: r.name  || '', dbId: r.id, sort_order: r.sort_order };
     return {
         type: r.type, key: r.key, cls: r.cls, time: r.time, name: r.name,
         detail: r.detail, duration: r.duration, notes: r.notes,
         location: r.location_name ? { name: r.location_name, address: r.location_address, mapsUrl: r.location_maps_url } : null,
         cta: r.cta_label ? { label: r.cta_label, url: r.cta_url } : null,
         checklist: r.checklist || [],
+        dbId: r.id, sort_order: r.sort_order,
     };
 }
 
@@ -989,6 +1057,7 @@ async function init() {
         subtitle: tripData.subtitle || '',
         days: (daysData || []).map(day => ({
             id: 'day-' + day.day_number,
+            dbId: day.id,
             open: day.expanded_default,
             date: formatDate(day.date),
             label: day.label || '',
@@ -1023,16 +1092,45 @@ async function init() {
 const DOT_CLASS = { travel:'dot-travel', activity:'dot-activity', food:'dot-food', sight:'dot-sight' };
 const DOT_COLOR = { travel:'#3B82F6', activity:'#C9A227', food:'#F97316', sight:'#818CF8' };
 
-const ITEM_MAP  = {};
-const DAY_FOR_KEY = {};
+let ITEM_MAP    = {};
+let ROW_BY_DBID = {};
+let DAY_FOR_KEY  = {};
+let DAY_FOR_DBID = {};
+
+const _editMode = new Set();
+let _editingDbId    = null;
+let _editingDayDbId = null;
+let _deletingDbId   = null;
 
 function hasDetail(row) {
     return !!(row.location || row.cta || (row.checklist && row.checklist.length) || row.notes);
 }
 
+const PENCIL_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+const TRASH_SVG  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+const UP_SVG     = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
+const DOWN_SVG   = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+
+function editBtns(row, isFirst, isLast, dayDbId) {
+    const canMove = row.type === 'item';
+    return `<div class="it-edit-btns" onclick="event.stopPropagation()">
+        ${canMove ? `<button class="it-edit-btn" title="Move up"   onclick="moveRow(${row.dbId},'up')"   ${isFirst?'disabled':''}>${UP_SVG}</button>
+        <button class="it-edit-btn" title="Move down" onclick="moveRow(${row.dbId},'down')" ${isLast ?'disabled':''}>${DOWN_SVG}</button>` : ''}
+        <button class="it-edit-btn edit" title="Edit"   onclick="openEditSheet(${row.dbId})">${PENCIL_SVG}</button>
+        <button class="it-edit-btn del"  title="Delete" onclick="openDelSheet(${row.dbId})">${TRASH_SVG}</button>
+    </div>`;
+}
+
 function renderDays() {
+    ITEM_MAP    = {};
+    ROW_BY_DBID = {};
+    DAY_FOR_KEY  = {};
+    DAY_FOR_DBID = {};
+
     TRIP.days.forEach(day => {
+        DAY_FOR_DBID[day.dbId] = day;
         (day.rows || []).forEach(row => {
+            if (row.dbId !== undefined) ROW_BY_DBID[row.dbId] = row;
             if (row.type === 'item') {
                 ITEM_MAP[row.key] = row;
                 DAY_FOR_KEY[row.key] = day;
@@ -1053,40 +1151,60 @@ function renderDays() {
     </div>`;
 
     TRIP.days.forEach(day => {
+        const inEdit = _editMode.has(day.id);
         html += `<div class="day-card${day.open ? ' open' : ''}" id="${day.id}">
-            <div class="day-header" onclick="toggleDay('${day.id}')">
-                <div>
-                    <div class="day-date">${day.date}</div>
-                    <div class="day-label">${day.label}</div>
+            <div class="day-header" style="display:flex;align-items:center;gap:8px;">
+                <div style="flex:1;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleDay('${day.id}')">
+                    <div>
+                        <div class="day-date">${day.date}</div>
+                        <div class="day-label">${day.label}</div>
+                    </div>
+                    <span class="day-chevron"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
                 </div>
-                <span class="day-chevron"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+                <button class="day-edit-toggle${inEdit ? ' active' : ''}" onclick="event.stopPropagation();toggleEditMode('${day.id}')">Edit</button>
             </div>
             <div class="day-body">`;
 
-        day.rows.forEach(row => {
+        day.rows.forEach((row, idx) => {
+            const isFirst = idx === 0;
+            const isLast  = idx === day.rows.length - 1;
+
             if (row.type === 'item') {
-                const dotCls  = DOT_CLASS[row.cls] || 'dot-travel';
-                const rich    = hasDetail(row);
-                const nameHtml = row.nameUrl
-                    ? `<a href="${row.nameUrl}" target="_blank">${row.name}</a>`
-                    : row.name;
-                html += `<div class="it-item${rich ? ' has-detail' : ''}" data-key="${row.key}" onclick="void 0">
-                    <div class="it-time">${row.time}</div>
+                const dotCls   = DOT_CLASS[row.cls] || 'dot-travel';
+                const rich     = hasDetail(row);
+                const nameHtml = row.name || '';
+                html += `<div class="it-item${rich ? ' has-detail' : ''}" data-key="${row.key}">
+                    <div class="it-time">${row.time || ''}</div>
                     <div class="it-dot-wrap"><div class="it-dot ${dotCls}" data-done-target="${row.key}"></div></div>
                     <div class="it-content">
                         <div class="it-name">${nameHtml}</div>
                         ${row.detail ? `<div class="it-detail">${row.detail}</div>` : ''}
                     </div>
-                    ${rich ? `<div class="it-chevron"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>` : ''}
+                    ${inEdit
+                        ? editBtns(row, isFirst, isLast, day.dbId)
+                        : (rich ? `<div class="it-chevron"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>` : '')}
                 </div>`;
             } else if (row.type === 'empty') {
-                html += `<div class="day-empty">${row.note}</div>`;
+                html += `<div class="day-empty" style="display:flex;align-items:center;justify-content:space-between;">
+                    <span>${row.note || ''}</span>
+                    ${inEdit ? editBtns(row, isFirst, isLast, day.dbId) : ''}
+                </div>`;
             } else if (row.type === 'section') {
-                html += `<div class="day-section-label">${row.label}</div>`;
+                html += `<div class="day-section-label" style="display:flex;align-items:center;justify-content:space-between;">
+                    <span>${row.label || ''}</span>
+                    ${inEdit ? editBtns(row, isFirst, isLast, day.dbId) : ''}
+                </div>`;
             } else if (row.type === 'info') {
-                html += row.html;
+                html += row.html || '';
             }
         });
+
+        if (inEdit) {
+            html += `<button class="day-add-btn" onclick="openAddSheet('${day.dbId}')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Item
+            </button>`;
+        }
 
         html += `</div></div>`;
     });
@@ -1096,13 +1214,360 @@ function renderDays() {
     document.getElementById('panel-days').addEventListener('click', function(e) {
         const el = e.target.closest('.it-item[data-key]');
         if (!el) return;
-        const key  = el.dataset.key;
-        const rich = el.classList.contains('has-detail');
+        const key = el.dataset.key;
+        const day = DAY_FOR_KEY[key];
+        if (day && _editMode.has(day.id)) return;
         if (e.target.closest('.it-dot-wrap')) { toggleDone(el); return; }
         if (e.target.closest('a')) return;
+        const rich = el.classList.contains('has-detail');
         if (rich) { openSheet(key); return; }
         toggleDone(el);
     });
+
+    applyDoneState();
+}
+
+// ── Edit mode ─────────────────────────────────────────────────────
+function toggleEditMode(dayId) {
+    const wasOpen = document.getElementById(dayId) && document.getElementById(dayId).classList.contains('open');
+    if (_editMode.has(dayId)) _editMode.delete(dayId);
+    else _editMode.add(dayId);
+    renderDays();
+    if (wasOpen) {
+        const el = document.getElementById(dayId);
+        if (el && !el.classList.contains('open')) el.classList.add('open');
+    }
+}
+
+async function refreshDay(dayDbId) {
+    const { data: items } = await sb.from('trip_items').select('*').eq('day_id', dayDbId).order('sort_order');
+    const day = TRIP.days.find(d => d.dbId == dayDbId);
+    if (day) day.rows = (items || []).map(rowFromDb);
+    renderDays();
+    const dayEl = document.getElementById(day ? day.id : '');
+    if (dayEl && !dayEl.classList.contains('open')) dayEl.classList.add('open');
+}
+
+async function moveRow(dbId, direction) {
+    let day = null, idx = -1;
+    for (const d of TRIP.days) {
+        const i = d.rows.findIndex(r => r.dbId == dbId);
+        if (i >= 0) { day = d; idx = i; break; }
+    }
+    if (!day || idx < 0) return;
+    const rows = day.rows;
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= rows.length) return;
+    const row = rows[idx], swapRow = rows[swapIdx];
+    await Promise.all([
+        sb.from('trip_items').update({ sort_order: swapRow.sort_order }).eq('id', dbId),
+        sb.from('trip_items').update({ sort_order: row.sort_order }).eq('id', swapRow.dbId),
+    ]);
+    await refreshDay(day.dbId);
+}
+
+// ── Edit / Add form sheet ─────────────────────────────────────────
+function buildFormHtml(row) {
+    const isItem    = !row || row.type === 'item';
+    const isSection = row && row.type === 'section';
+    const isEmpty   = row && row.type === 'empty';
+
+    const cls   = (row && row.cls)      || 'travel';
+    const time  = (row && row.time)     || '';
+    const name  = (row && row.name)     || '';
+    const det   = (row && row.detail)   || '';
+    const dur   = (row && row.duration) || '';
+    const notes = (row && row.notes)    || '';
+
+    const loc      = row && row.location;
+    const locName  = loc ? loc.name    : '';
+    const locAddr  = loc ? loc.address : '';
+    const locMaps  = loc ? loc.mapsUrl : '';
+
+    const cta      = row && row.cta;
+    const ctaLabel = cta ? cta.label : '';
+    const ctaUrl   = cta ? cta.url   : '';
+
+    const checklist = (row && row.checklist) || [];
+
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+
+    const mkChip = (c, label) =>
+        `<div class="ef-chip ${c}${c===cls?' active':''}" onclick="efSetCls('${c}')">${label}</div>`;
+
+    const clHtml = checklist.map((ck, i) =>
+        `<div class="ef-cl-row"><input type="text" value="${esc(ck.label)}" placeholder="Item ${i+1}"><button class="ef-cl-del" onclick="this.parentElement.remove()">×</button></div>`
+    ).join('');
+
+    return `
+    <div class="ef-field">
+        <div class="ef-label">Type</div>
+        <div class="ef-type-tabs">
+            <div class="ef-type-tab${isItem   ?' active':''}" id="eft-item"    onclick="efSetType('item')">Item</div>
+            <div class="ef-type-tab${isSection?' active':''}" id="eft-section" onclick="efSetType('section')">Section</div>
+            <div class="ef-type-tab${isEmpty  ?' active':''}" id="eft-empty"   onclick="efSetType('empty')">Empty</div>
+        </div>
+    </div>
+
+    <div id="ef-item-fields" style="display:${isItem?'block':'none'}">
+        <div class="ef-field">
+            <div class="ef-label">Category</div>
+            <div class="ef-cls-chips" id="ef-cls-chips">
+                ${mkChip('travel',   '✈ Travel')}
+                ${mkChip('activity', '🎫 Activity')}
+                ${mkChip('food',     '🍽 Food')}
+                ${mkChip('sight',    '🏙 Sight')}
+            </div>
+        </div>
+        <div class="ef-row2">
+            <div class="ef-field">
+                <div class="ef-label">Time</div>
+                <input class="ef-input" id="ef-time" type="text" placeholder="09:00" value="${esc(time)}">
+            </div>
+            <div class="ef-field">
+                <div class="ef-label">Duration</div>
+                <input class="ef-input" id="ef-dur" type="text" placeholder="2 hrs" value="${esc(dur)}">
+            </div>
+        </div>
+        <div class="ef-field">
+            <div class="ef-label">Name</div>
+            <input class="ef-input" id="ef-name" type="text" placeholder="Item name" value="${esc(name)}">
+        </div>
+        <div class="ef-field">
+            <div class="ef-label">Detail / Subtitle</div>
+            <input class="ef-input" id="ef-det" type="text" placeholder="Short description" value="${esc(det)}">
+        </div>
+
+        <div class="ef-expander">
+            <div class="ef-exp-head${locName?' open':''}" onclick="efToggleExp(this)">
+                <span>📍 Location</span><span class="ef-exp-arrow">›</span>
+            </div>
+            <div class="ef-exp-body${locName?' open':''}">
+                <div class="ef-field"><div class="ef-label">Place name</div><input class="ef-input" id="ef-loc-name" type="text" value="${esc(locName)}"></div>
+                <div class="ef-field"><div class="ef-label">Address</div><input class="ef-input" id="ef-loc-addr" type="text" value="${esc(locAddr)}"></div>
+                <div class="ef-field"><div class="ef-label">Maps URL</div><input class="ef-input" id="ef-loc-maps" type="url" value="${esc(locMaps)}"></div>
+            </div>
+        </div>
+
+        <div class="ef-expander">
+            <div class="ef-exp-head${ctaLabel?' open':''}" onclick="efToggleExp(this)">
+                <span>🔗 CTA Button</span><span class="ef-exp-arrow">›</span>
+            </div>
+            <div class="ef-exp-body${ctaLabel?' open':''}">
+                <div class="ef-field"><div class="ef-label">Button label</div><input class="ef-input" id="ef-cta-label" type="text" value="${esc(ctaLabel)}"></div>
+                <div class="ef-field"><div class="ef-label">URL</div><input class="ef-input" id="ef-cta-url" type="url" value="${esc(ctaUrl)}"></div>
+            </div>
+        </div>
+
+        <div class="ef-expander">
+            <div class="ef-exp-head${checklist.length?' open':''}" onclick="efToggleExp(this)">
+                <span>✅ Checklist</span><span class="ef-exp-arrow">›</span>
+            </div>
+            <div class="ef-exp-body${checklist.length?' open':''}">
+                <div id="ef-cl-list">${clHtml}</div>
+                <button class="ef-cl-add" onclick="efAddCl()">+ Add item</button>
+            </div>
+        </div>
+
+        <div class="ef-expander">
+            <div class="ef-exp-head${notes?' open':''}" onclick="efToggleExp(this)">
+                <span>📝 Notes</span><span class="ef-exp-arrow">›</span>
+            </div>
+            <div class="ef-exp-body${notes?' open':''}">
+                <div class="ef-field"><textarea class="ef-input ef-textarea" id="ef-notes" placeholder="Internal notes…">${esc(notes)}</textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ef-section-fields" style="display:${isSection?'block':'none'}">
+        <div class="ef-field">
+            <div class="ef-label">Section label</div>
+            <input class="ef-input" id="ef-section-label" type="text" placeholder="e.g. Morning" value="${isSection ? esc(row.label||'') : ''}">
+        </div>
+    </div>
+
+    <div id="ef-empty-fields" style="display:${isEmpty?'block':'none'}">
+        <div class="ef-field">
+            <div class="ef-label">Note (optional)</div>
+            <input class="ef-input" id="ef-empty-note" type="text" placeholder="e.g. Free afternoon" value="${isEmpty ? esc(row.note||'') : ''}">
+        </div>
+    </div>
+
+    <div style="height:16px;"></div>`;
+}
+
+function efSetType(type) {
+    ['item','section','empty'].forEach(t => {
+        const tab = document.getElementById('eft-'+t);
+        const fld = document.getElementById('ef-'+t+'-fields');
+        if (tab) tab.classList.toggle('active', t===type);
+        if (fld) fld.style.display = t===type ? 'block' : 'none';
+    });
+}
+
+function efSetCls(cls) {
+    document.querySelectorAll('#ef-cls-chips .ef-chip').forEach(c => {
+        c.classList.toggle('active', c.classList.contains(cls));
+    });
+}
+
+function efToggleExp(head) {
+    head.classList.toggle('open');
+    head.nextElementSibling.classList.toggle('open');
+}
+
+function efAddCl() {
+    const list = document.getElementById('ef-cl-list');
+    const idx  = list.children.length;
+    const div  = document.createElement('div');
+    div.className = 'ef-cl-row';
+    div.innerHTML = `<input type="text" placeholder="Item ${idx+1}"><button class="ef-cl-del" onclick="this.parentElement.remove()">×</button>`;
+    list.appendChild(div);
+    div.querySelector('input').focus();
+}
+
+function openEditSheet(dbId) {
+    _editingDbId = dbId;
+    _editingDayDbId = null;
+    const row = ROW_BY_DBID[dbId];
+    document.getElementById('edit-sheet-title').textContent = 'Edit Item';
+    document.getElementById('edit-body').innerHTML = buildFormHtml(row || null);
+    document.getElementById('edit-backdrop').classList.add('open');
+    document.getElementById('edit-sheet').classList.add('open');
+}
+
+function openAddSheet(dayDbId) {
+    _editingDbId = null;
+    _editingDayDbId = dayDbId;
+    document.getElementById('edit-sheet-title').textContent = 'Add Item';
+    document.getElementById('edit-body').innerHTML = buildFormHtml(null);
+    document.getElementById('edit-backdrop').classList.add('open');
+    document.getElementById('edit-sheet').classList.add('open');
+}
+
+function closeEditSheet() {
+    document.getElementById('edit-backdrop').classList.remove('open');
+    document.getElementById('edit-sheet').classList.remove('open');
+    _editingDbId = null;
+    _editingDayDbId = null;
+}
+
+function _readForm() {
+    const activeType = ['item','section','empty'].find(t => {
+        const el = document.getElementById('eft-'+t);
+        return el && el.classList.contains('active');
+    }) || 'item';
+
+    if (activeType === 'section') {
+        return { type: 'section', name: (document.getElementById('ef-section-label')||{value:''}).value.trim() };
+    }
+    if (activeType === 'empty') {
+        return { type: 'empty', detail: (document.getElementById('ef-empty-note')||{value:''}).value.trim() };
+    }
+
+    const activeChip = document.querySelector('#ef-cls-chips .ef-chip.active');
+    const cls = activeChip
+        ? [...activeChip.classList].find(c => ['travel','activity','food','sight'].includes(c)) || 'travel'
+        : 'travel';
+
+    const g = id => (document.getElementById(id)||{value:''}).value.trim();
+
+    const locName = g('ef-loc-name'), locAddr = g('ef-loc-addr'), locMaps = g('ef-loc-maps');
+    const ctaLabel = g('ef-cta-label'), ctaUrl = g('ef-cta-url');
+
+    const clItems = [];
+    document.querySelectorAll('#ef-cl-list .ef-cl-row input').forEach((inp, i) => {
+        const label = inp.value.trim();
+        if (label) clItems.push({ key: 'cl-' + Date.now() + '-' + i, label });
+    });
+
+    return {
+        type: 'item',
+        cls,
+        time:     g('ef-time'),
+        name:     g('ef-name'),
+        detail:   g('ef-det')   || null,
+        duration: g('ef-dur')   || null,
+        notes:    g('ef-notes') || null,
+        location_name:     locName  || null,
+        location_address:  locAddr  || null,
+        location_maps_url: locMaps  || null,
+        cta_label: ctaLabel || null,
+        cta_url:   ctaUrl   || null,
+        checklist: clItems.length ? clItems : null,
+    };
+}
+
+async function saveItem() {
+    const btn = document.getElementById('ef-save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    const payload = _readForm();
+    try {
+        if (_editingDbId !== null) {
+            const { error } = await sb.from('trip_items').update(payload).eq('id', _editingDbId);
+            if (error) throw error;
+            let dayDbId = null;
+            for (const d of TRIP.days) {
+                if (d.rows.some(r => r.dbId == _editingDbId)) { dayDbId = d.dbId; break; }
+            }
+            closeEditSheet();
+            if (dayDbId !== null) await refreshDay(dayDbId);
+        } else {
+            const { data: maxRow } = await sb.from('trip_items')
+                .select('sort_order').eq('day_id', _editingDayDbId)
+                .order('sort_order', { ascending: false }).limit(1).maybeSingle();
+            const nextOrder = (maxRow ? maxRow.sort_order : 0) + 10;
+            const { error } = await sb.from('trip_items').insert({
+                ...payload,
+                day_id: _editingDayDbId,
+                sort_order: nextOrder,
+                key: payload.type === 'item' ? ('item-' + Date.now()) : null,
+            });
+            if (error) throw error;
+            const dayDbId = _editingDayDbId;
+            closeEditSheet();
+            await refreshDay(dayDbId);
+        }
+    } catch(e) {
+        alert('Error saving: ' + (e.message || String(e)));
+        btn.disabled = false;
+        btn.textContent = 'Save';
+    }
+}
+
+// ── Delete confirm sheet ──────────────────────────────────────────
+function openDelSheet(dbId) {
+    _deletingDbId = dbId;
+    const row  = ROW_BY_DBID[dbId];
+    const name = row ? (row.name || row.label || row.note || 'this item') : 'this item';
+    document.getElementById('del-body').innerHTML = `
+        <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;">Delete item?</div>
+        <div style="font-size:14px;color:var(--sub);margin-bottom:24px;">"${name}" will be permanently removed.</div>
+        <div style="display:flex;gap:10px;">
+            <button class="ef-btn-cancel" onclick="closeDelSheet()" style="flex:1;">Cancel</button>
+            <button class="ef-btn-del"    onclick="confirmDelete()" style="flex:1;">Delete</button>
+        </div>`;
+    document.getElementById('del-backdrop').classList.add('open');
+    document.getElementById('del-sheet').classList.add('open');
+}
+
+function closeDelSheet() {
+    document.getElementById('del-backdrop').classList.remove('open');
+    document.getElementById('del-sheet').classList.remove('open');
+    _deletingDbId = null;
+}
+
+async function confirmDelete() {
+    if (_deletingDbId === null) return;
+    let dayDbId = null;
+    for (const d of TRIP.days) {
+        if (d.rows.some(r => r.dbId == _deletingDbId)) { dayDbId = d.dbId; break; }
+    }
+    const { error } = await sb.from('trip_items').delete().eq('id', _deletingDbId);
+    if (error) { alert('Error: ' + error.message); return; }
+    closeDelSheet();
+    if (dayDbId !== null) await refreshDay(dayDbId);
 }
 
 // ── Bottom sheet ──────────────────────────────────────────────────
@@ -1118,8 +1583,8 @@ function openSheet(key) {
     document.getElementById('sh-dot').style.background = dotColor;
 
     const timeStr = item.duration ? `${item.time}  ·  ${item.duration}` : item.time;
-    document.getElementById('sh-time').textContent = timeStr;
-    document.getElementById('sh-name').textContent = item.name.replace(/^\p{Emoji}\s*/u, '');
+    document.getElementById('sh-time').textContent = timeStr || '';
+    document.getElementById('sh-name').textContent = (item.name || '').replace(/^\p{Emoji}\s*/u, '');
 
     const meta = document.getElementById('sh-meta');
     meta.innerHTML = day
@@ -1170,7 +1635,7 @@ function openSheet(key) {
 
     body.querySelectorAll('.cl-item[data-ck]').forEach(el => {
         el.addEventListener('click', async function() {
-            const ck  = el.dataset.ck;
+            const ck   = el.dataset.ck;
             const next = !_doneState[ck];
             _doneState[ck] = next;
             el.classList.toggle('done', next);
@@ -1219,7 +1684,7 @@ function switchTab(name) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn-top').forEach(b => b.classList.remove('active'));
     document.getElementById('panel-' + name).classList.add('active');
-    document.getElementById('tab-' + name).classList.add('active');
+    document.getElementById('tab-'   + name).classList.add('active');
     document.querySelector('.content-area').scrollTop = 0;
 }
 
@@ -1228,7 +1693,7 @@ function toggleDay(id) { document.getElementById(id).classList.toggle('open'); }
 function switchMeal(name) {
     document.querySelectorAll('.meal-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.meal-tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('meal-' + name).classList.add('active');
+    document.getElementById('meal-'    + name).classList.add('active');
     document.getElementById('mealtab-' + name).classList.add('active');
 }
 
@@ -1255,15 +1720,10 @@ function applyDoneState() {
 
 async function loadDone() {
     const fetchStart = Date.now();
-    const { data } = await sb
-        .from('itinerary_done')
-        .select('item_key, done')
-        .eq('trip_id', TRIP.id);
+    const { data } = await sb.from('itinerary_done').select('item_key, done').eq('trip_id', TRIP.id);
     if (data) {
         data.forEach(row => {
-            if ((_localWriteAt[row.item_key] || 0) < fetchStart) {
-                _doneState[row.item_key] = row.done;
-            }
+            if ((_localWriteAt[row.item_key] || 0) < fetchStart) _doneState[row.item_key] = row.done;
         });
         applyDoneState();
     }
@@ -1277,7 +1737,7 @@ async function toggleDone(el) {
     _localWriteAt[key] = Date.now();
     el.classList.toggle('done', next);
 
-    const item = ITEM_MAP[key];
+    const item    = ITEM_MAP[key];
     const upserts = [{ trip_id: TRIP.id, item_key: key, done: next }];
     if (next && item && item.checklist) {
         item.checklist.forEach(ck => {
