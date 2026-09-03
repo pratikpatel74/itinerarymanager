@@ -648,9 +648,12 @@
     </div>
 
     <!-- ── Sync bar ── -->
-    <div class="sync-bar" id="sync-bar">
-        <div class="sync-dot"></div>
-        <span id="sync-text">Live sync on</span>
+    <div class="sync-bar" id="sync-bar" style="justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:6px;">
+            <div class="sync-dot"></div>
+            <span id="sync-text">Live sync on</span>
+        </div>
+        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v5</span>
     </div>
 
     <!-- ── Scrollable content ── -->
@@ -1158,28 +1161,34 @@ function renderDays() {
 
     document.getElementById('panel-days').innerHTML = html;
 
-    // Dot click → toggle done. Row click → open sheet (if rich) or toggle done.
-    document.querySelectorAll('.it-item[data-key]').forEach(el => {
+    // Single delegated listener — more reliable on mobile than per-item listeners
+    document.getElementById('panel-days').addEventListener('click', function(e) {
+        const el = e.target.closest('.it-item[data-key]');
+        if (!el) return;
+
         const key  = el.dataset.key;
         const rich = el.classList.contains('has-detail');
+        const done = el.classList.contains('done');
 
-        el.querySelector('.it-dot-wrap').addEventListener('click', function(e) {
-            e.stopPropagation();
+        // Dot area → always toggle
+        if (e.target.closest('.it-dot-wrap')) {
             toggleDone(el);
-        });
+            return;
+        }
 
-        el.addEventListener('click', function(e) {
-            if (e.target.closest('.it-dot-wrap')) return;
-            // Done item: tap anywhere on row unticks it (overrides link navigation)
-            if (el.classList.contains('done')) {
-                e.preventDefault();
-                toggleDone(el);
-                return;
-            }
-            if (e.target.closest('a')) return; // let links open normally for undone items
-            if (rich) openSheet(key);
-            else toggleDone(el);
-        });
+        // Done row → untick (takes priority over link/sheet)
+        if (done) {
+            e.preventDefault();
+            toggleDone(el);
+            return;
+        }
+
+        // Undone: let named links open normally
+        if (e.target.closest('a')) return;
+
+        // Undone: open sheet or toggle
+        if (rich) openSheet(key);
+        else toggleDone(el);
     });
 }
 
@@ -1340,14 +1349,24 @@ async function loadDone() {
     }
 }
 
+// Track the timestamp of each local toggle so stale RT events don't overwrite it
+const _doneWrittenAt = {};
+
 sb.channel('itinerary-sync-' + TRIP.id)
     .on('postgres_changes', {
         event: '*', schema: 'public', table: 'itinerary_done',
         filter: 'trip_id=eq.' + TRIP.id
     }, payload => {
         if (payload.new && payload.new.item_key !== undefined) {
-            _doneState[payload.new.item_key] = payload.new.done;
-            applyDoneState();
+            const key = payload.new.item_key;
+            const payloadTs = payload.new.updated_at || '';
+            const localTs   = _doneWrittenAt[key]  || '';
+            // Only apply if the RT event is strictly newer than our last local write
+            // (guards against a delayed "mark-done" event arriving after "row-untick")
+            if (payloadTs >= localTs) {
+                _doneState[key] = payload.new.done;
+                applyDoneState();
+            }
         }
     })
     .subscribe();
@@ -1356,10 +1375,12 @@ async function toggleDone(el) {
     const key = el.dataset.key;
     if (!key) return;
     const next = !_doneState[key];
-    _doneState[key] = next;
+    const now  = new Date().toISOString();
+    _doneState[key]     = next;
+    _doneWrittenAt[key] = now;          // record when we wrote locally
     el.classList.toggle('done', next);
     const { error } = await sb.from('itinerary_done').upsert(
-        { trip_id: TRIP.id, item_key: key, done: next, updated_at: new Date().toISOString() },
+        { trip_id: TRIP.id, item_key: key, done: next, updated_at: now },
         { onConflict: 'trip_id,item_key' }
     );
     showToast(error ? 'error' : 'synced');
