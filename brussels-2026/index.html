@@ -1419,7 +1419,7 @@ function buildFormHtml(row) {
 
         <div class="ef-expander">
             <div class="ef-exp-head${locName?' open':''}" onclick="efToggleExp(this)">
-                <span>📍 Location</span><span class="ef-exp-arrow">›</span>
+                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Location</span><span class="ef-exp-arrow">›</span>
             </div>
             <div class="ef-exp-body${locName?' open':''}">
                 <div class="ef-field"><div class="ef-label">Place name</div><input class="ef-input" id="ef-loc-name" type="text" value="${esc(locName)}"></div>
@@ -1430,7 +1430,7 @@ function buildFormHtml(row) {
 
         <div class="ef-expander">
             <div class="ef-exp-head${ctaLabel?' open':''}" onclick="efToggleExp(this)">
-                <span>🔗 CTA Button</span><span class="ef-exp-arrow">›</span>
+                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> CTA Button</span><span class="ef-exp-arrow">›</span>
             </div>
             <div class="ef-exp-body${ctaLabel?' open':''}">
                 <div class="ef-field"><div class="ef-label">Button label</div><input class="ef-input" id="ef-cta-label" type="text" value="${esc(ctaLabel)}"></div>
@@ -1440,7 +1440,7 @@ function buildFormHtml(row) {
 
         <div class="ef-expander">
             <div class="ef-exp-head${checklist.length?' open':''}" onclick="efToggleExp(this)">
-                <span>✅ Checklist</span><span class="ef-exp-arrow">›</span>
+                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Checklist</span><span class="ef-exp-arrow">›</span>
             </div>
             <div class="ef-exp-body${checklist.length?' open':''}">
                 <div id="ef-cl-list">${clHtml}</div>
@@ -1450,7 +1450,7 @@ function buildFormHtml(row) {
 
         <div class="ef-expander">
             <div class="ef-exp-head${notes?' open':''}" onclick="efToggleExp(this)">
-                <span>📝 Notes</span><span class="ef-exp-arrow">›</span>
+                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Notes</span><span class="ef-exp-arrow">›</span>
             </div>
             <div class="ef-exp-body${notes?' open':''}">
                 <div class="ef-field"><textarea class="ef-input ef-textarea" id="ef-notes" placeholder="Internal notes…">${esc(notes)}</textarea></div>
@@ -1928,7 +1928,7 @@ init();
         var walkSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>';
         el.innerHTML = EXPLORE_DB.map(function(a) {
             var mUrl = a.maps_url || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(a.name + ' Brussels'));
-            var mapLabel = (a.distance_text || '').toLowerCase().indexOf('metro') >= 0 ? 'Transit' : 'Map';
+            var mapLabel = (a.dist_text || '').toLowerCase().indexOf('metro') >= 0 ? 'Transit' : 'Map';
             return '<div class="attraction-item" data-xid="' + a.id + '">' +
                 '<div class="attraction-info">' +
                 '<div><a href="' + escH(a.website_url || '#') + '" target="_blank" class="attraction-name-link">' + escH(a.name) + '</a></div>' +
@@ -1936,7 +1936,7 @@ init();
                 '</div>' +
                 '<div style="display:flex;gap:4px;align-items:center;">' +
                 '<a href="' + escH(mUrl) + '" target="_blank" class="map-link">' + mapLabel + '</a>' +
-                '<button class="row-edit-btn" onclick="openXSheet(' + JSON.stringify(a.id) + ')" title="Edit">&#9998;</button>' +
+                '<button class="row-edit-btn" onclick="openXSheet(' + JSON.stringify(a.id) + ')" title="Edit">' + PENCIL_SVG + '</button>' +
                 '</div></div>';
         }).join('');
     }
@@ -1946,7 +1946,7 @@ init();
         document.getElementById('x-sheet-title').textContent = a ? 'Edit Attraction' : 'Add Attraction';
         document.getElementById('x-edit-id').value   = a ? a.id : '';
         document.getElementById('x-edit-name').value = a ? (a.name || '') : '';
-        document.getElementById('x-edit-dist').value = a ? (a.distance_text || '') : '';
+        document.getElementById('x-edit-dist').value = a ? (a.dist_text || '') : '';
         document.getElementById('x-edit-url').value  = a ? (a.website_url || '') : '';
         document.getElementById('x-edit-maps').value = a ? (a.maps_url || '') : '';
         document.getElementById('x-edit-lat').value  = a ? (a.lat || '') : '';
@@ -2056,7 +2056,7 @@ init();
                 '<div class="resto-name"><a href="' + escH(r.website_url || '#') + '" target="_blank">' + escH(r.name) + '</a></div>' +
                 '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">' +
                 '<div class="resto-tags">' + tagsHtml + '</div>' +
-                '<button class="row-edit-btn" onclick="openRSheet(' + JSON.stringify(r.id) + ',\'' + r.meal_type + '\')" title="Edit">&#9998;</button>' +
+                '<button class="row-edit-btn" onclick="openRSheet(' + JSON.stringify(r.id) + ',\'' + r.meal_type + '\')" title="Edit">' + PENCIL_SVG + '</button>' +
                 '</div></div>' +
                 (bodyRows ? '<div class="resto-body">' + bodyRows + '</div>' : '') +
                 (actHtml ? '<div class="resto-actions">' + actHtml + '</div>' : '') +
@@ -2079,7 +2079,7 @@ init();
         document.getElementById('r-edit-name').value     = r ? (r.name || '') : '';
         document.getElementById('r-edit-website').value  = r ? (r.website_url || '') : '';
         document.getElementById('r-edit-address').value  = '';
-        document.getElementById('r-edit-dist').value     = r ? (r.distance_text || '') : '';
+        document.getElementById('r-edit-dist').value     = r ? (r.walk_text || '') : '';
         document.getElementById('r-edit-hours').value    = r ? (r.hours || '') : '';
         document.getElementById('r-edit-desc').value     = r ? (r.description || '') : '';
         document.getElementById('r-edit-phone').value    = r ? (r.phone || '') : '';
