@@ -655,7 +655,7 @@
             <div class="sync-dot"></div>
             <span id="sync-text">Live sync on</span>
         </div>
-        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v11</span>
+        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v14</span>
     </div>
 
     <!-- ── Scrollable content ── -->
@@ -1140,7 +1140,7 @@ function renderDays() {
                 const nameHtml = row.nameUrl
                     ? `<a href="${row.nameUrl}" target="_blank">${row.name}</a>`
                     : row.name;
-                html += `<div class="it-item${rich ? ' has-detail' : ''}" data-key="${row.key}">
+                html += `<div class="it-item${rich ? ' has-detail' : ''}" data-key="${row.key}" onclick="void 0">
                     <div class="it-time">${row.time}</div>
                     <div class="it-dot-wrap"><div class="it-dot ${dotCls}" data-done-target="${row.key}"></div></div>
                     <div class="it-content">
@@ -1178,19 +1178,13 @@ function renderDays() {
             return;
         }
 
-        // Done row → untick (takes priority over link/sheet)
-        if (done) {
-            e.preventDefault();
-            toggleDone(el);
-            return;
-        }
-
-        // Undone: let named links open normally
         if (e.target.closest('a')) return;
 
-        // Undone: open sheet or toggle
-        if (rich) openSheet(key);
-        else toggleDone(el);
+        // Rich items always open the sheet (done or not) — use the dot to toggle
+        if (rich) { openSheet(key); return; }
+
+        // Simple items (no sheet): row tap toggles done
+        toggleDone(el);
     });
 }
 
@@ -1404,7 +1398,9 @@ async function toggleDone(el) {
     // Cascade to sub-items when parent is marked done
     const item = ITEM_MAP[key];
     const upserts = [{ trip_id: TRIP.id, item_key: key, done: next }];
-    if (item && item.checklist) {
+    // Only cascade to sub-items when marking parent DONE — unticking the parent
+    // leaves sub-items as-is so the user can manage them individually
+    if (next && item && item.checklist) {
         item.checklist.forEach(ck => {
             _doneState[ck.key]    = next;
             _localWriteAt[ck.key] = Date.now();
