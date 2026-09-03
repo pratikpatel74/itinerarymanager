@@ -1170,8 +1170,8 @@ function renderDays() {
         const rich = el.classList.contains('has-detail');
         const done = el.classList.contains('done');
 
-        // DEBUG v6 — remove once bug is diagnosed
-        showToast('tap: done=' + done + ' cls=' + e.target.className.toString().slice(0, 30));
+        // DEBUG v6 — green = done detected, white = NOT done detected
+        showToast(done ? 'synced' : 'error');
 
         // Dot area → always toggle
         if (e.target.closest('.it-dot-wrap')) {
