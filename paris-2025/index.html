@@ -6,6 +6,8 @@
     <meta name="format-detection" content="telephone=no">
     <title>Paris 2025 · Trip Guide</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap">
     <style>
@@ -639,6 +641,77 @@
     .ef-btn-save { flex:2; padding:12px; background:var(--blue); border:none; border-radius:12px; color:#fff; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
     .ef-btn-save:disabled { opacity:0.5; cursor:wait; }
     .ef-btn-del { flex:1; padding:12px; background:#EF4444; border:none; border-radius:12px; color:#fff; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+
+    /* ── Explore view toggle ── */
+    .explore-view-toggle {
+        display: flex; gap: 3px;
+        background: var(--surface2); border-radius: 10px;
+        padding: 3px; margin-bottom: 12px;
+    }
+    .evt-btn {
+        flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+        padding: 8px 12px; border-radius: 8px;
+        font-size: 12px; font-weight: 600;
+        background: transparent; border: none; cursor: pointer;
+        color: var(--sub); transition: background 0.15s, color 0.15s;
+        -webkit-tap-highlight-color: transparent; font-family: inherit;
+    }
+    .evt-btn.active {
+        background: var(--surface); color: var(--text);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    #explore-map-view { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+    #attractions-map { height: 380px; width: 100%; }
+    .explore-map-hint { font-size: 11px; color: var(--sub); text-align: center; padding: 6px 0 2px; }
+    .leaflet-popup-content-wrapper {
+        background: #1C1C1E !important; border: 1px solid rgba(255,255,255,0.1);
+        color: #F2F2F2 !important; border-radius: 10px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+    }
+    .leaflet-popup-tip { background: #1C1C1E !important; }
+    .leaflet-popup-content { margin: 10px 12px !important; font-size: 12px; line-height: 1.5; }
+    .leaflet-popup-content strong { color: #F2F2F2; font-size: 13px; display: block; margin-bottom: 2px; }
+    .leaflet-popup-content a { color: #C9A227; text-decoration: none; font-weight: 600; }
+    .pop-dist { color: #8E8E93; font-size: 11px; display: block; margin-bottom: 5px; }
+    .leaflet-container { background: #111; font-family: 'DM Sans', system-ui, sans-serif; }
+    .leaflet-control-attribution { background: rgba(10,10,10,0.75) !important; color: #666 !important; font-size: 9px !important; }
+    .leaflet-control-attribution a { color: #666 !important; }
+    .leaflet-bar a { background: #1C1C1E !important; color: #F2F2F2 !important; border-color: rgba(255,255,255,0.1) !important; }
+    .leaflet-bar a:hover { background: #2a2a2c !important; }
+
+    /* ── Meal sub-tabs ── */
+    .meal-tabs { display: flex; gap: 6px; padding: 0 0 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .meal-tabs::-webkit-scrollbar { display: none; }
+    .meal-tab-btn {
+        display: flex; align-items: center; gap: 5px; padding: 7px 14px;
+        border-radius: 20px; border: 1px solid var(--border);
+        background: var(--surface); color: var(--sub);
+        font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+        -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s, border-color 0.15s; flex-shrink: 0;
+        font-family: 'DM Sans', sans-serif;
+    }
+    .meal-tab-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .meal-tab-btn.active { background: var(--gold); color: #0A0A0A; border-color: var(--gold); }
+    .meal-panel { display: none; }
+    .meal-panel.active { display: block; }
+
+    /* ── Add / Edit buttons ── */
+    .add-row-btn {
+        display:block; width:100%; margin-top:10px; padding:10px;
+        background:transparent; border:1.5px dashed var(--border);
+        border-radius:10px; color:var(--sub);
+        font-size:13px; font-weight:600; font-family:inherit;
+        cursor:pointer; transition:border-color 0.15s,color 0.15s;
+        -webkit-tap-highlight-color:transparent;
+    }
+    .add-row-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .row-edit-btn {
+        flex-shrink:0; background:transparent; border:none; cursor:pointer;
+        padding:5px 6px; color:var(--sub); font-size:14px; line-height:1;
+        -webkit-tap-highlight-color:transparent; transition:color 0.15s;
+        border-radius:6px;
+    }
+    .row-edit-btn:hover { color:var(--gold); background:var(--surface2); }
     </style>
 </head>
 <body>
@@ -744,34 +817,24 @@
         <div class="tab-panel" id="panel-explore">
             <div class="card">
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><line x1="3" y1="9" x2="3" y2="20"/><line x1="21" y1="9" x2="21" y2="20"/><rect x="3" y="19" width="18" height="2" rx="0.5"/><line x1="7" y1="9" x2="7" y2="19"/><line x1="12" y1="9" x2="12" y2="19"/><line x1="17" y1="9" x2="17" y2="19"/></svg>Nearby Attractions</div>
+                                <div class="explore-view-toggle">
+                    <button class="evt-btn active" id="evtList" onclick="switchExploreView('list')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        List
+                    </button>
+                    <button class="evt-btn" id="evtMap" onclick="switchExploreView('map')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+                        Map
+                    </button>
+                </div>
+                <div id="explore-list-view">
                 <p style="font-size: 11px; color: var(--sub); margin-bottom: 10px;">Tap name for website · Tap Map for walking directions from hotel.</p>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.paris-arc-de-triomphe.fr/en/" target="_blank" class="attraction-name-link">Arc de Triomphe</a></div><div class="attraction-dist">🚶 200m · 3 min walk · €13 adult</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Arc+de+Triomphe+Paris&travelmode=walking" target="_blank" class="map-link">Map</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://en.parisinfo.com/paris-museum-monument/71478/Avenue-des-Champs-Elysees" target="_blank" class="attraction-name-link">Avenue des Champs-Élysées</a></div><div class="attraction-dist">🚶 200m · 3 min walk · Free to stroll</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Avenue+des+Champs-Elysees+Paris&travelmode=walking" target="_blank" class="map-link">Map</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.toureiffel.paris/en" target="_blank" class="attraction-name-link">Eiffel Tower</a></div><div class="attraction-dist">🚶 1.5km · 18 min walk or Metro · From €19.40 adult</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Eiffel+Tower+Paris&travelmode=walking" target="_blank" class="map-link">Map</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.trocadero.com/" target="_blank" class="attraction-name-link">Trocadéro &amp; Best Eiffel View</a></div><div class="attraction-dist">🚶 1.2km · 15 min walk · Free · Best photo spot</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Trocadero+Paris&travelmode=walking" target="_blank" class="map-link">Map</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.musee-orsay.fr/en" target="_blank" class="attraction-name-link">Musée d'Orsay</a></div><div class="attraction-dist">🚶 3.5km · Metro line 9 → Solférino · €16 adult</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Musee+d%27Orsay+Paris&travelmode=transit" target="_blank" class="map-link">Transit</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.louvre.fr/en" target="_blank" class="attraction-name-link">The Louvre</a></div><div class="attraction-dist">🚶 4km · Metro line 1 → Palais Royal · €22 adult</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Louvre+Museum+Paris&travelmode=transit" target="_blank" class="map-link">Transit</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.sacre-coeur-montmartre.com/english/" target="_blank" class="attraction-name-link">Sacré-Cœur &amp; Montmartre</a></div><div class="attraction-dist">🚇 ~25 min · Metro line 2 → Anvers · Free entry</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris+11+Rue+du+Dome&destination=Sacre-Coeur+Paris&travelmode=transit" target="_blank" class="map-link">Transit</a>
+                <div id="explore-list-inner"></div>
+                <button class="add-row-btn" onclick="openXSheet(null)">+ Add Attraction</button>
+                </div><!-- /explore-list-view -->
+                <div id="explore-map-view" style="display:none;">
+                    <div id="attractions-map"></div>
+                    <p class="explore-map-hint">Tap a pin to see details</p>
                 </div>
             </div>
         </div>
@@ -779,13 +842,58 @@
         <!-- ══ EAT TAB ══ -->
         <div class="tab-panel" id="panel-eat">
             <div class="card">
-                <p style="font-size: 13px; color: var(--sub); line-height: 1.7;">
-                    Restaurant recommendations coming soon — this section will be filled in for future Paris visits. For now, explore <strong style="color:var(--text);">Rue de Longchamp</strong> and <strong style="color:var(--text);">Avenue Kléber</strong> just steps from the hotel — both are lined with excellent cafés and brasseries.
-                </p>
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>Where to Eat</div>
+                <p style="font-size: 11px; color: var(--sub); margin-bottom: 12px;">Tap name for website · Tap Directions for Google Maps route.</p>
+                <div class="meal-tabs">
+                    <button class="meal-tab-btn active" id="mealtab-breakfast" onclick="switchMeal('breakfast')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                        Breakfast
+                    </button>
+                    <button class="meal-tab-btn" id="mealtab-lunch" onclick="switchMeal('lunch')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                        Lunch
+                    </button>
+                    <button class="meal-tab-btn" id="mealtab-dinner" onclick="switchMeal('dinner')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"/><path d="m4 16 2-8h12l2 8"/><path d="M12 4c-1.1 0-2 .9-2 2v2h4V6c0-1.1-.9-2-2-2z"/></svg>
+                        Dinner
+                    </button>
+                    <button class="meal-tab-btn" id="mealtab-snacks" onclick="switchMeal('snacks')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6l3 7H6L9 2z"/><path d="M3 9h18v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><path d="M12 9v9"/></svg>
+                        Snacks
+                    </button>
+                </div>
+            </div>
+            <!-- Breakfast -->
+            <div class="meal-panel active" id="meal-breakfast">
+                <div class="card">
+                <div id="meal-list-breakfast"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'breakfast')">+ Add Place</button>
+                </div>
+            </div>
+            <!-- Lunch -->
+            <div class="meal-panel" id="meal-lunch">
+                <div class="card">
+                <div id="meal-list-lunch"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'lunch')">+ Add Place</button>
+                </div>
+            </div>
+            <!-- Dinner -->
+            <div class="meal-panel" id="meal-dinner">
+                <div class="card">
+                <div id="meal-list-dinner"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'dinner')">+ Add Place</button>
+                </div>
+            </div>
+            <!-- Snacks -->
+            <div class="meal-panel" id="meal-snacks">
+                <div class="card">
+                <div id="meal-list-snacks"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'snacks')">+ Add Place</button>
+                </div>
             </div>
         </div>
 
-        <!-- ══ INFO TAB ══ -->
+                <!-- ══ INFO TAB ══ -->
         <div class="tab-panel" id="panel-info">
             <div class="card">
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a6 6 0 0 1 12 0v2"/><circle cx="17" cy="7" r="2.5"/><path d="M21 21v-1.5a4 4 0 0 0-3-3.87"/></svg>Passengers</div>
@@ -868,6 +976,96 @@
     <div id="del-body" style="padding:24px 20px 32px;"></div>
 </div>
 
+
+<!-- Explore attraction edit sheet -->
+<div class="sheet-backdrop" id="x-backdrop" onclick="closeXSheet()"></div>
+<div class="sheet" id="x-edit-sheet" style="display:flex;flex-direction:column;">
+    <div class="sheet-handle"></div>
+    <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <div id="x-sheet-title" style="font-family:'DM Sans',system-ui,sans-serif;font-size:18px;font-weight:700;">Add Attraction</div>
+        <div onclick="closeXSheet()" style="cursor:pointer;color:var(--sub);padding:4px 8px;line-height:1;font-size:18px;">&#x2715;</div>
+    </div>
+    <input type="hidden" id="x-edit-id">
+    <div style="padding:16px 16px 0;overflow-y:auto;flex:1;">
+        <div class="ef-field"><div class="ef-label">Name</div><input class="ef-input" id="x-edit-name" placeholder="e.g. Eiffel Tower"></div>
+        <div class="ef-field"><div class="ef-label">Distance / Travel</div><input class="ef-input" id="x-edit-dist" placeholder="e.g. 1.5km &#xB7; 18 min walk"></div>
+        <div class="ef-field"><div class="ef-label">Website URL</div><input class="ef-input" id="x-edit-url" type="url" placeholder="https://"></div>
+        <div class="ef-field"><div class="ef-label">Google Maps URL</div><input class="ef-input" id="x-edit-maps" type="url" placeholder="https://maps.google.com/..."></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="ef-field"><div class="ef-label">Latitude</div><input class="ef-input" id="x-edit-lat" placeholder="48.8584"></div>
+            <div class="ef-field"><div class="ef-label">Longitude</div><input class="ef-input" id="x-edit-lng" placeholder="2.2945"></div>
+        </div>
+        <div class="ef-field"><div class="ef-label">Sort Order</div><input class="ef-input" id="x-edit-sort" type="number" placeholder="0"></div>
+        <button id="x-del-btn" onclick="openXDelSheet(document.getElementById('x-edit-id').value)" style="display:none;width:100%;background:transparent;border:1.5px solid #FF453A;color:#FF453A;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin:4px 0 12px;">Delete Attraction</button>
+    </div>
+    <div class="ef-footer">
+        <button class="ef-btn-cancel" onclick="closeXSheet()">Cancel</button>
+        <button class="ef-btn-save" id="x-save-btn" onclick="saveXItem()">Save</button>
+    </div>
+</div>
+
+<!-- Explore attraction delete sheet -->
+<div class="sheet-backdrop" id="x-del-backdrop" onclick="closeXDelSheet()"></div>
+<div class="sheet" id="x-del-sheet">
+    <div class="sheet-handle"></div>
+    <input type="hidden" id="x-del-id">
+    <div style="padding:24px 20px 32px;text-align:center;">
+        <p style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 8px;">Remove Attraction?</p>
+        <p id="x-del-name" style="font-size:13px;color:var(--sub);margin:0 0 20px;"></p>
+        <button id="x-del-confirm-btn" onclick="confirmXDel()" style="width:100%;background:#FF453A;color:#fff;border:none;border-radius:12px;padding:13px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">Delete</button>
+        <button onclick="closeXDelSheet()" style="width:100%;background:transparent;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-family:inherit;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer;">Cancel</button>
+    </div>
+</div>
+
+<!-- Eat restaurant edit sheet -->
+<div class="sheet-backdrop" id="r-backdrop" onclick="closeRSheet()"></div>
+<div class="sheet" id="r-edit-sheet" style="display:flex;flex-direction:column;">
+    <div class="sheet-handle"></div>
+    <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <div id="r-sheet-title" style="font-family:'DM Sans',system-ui,sans-serif;font-size:18px;font-weight:700;">Add Place</div>
+        <div onclick="closeRSheet()" style="cursor:pointer;color:var(--sub);padding:4px 8px;line-height:1;font-size:18px;">&#x2715;</div>
+    </div>
+    <input type="hidden" id="r-edit-id">
+    <div style="padding:16px 16px 0;overflow-y:auto;flex:1;">
+        <div class="ef-field"><div class="ef-label">Meal Type</div>
+            <select class="ef-input" id="r-edit-meal">
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snacks">Snacks</option>
+            </select>
+        </div>
+        <div class="ef-field"><div class="ef-label">Name</div><input class="ef-input" id="r-edit-name" placeholder="Restaurant name"></div>
+        <div class="ef-field"><div class="ef-label">Website URL</div><input class="ef-input" id="r-edit-website" type="url" placeholder="https://"></div>
+        <div class="ef-field"><div class="ef-label">Address</div><input class="ef-input" id="r-edit-address" placeholder="Street, Paris"></div>
+        <div class="ef-field"><div class="ef-label">Distance</div><input class="ef-input" id="r-edit-dist" placeholder="e.g. ~2 min walk"></div>
+        <div class="ef-field"><div class="ef-label">Hours</div><input class="ef-input" id="r-edit-hours" placeholder="e.g. Mon&#x2013;Fri 09:00&#x2013;22:00"></div>
+        <div class="ef-field"><div class="ef-label">Description / Highlights</div><textarea class="ef-input ef-textarea" id="r-edit-desc" placeholder="Key dishes, standout notes..."></textarea></div>
+        <div class="ef-field"><div class="ef-label">Phone</div><input class="ef-input" id="r-edit-phone" type="tel" placeholder="+33..."></div>
+        <div class="ef-field"><div class="ef-label">Menu URL</div><input class="ef-input" id="r-edit-menu" type="url" placeholder="https://"></div>
+        <div class="ef-field"><div class="ef-label">Directions URL</div><input class="ef-input" id="r-edit-directions" type="url" placeholder="https://maps.google.com/..."></div>
+        <div class="ef-field"><div class="ef-label">Tags (comma-separated)</div><input class="ef-input" id="r-edit-tags" placeholder="e.g. French Bistro, Vegan options, &#x20AC;&#x20AC;"></div>
+        <div class="ef-field"><div class="ef-label">Sort Order</div><input class="ef-input" id="r-edit-sort" type="number" placeholder="0"></div>
+        <button id="r-del-btn" onclick="openRDelSheet(document.getElementById('r-edit-id').value)" style="display:none;width:100%;background:transparent;border:1.5px solid #FF453A;color:#FF453A;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin:4px 0 12px;">Delete Place</button>
+    </div>
+    <div class="ef-footer">
+        <button class="ef-btn-cancel" onclick="closeRSheet()">Cancel</button>
+        <button class="ef-btn-save" id="r-save-btn" onclick="saveRItem()">Save</button>
+    </div>
+</div>
+
+<!-- Eat restaurant delete sheet -->
+<div class="sheet-backdrop" id="r-del-backdrop" onclick="closeRDelSheet()"></div>
+<div class="sheet" id="r-del-sheet">
+    <div class="sheet-handle"></div>
+    <input type="hidden" id="r-del-id">
+    <div style="padding:24px 20px 32px;text-align:center;">
+        <p style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 8px;">Remove Place?</p>
+        <p id="r-del-name" style="font-size:13px;color:var(--sub);margin:0 0 20px;"></p>
+        <button id="r-del-confirm-btn" onclick="confirmRDel()" style="width:100%;background:#FF453A;color:#fff;border:none;border-radius:12px;padding:13px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">Delete</button>
+        <button onclick="closeRDelSheet()" style="width:100%;background:transparent;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-family:inherit;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer;">Cancel</button>
+    </div>
+</div>
 </div><!-- /app-shell -->
 
 <script>
@@ -935,6 +1133,8 @@ async function init() {
 
     renderDays();
     loadDone();
+    loadExplore();
+    loadEat();
 
     sb.channel('itinerary-sync-' + TRIP.id)
         .on('postgres_changes', {
@@ -1629,6 +1829,315 @@ async function toggleDone(el) {
 
 // ── Boot ──────────────────────────────────────────────────────────
 init();
+
+    /* ── Explore map / list toggle ── */
+    function switchExploreView(view) {
+        var lv = document.getElementById('explore-list-view');
+        var mv = document.getElementById('explore-map-view');
+        var lb = document.getElementById('evtList');
+        var mb = document.getElementById('evtMap');
+        if (view === 'map') {
+            lv.style.display = 'none'; mv.style.display = 'block';
+            lb.classList.remove('active'); mb.classList.add('active');
+            initExploreMap();
+        } else {
+            lv.style.display = 'block'; mv.style.display = 'none';
+            lb.classList.add('active'); mb.classList.remove('active');
+        }
+    }
+
+    var _exploreMapInit = false;
+    var _exploreMap = null;
+    function initExploreMap() {
+        if (_exploreMapInit) return;
+        _exploreMapInit = true;
+        var map = L.map('attractions-map', { zoomControl: true }).setView([48.8729, 2.2954], 14);
+        _exploreMap = map;
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '\u00a9 <a href="https://www.openstreetmap.org/copyright">OSM</a> \u00a9 <a href="https://carto.com/">CARTO</a>',
+            subdomains: 'abcd', maxZoom: 19
+        }).addTo(map);
+
+        var hotelIcon = L.divIcon({
+            html: '<div style="width:30px;height:30px;border-radius:50%;background:#C9A227;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;">&#x1F3E8;</div>',
+            className: '', iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -18]
+        });
+        L.marker([48.8729, 2.2954], {icon: hotelIcon}).addTo(map)
+            .bindPopup('<strong>H\u00f4tel du Bois</strong><span class="pop-dist">Your base</span>');
+
+        function pinIcon(n) {
+            return L.divIcon({
+                html: '<div style="width:26px;height:26px;border-radius:50%;background:#1C1C1E;border:2.5px solid #C9A227;box-shadow:0 2px 6px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;color:#C9A227;font-family:system-ui,sans-serif;">' + n + '</div>',
+                className: '', iconSize: [26, 26], iconAnchor: [13, 13], popupAnchor: [0, -15]
+            });
+        }
+
+        var SPOTS = EXPLORE_DB.filter(function(a){ return a.lat && a.lng; });
+        SPOTS.forEach(function(a, i) {
+            L.marker([a.lat, a.lng], {icon: pinIcon(i + 1)}).addTo(map)
+                .bindPopup('<strong>' + escH(a.name) + '</strong><span class="pop-dist">' + escH(a.dist_text || '') + '</span><a href="' + escH(a.website_url || '#') + '" target="_blank">Website &#x2192;</a>');
+        });
+    }
+
+    /* ── HTML escape helper ── */
+    function escH(s) {
+        return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ── EXPLORE (Attractions) CRUD ───────────────────────────────────── */
+    var EXPLORE_DB = [];
+
+    async function loadExplore() {
+        var res = await sb.from('explore_attractions')
+            .select('*').eq('trip_id', TRIP_ID).order('sort_order');
+        if (res.error) { console.error('loadExplore:', res.error); return; }
+        EXPLORE_DB = res.data || [];
+        renderExploreList();
+        if (_exploreMapInit) {
+            if (_exploreMap) { _exploreMap.remove(); _exploreMap = null; }
+            _exploreMapInit = false;
+            if (document.getElementById('explore-map-view').style.display !== 'none') {
+                initExploreMap();
+            }
+        }
+    }
+
+    function renderExploreList() {
+        var el = document.getElementById('explore-list-inner');
+        if (!el) return;
+        if (!EXPLORE_DB.length) {
+            el.innerHTML = '<p style="font-size:12px;color:var(--sub);text-align:center;padding:20px 0;">No attractions yet. Tap + to add one.</p>';
+            return;
+        }
+        var walkSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>';
+        el.innerHTML = EXPLORE_DB.map(function(a) {
+            var mUrl = a.maps_url || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(a.name + ' Paris'));
+            var mapLabel = (a.distance_text || '').toLowerCase().indexOf('metro') >= 0 || (a.distance_text || '').toLowerCase().indexOf('rer') >= 0 ? 'Transit' : 'Map';
+            return '<div class="attraction-item" data-xid="' + a.id + '">' +
+                '<div class="attraction-info">' +
+                '<div><a href="' + escH(a.website_url || '#') + '" target="_blank" class="attraction-name-link">' + escH(a.name) + '</a></div>' +
+                '<div class="attraction-dist">' + walkSvg + ' ' + escH(a.dist_text || '') + '</div>' +
+                '</div>' +
+                '<div style="display:flex;gap:4px;align-items:center;">' +
+                '<a href="' + escH(mUrl) + '" target="_blank" class="map-link">' + mapLabel + '</a>' +
+                '<button class="row-edit-btn" onclick="openXSheet(' + JSON.stringify(a.id) + ')" title="Edit">&#9998;</button>' +
+                '</div></div>';
+        }).join('');
+    }
+
+    function openXSheet(id) {
+        var a = id ? EXPLORE_DB.find(function(x){ return x.id == id; }) : null;
+        document.getElementById('x-sheet-title').textContent = a ? 'Edit Attraction' : 'Add Attraction';
+        document.getElementById('x-edit-id').value   = a ? a.id : '';
+        document.getElementById('x-edit-name').value = a ? (a.name || '') : '';
+        document.getElementById('x-edit-dist').value = a ? (a.distance_text || '') : '';
+        document.getElementById('x-edit-url').value  = a ? (a.website_url || '') : '';
+        document.getElementById('x-edit-maps').value = a ? (a.maps_url || '') : '';
+        document.getElementById('x-edit-lat').value  = a ? (a.lat || '') : '';
+        document.getElementById('x-edit-lng').value  = a ? (a.lng || '') : '';
+        document.getElementById('x-edit-sort').value = a ? (a.sort_order != null ? a.sort_order : EXPLORE_DB.length) : EXPLORE_DB.length;
+        document.getElementById('x-del-btn').style.display = a ? 'block' : 'none';
+        document.getElementById('x-backdrop').classList.add('open');
+        document.getElementById('x-edit-sheet').classList.add('open');
+    }
+
+    function closeXSheet() {
+        document.getElementById('x-backdrop').classList.remove('open');
+        document.getElementById('x-edit-sheet').classList.remove('open');
+    }
+
+    async function saveXItem() {
+        var id  = document.getElementById('x-edit-id').value;
+        var lat = parseFloat(document.getElementById('x-edit-lat').value);
+        var lng = parseFloat(document.getElementById('x-edit-lng').value);
+        var payload = {
+            trip_id:       TRIP_ID,
+            name:          document.getElementById('x-edit-name').value.trim(),
+            dist_text:     document.getElementById('x-edit-dist').value.trim(),
+            website_url:   document.getElementById('x-edit-url').value.trim(),
+            maps_url:      document.getElementById('x-edit-maps').value.trim(),
+            lat:           isNaN(lat) ? null : lat,
+            lng:           isNaN(lng) ? null : lng,
+            sort_order:    parseInt(document.getElementById('x-edit-sort').value) || 0,
+        };
+        var btn = document.getElementById('x-save-btn');
+        btn.disabled = true; btn.textContent = 'Saving…';
+        var res = id
+            ? await sb.from('explore_attractions').update(payload).eq('id', id)
+            : await sb.from('explore_attractions').insert(payload);
+        btn.disabled = false; btn.textContent = 'Save';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeXSheet();
+        await loadExplore();
+    }
+
+    function openXDelSheet(id) {
+        if (!id) return;
+        var a = EXPLORE_DB.find(function(x){ return x.id == id; });
+        if (!a) return;
+        closeXSheet();
+        document.getElementById('x-del-name').textContent = a.name;
+        document.getElementById('x-del-id').value = id;
+        document.getElementById('x-del-backdrop').classList.add('open');
+        document.getElementById('x-del-sheet').classList.add('open');
+    }
+
+    function closeXDelSheet() {
+        document.getElementById('x-del-backdrop').classList.remove('open');
+        document.getElementById('x-del-sheet').classList.remove('open');
+    }
+
+    async function confirmXDel() {
+        var id = document.getElementById('x-del-id').value;
+        var btn = document.getElementById('x-del-confirm-btn');
+        btn.disabled = true; btn.textContent = 'Deleting…';
+        var res = await sb.from('explore_attractions').delete().eq('id', id);
+        btn.disabled = false; btn.textContent = 'Delete';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeXDelSheet();
+        await loadExplore();
+    }
+
+    /* ── EAT (Restaurants) CRUD ──────────────────────────────────────── */
+    var EAT_DB = {};
+
+    async function loadEat() {
+        var res = await sb.from('eat_restaurants')
+            .select('*').eq('trip_id', TRIP_ID).order('sort_order');
+        if (res.error) { console.error('loadEat:', res.error); return; }
+        EAT_DB = {};
+        (res.data || []).forEach(function(r) {
+            if (!EAT_DB[r.meal_type]) EAT_DB[r.meal_type] = [];
+            EAT_DB[r.meal_type].push(r);
+        });
+        ['breakfast','lunch','dinner','snacks'].forEach(renderEatPanel);
+    }
+
+    function renderEatPanel(mealType) {
+        var el = document.getElementById('meal-list-' + mealType);
+        if (!el) return;
+        var items = EAT_DB[mealType] || [];
+        if (!items.length) {
+            el.innerHTML = '<p style="font-size:12px;color:var(--sub);text-align:center;padding:20px 0;">No places yet. Tap + to add one.</p>';
+            return;
+        }
+        el.innerHTML = items.map(function(r) {
+            var tagsHtml = (r.tags || []).map(function(t){ return '<span class="resto-tag">' + escH(t) + '</span>'; }).join('');
+            var bodyRows = '';
+            if (r.walk_text)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text">' + escH(r.walk_text || '') + '</div></div>';
+            if (r.hours)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text">' + escH(r.hours) + '</div></div>';
+            if (r.description)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">' + escH(r.description) + '</div></div>';
+            if (r.phone)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:' + escH(r.phone) + '">' + escH(r.phone) + '</a></div></div>';
+            var actHtml = '';
+            if (r.menu_url) actHtml += '<a href="' + escH(r.menu_url) + '" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Menu</a>';
+            if (r.maps_url) actHtml += '<a href="' + escH(r.maps_url) + '" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a>';
+            return '<div class="resto-card" data-rid="' + r.id + '">' +
+                '<div class="resto-header">' +
+                '<div class="resto-name"><a href="' + escH(r.website_url || '#') + '" target="_blank">' + escH(r.name) + '</a></div>' +
+                '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">' +
+                '<div class="resto-tags">' + tagsHtml + '</div>' +
+                '<button class="row-edit-btn" onclick="openRSheet(' + JSON.stringify(r.id) + ','' + r.meal_type + '')" title="Edit">&#9998;</button>' +
+                '</div></div>' +
+                (bodyRows ? '<div class="resto-body">' + bodyRows + '</div>' : '') +
+                (actHtml ? '<div class="resto-actions">' + actHtml + '</div>' : '') +
+                '</div>';
+        }).join('');
+    }
+
+    function _findR(id) {
+        var found = null;
+        Object.values(EAT_DB).forEach(function(arr){ arr.forEach(function(x){ if (x.id == id) found = x; }); });
+        return found;
+    }
+
+    function openRSheet(id, mealType) {
+        var r = id ? _findR(id) : null;
+        if (r) mealType = r.meal_type;
+        document.getElementById('r-sheet-title').textContent = r ? 'Edit Place' : 'Add Place';
+        document.getElementById('r-edit-id').value       = r ? r.id : '';
+        document.getElementById('r-edit-meal').value     = r ? r.meal_type : (mealType || 'breakfast');
+        document.getElementById('r-edit-name').value     = r ? (r.name || '') : '';
+        document.getElementById('r-edit-website').value  = r ? (r.website_url || '') : '';
+        document.getElementById('r-edit-address').value  = '';
+        document.getElementById('r-edit-dist').value     = r ? (r.distance_text || '') : '';
+        document.getElementById('r-edit-hours').value    = r ? (r.hours || '') : '';
+        document.getElementById('r-edit-desc').value     = r ? (r.description || '') : '';
+        document.getElementById('r-edit-phone').value    = r ? (r.phone || '') : '';
+        document.getElementById('r-edit-menu').value     = r ? (r.menu_url || '') : '';
+        document.getElementById('r-edit-directions').value = r ? (r.maps_url || '') : '';
+        document.getElementById('r-edit-tags').value     = r ? (r.tags || []).join(', ') : '';
+        document.getElementById('r-edit-sort').value     = r ? (r.sort_order != null ? r.sort_order : 0) : 0;
+        document.getElementById('r-del-btn').style.display = r ? 'block' : 'none';
+        document.getElementById('r-backdrop').classList.add('open');
+        document.getElementById('r-edit-sheet').classList.add('open');
+    }
+
+    function closeRSheet() {
+        document.getElementById('r-backdrop').classList.remove('open');
+        document.getElementById('r-edit-sheet').classList.remove('open');
+    }
+
+    async function saveRItem() {
+        var id = document.getElementById('r-edit-id').value;
+        var tagsRaw = document.getElementById('r-edit-tags').value.trim();
+        var tags = tagsRaw ? tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
+        var payload = {
+            trip_id:       TRIP_ID,
+            meal_type:     document.getElementById('r-edit-meal').value,
+            name:          document.getElementById('r-edit-name').value.trim(),
+            website_url:   document.getElementById('r-edit-website').value.trim(),
+            walk_text:     document.getElementById('r-edit-dist').value.trim(),
+            hours:         document.getElementById('r-edit-hours').value.trim(),
+            description:   document.getElementById('r-edit-desc').value.trim(),
+            phone:         document.getElementById('r-edit-phone').value.trim(),
+            menu_url:      document.getElementById('r-edit-menu').value.trim(),
+            maps_url:      document.getElementById('r-edit-directions').value.trim(),
+            tags:          tags,
+            sort_order:    parseInt(document.getElementById('r-edit-sort').value) || 0,
+        };
+        var btn = document.getElementById('r-save-btn');
+        btn.disabled = true; btn.textContent = 'Saving…';
+        var res = id
+            ? await sb.from('eat_restaurants').update(payload).eq('id', id)
+            : await sb.from('eat_restaurants').insert(payload);
+        btn.disabled = false; btn.textContent = 'Save';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeRSheet();
+        await loadEat();
+    }
+
+    function openRDelSheet(id) {
+        if (!id) return;
+        var r = _findR(id);
+        if (!r) return;
+        closeRSheet();
+        document.getElementById('r-del-name').textContent = r.name;
+        document.getElementById('r-del-id').value = id;
+        document.getElementById('r-del-backdrop').classList.add('open');
+        document.getElementById('r-del-sheet').classList.add('open');
+    }
+
+    function closeRDelSheet() {
+        document.getElementById('r-del-backdrop').classList.remove('open');
+        document.getElementById('r-del-sheet').classList.remove('open');
+    }
+
+    async function confirmRDel() {
+        var id = document.getElementById('r-del-id').value;
+        var btn = document.getElementById('r-del-confirm-btn');
+        btn.disabled = true; btn.textContent = 'Deleting…';
+        var res = await sb.from('eat_restaurants').delete().eq('id', id);
+        btn.disabled = false; btn.textContent = 'Delete';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeRDelSheet();
+        await loadEat();
+    }
+
+
 </script>
 </body>
 </html>

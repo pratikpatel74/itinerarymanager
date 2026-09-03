@@ -700,6 +700,25 @@
     .leaflet-control-attribution a { color: #666 !important; }
     .leaflet-bar a { background: #1C1C1E !important; color: #F2F2F2 !important; border-color: rgba(255,255,255,0.1) !important; }
     .leaflet-bar a:hover { background: #2a2a2c !important; }
+
+    /* ── Explore / Eat CRUD ─────────────────────────────────────────── */
+    .add-row-btn {
+        display:block; width:100%; margin-top:10px; padding:10px;
+        background:transparent; border:1.5px dashed var(--border);
+        border-radius:10px; color:var(--sub);
+        font-size:13px; font-weight:600; font-family:inherit;
+        cursor:pointer; transition:border-color 0.15s,color 0.15s;
+        -webkit-tap-highlight-color:transparent;
+    }
+    .add-row-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .row-edit-btn {
+        flex-shrink:0; background:transparent; border:none; cursor:pointer;
+        padding:5px 6px; color:var(--sub); font-size:14px; line-height:1;
+        -webkit-tap-highlight-color:transparent; transition:color 0.15s;
+        border-radius:6px;
+    }
+    .row-edit-btn:hover { color:var(--gold); background:var(--surface2); }
+    .ef-textarea { resize:vertical; min-height:72px; }
     </style>
 </head>
 <body>
@@ -822,39 +841,9 @@
                 </div>
                 <div id="explore-list-view">
                 <p style="font-size: 11px; color: var(--sub); margin-bottom: 10px;">Tap name for website · Tap Map for walking directions from hotel.</p>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.brussels.be/grand-place" target="_blank" class="attraction-name-link">Grand Place (Main Square)</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>100m · 1–2 min walk</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Grand+Place+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.grsh.be/en/" target="_blank" class="attraction-name-link">Galeries Royales Saint-Hubert</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>120m · 2 min walk</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Galeries+Royales+Saint-Hubert&travelmode=walking" target="_blank" class="map-link">Map</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.brussels.be/manneken-pis" target="_blank" class="attraction-name-link">Manneken Pis</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>450m · 5 min walk</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Manneken+Pis&travelmode=walking" target="_blank" class="map-link">Map</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.choco-story-brussels.be/" target="_blank" class="attraction-name-link">Choco-Story Brussels</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>500m · 6 min walk · €12 adults / €8 children</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Choco-Story+Rue+de+l%27Etuve+41+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.brussels.be/mont-des-arts" target="_blank" class="attraction-name-link">Mont des Arts (Viewpoint)</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>500m · 6 min walk</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Mont+des+Arts+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://cathedalestmichel.be" target="_blank" class="attraction-name-link">St Michael &amp; St Gudula Cathedral</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>550m · 7 min walk</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=St+Michael+and+St+Gudula+Cathedral&travelmode=walking" target="_blank" class="map-link">Map</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.monarchie.be/en/heritage/royal-palace-of-brussels" target="_blank" class="attraction-name-link">Royal Palace of Brussels</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>950m · 12 min walk</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Royal+Palace+of+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
-                </div>
-                <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://atomium.be/atomium-price" target="_blank" class="attraction-name-link">Atomium</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><line x1="6" y1="11" x2="6" y2="11"/><line x1="18" y1="11" x2="18" y2="11"/></svg> ~30 min · Metro line 6 → Atomium stop · €17 adult / €9 student&amp;child · Open 10:00–17:30</div></div>
-                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Atomium+Brussels&travelmode=transit" target="_blank" class="map-link">Transit</a>
-                </div>
-                </div><!-- /explore-list-view -->
+                <div id="explore-list-inner"></div>
+                <button class="add-row-btn" onclick="openXSheet(null)">+ Add Attraction</button>
+                                </div><!-- /explore-list-view -->
                 <div id="explore-map-view" style="display:none;">
                     <div id="attractions-map"></div>
                     <p class="explore-map-hint">Tap a pin to see details</p>
@@ -887,84 +876,23 @@
             </div>
             <!-- Breakfast -->
             <div class="meal-panel active" id="meal-breakfast">
-                <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="https://lloyd-coffee-eatery-grand-place.wheree.com" target="_blank">Lloyd Coffee Eatery</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg> Breakfast &amp; Brunch</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Vegan options</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Vegetarian</span><span class="resto-tag price"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> 8.2 / 10</span></div></div>
-                    <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>In the hotel building</strong> — Rue du Marché aux Herbes 80. 0 min walk.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text"><strong>Mon–Thu &amp; Sun:</strong> 7:00–20:00 · <strong>Fri–Sat:</strong> 7:00–22:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Egg sandwiches, salmon gravlax toast, pancakes, speculoos pancakes, halal options.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+3225119064">+32 2 511 9064</a></div></div>
-                    </div>
-                    <div class="resto-actions"><a href="https://lloyd-coffee-eatery-grand-place.wheree.com/menu" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Menu</a><a href="https://www.google.com/maps/search/?api=1&query=Lloyd+Coffee+Eatery+Rue+du+Marche+aux+Herbes+80+Brussels" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Map</a></div>
-                </div>
-                <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="https://www.thesistercafe-brussels.com" target="_blank">The Sister Brussels Café</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg> Breakfast until 13:00</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Vegan &amp; GF options</span><span class="resto-tag price">€€ €12–16</span></div></div>
-                    <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue Chair et Pain 3, on Grand Place itself.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:00–23:00 · <strong>Sat:</strong> 9:00–00:00 · <strong>Sun:</strong> 9:00–23:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Eggs &amp; bacon, avocado bowl, omelettes, vegan tofu scramble, waffles.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+3225132226">+32 2 513 22 26</a></div></div>
-                    </div>
-                    <div class="resto-actions"><a href="https://www.thesistercafe-brussels.com/food-menu" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Menu</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+Chair+et+Pain+3+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a></div>
-                </div>
-                <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="http://www.cappuccinobrussel.be/" target="_blank">Cappuccino Brussel</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg> Breakfast &amp; Brunch</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Vegan options</span><span class="resto-tag price">€€ €7–13</span></div></div>
-                    <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>~10 min walk</strong> — Avenue de Stalingrad 71, 1000 Brussels.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text">Daily from 9:00 · Sun–Thu 9:00–23:00 · Fri–Sat 9:00–00:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Fluffy pancakes, waffles, omelettes, crêpes, fruit salads. Set breakfast from €7. ⭐ 4.4/5 TripAdvisor.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+32488052464">+32 488 05 24 64</a></div></div>
-                    </div>
-                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15007770-Reviews-Cappuccino_Brussel-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Avenue+de+Stalingrad+71+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a></div>
-                </div>
+                <div id="meal-list-breakfast"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'breakfast')">+ Add Place</button>
             </div>
             <!-- Lunch -->
             <div class="meal-panel" id="meal-lunch">
-                <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15120847-Reviews-Yummy_Bowl-Brussels.html" target="_blank">Yummy Bowl</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Healthy Bowls</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg> Korean Fusion</span><span class="resto-tag price"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> 4.8 / 5 · #2 in Brussels</span><span class="resto-tag price">$ Budget-friendly</span></div></div>
-                    <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>~3 min walk</strong> — Rue des Éperonniers 49 (just south of Grand Place).</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:30–15:00 · <strong>Sat–Sun:</strong> 10:30–17:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></div><div class="resto-row-text">Buddha bowls, Pho, Dragon Ball bowl, homemade lemonade. <strong>#2 restaurant in Brussels</strong> on TripAdvisor.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+3222651802">+32 2 265 18 02</a></div></div>
-                    </div>
-                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15120847-Reviews-Yummy_Bowl-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Eperonniers+49+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a></div>
-                </div>
-                <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/zouzoubrussels/" target="_blank">ZouZou Brussels</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg> Brunch &amp; Burgers</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Halal</span><span class="resto-tag price">€€ Moderate</span></div></div>
-                    <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>~5 min walk</strong> — Rue des Colonies 18 (near Gare Centrale).</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text"><strong>Daily:</strong> 10:00–18:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Shakshouka, truffle burrata toast, fluffy pancakes, ZouZou burger, fresh salads &amp; bowls.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+32472102128">+32 472 10 21 28</a></div></div>
-                    </div>
-                    <div class="resto-actions"><a href="https://www.instagram.com/zouzoubrussels/" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> Instagram</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Colonies+18+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a></div>
-                </div>
+                <div id="meal-list-lunch"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'lunch')">+ Add Place</button>
             </div>
             <!-- Dinner -->
             <div class="meal-panel" id="meal-dinner">
-                <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="http://thelobsterhouse.be/" target="_blank">The Lobster House</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7zM15.5 15.5l4-4"/><path d="m13.76 8.23 4-4"/><path d="m8.23 13.76-4 4"/><path d="M20 4 4 20"/></svg> Seafood &amp; Lobster</span><span class="resto-tag">Belgian</span><span class="resto-tag price"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> 4.6 / 5 · #18 in Brussels</span><span class="resto-tag price">€€–€€€</span></div></div>
-                    <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue des Bouchers 34 (Brussels' famous restaurant street).</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text"><strong>Daily:</strong> 11:00–23:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Live lobster &amp; crab from seawater tanks, moules frites, paella, fresh oysters. Travellers' Choice 2025.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+3225022016">+32 2 502 20 16</a></div></div>
-                    </div>
-                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d1910997-Reviews-The_Lobster_House-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Bouchers+34+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a></div>
-                </div>
+                <div id="meal-list-dinner"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'dinner')">+ Add Place</button>
             </div>
             <!-- Snacks -->
             <div class="meal-panel" id="meal-snacks">
-                <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank">WAFFELIN</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg> Belgian Waffles</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg> Coffee</span><span class="resto-tag" style="background:var(--gold-lt);color:var(--gold);">New — hours unconfirmed</span></div></div>
-                    <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>Grand Place area</strong> — easy to find on foot around the square.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text">Hours not yet confirmed — worth checking their Instagram or asking at the hotel.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Royal Belgian waffles and specialty coffee. A must-try for authentic waffles near Grand Place.</div></div>
-                    </div>
-                    <div class="resto-actions"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> Instagram</a><a href="https://www.google.com/maps/search/?api=1&query=Waffelin+Brussels+Grand+Place" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Find on Map</a></div>
-                </div>
+                <div id="meal-list-snacks"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'snacks')">+ Add Place</button>
             </div>
         </div>
 
@@ -1064,6 +992,96 @@
     <div id="del-body" style="padding:24px 20px 32px;"></div>
 </div>
 
+
+<!-- Explore attraction edit sheet -->
+<div class="sheet-backdrop" id="x-backdrop" onclick="closeXSheet()"></div>
+<div class="sheet" id="x-edit-sheet" style="display:flex;flex-direction:column;">
+    <div class="sheet-handle"></div>
+    <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <div id="x-sheet-title" style="font-family:'DM Sans',system-ui,sans-serif;font-size:18px;font-weight:700;">Add Attraction</div>
+        <div onclick="closeXSheet()" style="cursor:pointer;color:var(--sub);padding:4px 8px;line-height:1;font-size:18px;">&#x2715;</div>
+    </div>
+    <input type="hidden" id="x-edit-id">
+    <div style="padding:16px 16px 0;overflow-y:auto;flex:1;">
+        <div class="ef-field"><div class="ef-label">Name</div><input class="ef-input" id="x-edit-name" placeholder="e.g. Grand Place"></div>
+        <div class="ef-field"><div class="ef-label">Distance / Travel</div><input class="ef-input" id="x-edit-dist" placeholder="e.g. 100m &#xB7; 1&#x2013;2 min walk"></div>
+        <div class="ef-field"><div class="ef-label">Website URL</div><input class="ef-input" id="x-edit-url" type="url" placeholder="https://"></div>
+        <div class="ef-field"><div class="ef-label">Google Maps URL</div><input class="ef-input" id="x-edit-maps" type="url" placeholder="https://maps.google.com/..."></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="ef-field"><div class="ef-label">Latitude</div><input class="ef-input" id="x-edit-lat" placeholder="50.8467"></div>
+            <div class="ef-field"><div class="ef-label">Longitude</div><input class="ef-input" id="x-edit-lng" placeholder="4.3528"></div>
+        </div>
+        <div class="ef-field"><div class="ef-label">Sort Order</div><input class="ef-input" id="x-edit-sort" type="number" placeholder="0"></div>
+        <button id="x-del-btn" onclick="openXDelSheet(document.getElementById('x-edit-id').value)" style="display:none;width:100%;background:transparent;border:1.5px solid #FF453A;color:#FF453A;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin:4px 0 12px;">Delete Attraction</button>
+    </div>
+    <div class="ef-footer">
+        <button class="ef-btn-cancel" onclick="closeXSheet()">Cancel</button>
+        <button class="ef-btn-save" id="x-save-btn" onclick="saveXItem()">Save</button>
+    </div>
+</div>
+
+<!-- Explore attraction delete sheet -->
+<div class="sheet-backdrop" id="x-del-backdrop" onclick="closeXDelSheet()"></div>
+<div class="sheet" id="x-del-sheet">
+    <div class="sheet-handle"></div>
+    <input type="hidden" id="x-del-id">
+    <div style="padding:24px 20px 32px;text-align:center;">
+        <p style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 8px;">Remove Attraction?</p>
+        <p id="x-del-name" style="font-size:13px;color:var(--sub);margin:0 0 20px;"></p>
+        <button id="x-del-confirm-btn" onclick="confirmXDel()" style="width:100%;background:#FF453A;color:#fff;border:none;border-radius:12px;padding:13px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">Delete</button>
+        <button onclick="closeXDelSheet()" style="width:100%;background:transparent;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-family:inherit;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer;">Cancel</button>
+    </div>
+</div>
+
+<!-- Eat restaurant edit sheet -->
+<div class="sheet-backdrop" id="r-backdrop" onclick="closeRSheet()"></div>
+<div class="sheet" id="r-edit-sheet" style="display:flex;flex-direction:column;">
+    <div class="sheet-handle"></div>
+    <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <div id="r-sheet-title" style="font-family:'DM Sans',system-ui,sans-serif;font-size:18px;font-weight:700;">Add Place</div>
+        <div onclick="closeRSheet()" style="cursor:pointer;color:var(--sub);padding:4px 8px;line-height:1;font-size:18px;">&#x2715;</div>
+    </div>
+    <input type="hidden" id="r-edit-id">
+    <div style="padding:16px 16px 0;overflow-y:auto;flex:1;">
+        <div class="ef-field"><div class="ef-label">Meal Type</div>
+            <select class="ef-input" id="r-edit-meal">
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snacks">Snacks</option>
+            </select>
+        </div>
+        <div class="ef-field"><div class="ef-label">Name</div><input class="ef-input" id="r-edit-name" placeholder="Restaurant name"></div>
+        <div class="ef-field"><div class="ef-label">Website URL</div><input class="ef-input" id="r-edit-website" type="url" placeholder="https://"></div>
+        <div class="ef-field"><div class="ef-label">Address</div><input class="ef-input" id="r-edit-address" placeholder="Street, City"></div>
+        <div class="ef-field"><div class="ef-label">Distance</div><input class="ef-input" id="r-edit-dist" placeholder="e.g. ~2 min walk"></div>
+        <div class="ef-field"><div class="ef-label">Hours</div><input class="ef-input" id="r-edit-hours" placeholder="e.g. Mon&#x2013;Fri 09:00&#x2013;22:00"></div>
+        <div class="ef-field"><div class="ef-label">Description / Highlights</div><textarea class="ef-input ef-textarea" id="r-edit-desc" placeholder="Key dishes, standout notes..."></textarea></div>
+        <div class="ef-field"><div class="ef-label">Phone</div><input class="ef-input" id="r-edit-phone" type="tel" placeholder="+32..."></div>
+        <div class="ef-field"><div class="ef-label">Menu URL</div><input class="ef-input" id="r-edit-menu" type="url" placeholder="https://"></div>
+        <div class="ef-field"><div class="ef-label">Directions URL</div><input class="ef-input" id="r-edit-directions" type="url" placeholder="https://maps.google.com/..."></div>
+        <div class="ef-field"><div class="ef-label">Tags (comma-separated)</div><input class="ef-input" id="r-edit-tags" placeholder="e.g. Breakfast &amp; Brunch, Vegan options, &#x20AC;&#x20AC;"></div>
+        <div class="ef-field"><div class="ef-label">Sort Order</div><input class="ef-input" id="r-edit-sort" type="number" placeholder="0"></div>
+        <button id="r-del-btn" onclick="openRDelSheet(document.getElementById('r-edit-id').value)" style="display:none;width:100%;background:transparent;border:1.5px solid #FF453A;color:#FF453A;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin:4px 0 12px;">Delete Place</button>
+    </div>
+    <div class="ef-footer">
+        <button class="ef-btn-cancel" onclick="closeRSheet()">Cancel</button>
+        <button class="ef-btn-save" id="r-save-btn" onclick="saveRItem()">Save</button>
+    </div>
+</div>
+
+<!-- Eat restaurant delete sheet -->
+<div class="sheet-backdrop" id="r-del-backdrop" onclick="closeRDelSheet()"></div>
+<div class="sheet" id="r-del-sheet">
+    <div class="sheet-handle"></div>
+    <input type="hidden" id="r-del-id">
+    <div style="padding:24px 20px 32px;text-align:center;">
+        <p style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 8px;">Remove Place?</p>
+        <p id="r-del-name" style="font-size:13px;color:var(--sub);margin:0 0 20px;"></p>
+        <button id="r-del-confirm-btn" onclick="confirmRDel()" style="width:100%;background:#FF453A;color:#fff;border:none;border-radius:12px;padding:13px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">Delete</button>
+        <button onclick="closeRDelSheet()" style="width:100%;background:transparent;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-family:inherit;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer;">Cancel</button>
+    </div>
+</div>
 </div><!-- /app-shell -->
 
 <script>
@@ -1131,6 +1149,8 @@ async function init() {
 
     renderDays();
     loadDone();
+    loadExplore();
+    loadEat();
 
     sb.channel('itinerary-sync-' + TRIP.id)
         .on('postgres_changes', {
@@ -1866,20 +1886,271 @@ init();
             });
         }
 
-        var SPOTS = [
-            [50.8467, 4.3525, 'Grand Place', '100m \u00b7 1\u20132 min walk', 'https://www.brussels.be/grand-place'],
-            [50.8475, 4.3542, 'Galeries Royales Saint-Hubert', '120m \u00b7 2 min walk', 'https://www.grsh.be/en/'],
-            [50.8447, 4.3497, 'Manneken Pis', '450m \u00b7 5 min walk', 'https://www.brussels.be/manneken-pis'],
-            [50.8447, 4.3490, 'Choco-Story Brussels', '500m \u00b7 6 min walk \u00b7 \u20ac12/\u20ac8', 'https://www.choco-story-brussels.be/'],
-            [50.8451, 4.3575, 'Mont des Arts', '500m \u00b7 6 min walk', 'https://www.brussels.be/mont-des-arts'],
-            [50.8493, 4.3570, 'St Michael & St Gudula Cathedral', '550m \u00b7 7 min walk', 'https://cathedalestmichel.be'],
-            [50.8422, 4.3617, 'Royal Palace of Brussels', '950m \u00b7 12 min walk', 'https://www.monarchie.be/en/heritage/royal-palace-of-brussels'],
-            [50.8950, 4.3412, 'Atomium', '~30 min \u00b7 Metro line 6', 'https://atomium.be/atomium-price']
-        ];
-        SPOTS.forEach(function(s, i) {
-            L.marker([s[0], s[1]], {icon: pinIcon(i + 1)}).addTo(map)
-                .bindPopup('<strong>' + s[2] + '</strong><span class="pop-dist">' + s[3] + '</span><a href="' + s[4] + '" target="_blank">Website \u2192</a>');
+        var SPOTS = EXPLORE_DB.filter(function(a){ return a.lat && a.lng; });
+        SPOTS.forEach(function(a, i) {
+            L.marker([a.lat, a.lng], {icon: pinIcon(i + 1)}).addTo(map)
+                .bindPopup('<strong>' + escH(a.name) + '</strong><span class="pop-dist">' + escH(a.dist_text || '') + '</span><a href="' + escH(a.website_url || '#') + '" target="_blank">Website &#x2192;</a>');
         });
+    }
+
+
+    /* ── HTML escape helper ── */
+    function escH(s) {
+        return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ── EXPLORE (Attractions) CRUD ───────────────────────────────────── */
+    var EXPLORE_DB = [];
+    var _exploreMap = null;
+
+    async function loadExplore() {
+        var res = await sb.from('explore_attractions')
+            .select('*').eq('trip_id', TRIP_ID).order('sort_order');
+        if (res.error) { console.error('loadExplore:', res.error); return; }
+        EXPLORE_DB = res.data || [];
+        renderExploreList();
+        if (_exploreMapInit) {
+            if (_exploreMap) { _exploreMap.remove(); _exploreMap = null; }
+            _exploreMapInit = false;
+            if (document.getElementById('explore-map-view').style.display !== 'none') {
+                initExploreMap();
+            }
+        }
+    }
+
+    function renderExploreList() {
+        var el = document.getElementById('explore-list-inner');
+        if (!el) return;
+        if (!EXPLORE_DB.length) {
+            el.innerHTML = '<p style="font-size:12px;color:var(--sub);text-align:center;padding:20px 0;">No attractions yet. Tap + to add one.</p>';
+            return;
+        }
+        var walkSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>';
+        el.innerHTML = EXPLORE_DB.map(function(a) {
+            var mUrl = a.maps_url || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(a.name + ' Brussels'));
+            var mapLabel = (a.distance_text || '').toLowerCase().indexOf('metro') >= 0 ? 'Transit' : 'Map';
+            return '<div class="attraction-item" data-xid="' + a.id + '">' +
+                '<div class="attraction-info">' +
+                '<div><a href="' + escH(a.website_url || '#') + '" target="_blank" class="attraction-name-link">' + escH(a.name) + '</a></div>' +
+                '<div class="attraction-dist">' + walkSvg + ' ' + escH(a.dist_text || '') + '</div>' +
+                '</div>' +
+                '<div style="display:flex;gap:4px;align-items:center;">' +
+                '<a href="' + escH(mUrl) + '" target="_blank" class="map-link">' + mapLabel + '</a>' +
+                '<button class="row-edit-btn" onclick="openXSheet(' + JSON.stringify(a.id) + ')" title="Edit">&#9998;</button>' +
+                '</div></div>';
+        }).join('');
+    }
+
+    function openXSheet(id) {
+        var a = id ? EXPLORE_DB.find(function(x){ return x.id == id; }) : null;
+        document.getElementById('x-sheet-title').textContent = a ? 'Edit Attraction' : 'Add Attraction';
+        document.getElementById('x-edit-id').value   = a ? a.id : '';
+        document.getElementById('x-edit-name').value = a ? (a.name || '') : '';
+        document.getElementById('x-edit-dist').value = a ? (a.distance_text || '') : '';
+        document.getElementById('x-edit-url').value  = a ? (a.website_url || '') : '';
+        document.getElementById('x-edit-maps').value = a ? (a.maps_url || '') : '';
+        document.getElementById('x-edit-lat').value  = a ? (a.lat || '') : '';
+        document.getElementById('x-edit-lng').value  = a ? (a.lng || '') : '';
+        document.getElementById('x-edit-sort').value = a ? (a.sort_order != null ? a.sort_order : EXPLORE_DB.length) : EXPLORE_DB.length;
+        document.getElementById('x-del-btn').style.display = a ? 'block' : 'none';
+        document.getElementById('x-backdrop').classList.add('open');
+        document.getElementById('x-edit-sheet').classList.add('open');
+    }
+
+    function closeXSheet() {
+        document.getElementById('x-backdrop').classList.remove('open');
+        document.getElementById('x-edit-sheet').classList.remove('open');
+    }
+
+    async function saveXItem() {
+        var id  = document.getElementById('x-edit-id').value;
+        var lat = parseFloat(document.getElementById('x-edit-lat').value);
+        var lng = parseFloat(document.getElementById('x-edit-lng').value);
+        var payload = {
+            trip_id:       TRIP_ID,
+            name:          document.getElementById('x-edit-name').value.trim(),
+            dist_text:     document.getElementById('x-edit-dist').value.trim(),
+            website_url:   document.getElementById('x-edit-url').value.trim(),
+            maps_url:      document.getElementById('x-edit-maps').value.trim(),
+            lat:           isNaN(lat) ? null : lat,
+            lng:           isNaN(lng) ? null : lng,
+            sort_order:    parseInt(document.getElementById('x-edit-sort').value) || 0,
+        };
+        var btn = document.getElementById('x-save-btn');
+        btn.disabled = true; btn.textContent = 'Saving…';
+        var res = id
+            ? await sb.from('explore_attractions').update(payload).eq('id', id)
+            : await sb.from('explore_attractions').insert(payload);
+        btn.disabled = false; btn.textContent = 'Save';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeXSheet();
+        await loadExplore();
+    }
+
+    function openXDelSheet(id) {
+        if (!id) return;
+        var a = EXPLORE_DB.find(function(x){ return x.id == id; });
+        if (!a) return;
+        closeXSheet();
+        document.getElementById('x-del-name').textContent = a.name;
+        document.getElementById('x-del-id').value = id;
+        document.getElementById('x-del-backdrop').classList.add('open');
+        document.getElementById('x-del-sheet').classList.add('open');
+    }
+
+    function closeXDelSheet() {
+        document.getElementById('x-del-backdrop').classList.remove('open');
+        document.getElementById('x-del-sheet').classList.remove('open');
+    }
+
+    async function confirmXDel() {
+        var id = document.getElementById('x-del-id').value;
+        var btn = document.getElementById('x-del-confirm-btn');
+        btn.disabled = true; btn.textContent = 'Deleting…';
+        var res = await sb.from('explore_attractions').delete().eq('id', id);
+        btn.disabled = false; btn.textContent = 'Delete';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeXDelSheet();
+        await loadExplore();
+    }
+
+    /* ── EAT (Restaurants) CRUD ──────────────────────────────────────── */
+    var EAT_DB = {};
+
+    async function loadEat() {
+        var res = await sb.from('eat_restaurants')
+            .select('*').eq('trip_id', TRIP_ID).order('sort_order');
+        if (res.error) { console.error('loadEat:', res.error); return; }
+        EAT_DB = {};
+        (res.data || []).forEach(function(r) {
+            if (!EAT_DB[r.meal_type]) EAT_DB[r.meal_type] = [];
+            EAT_DB[r.meal_type].push(r);
+        });
+        ['breakfast','lunch','dinner','snacks'].forEach(renderEatPanel);
+    }
+
+    function renderEatPanel(mealType) {
+        var el = document.getElementById('meal-list-' + mealType);
+        if (!el) return;
+        var items = EAT_DB[mealType] || [];
+        if (!items.length) {
+            el.innerHTML = '<p style="font-size:12px;color:var(--sub);text-align:center;padding:20px 0;">No places yet. Tap + to add one.</p>';
+            return;
+        }
+        el.innerHTML = items.map(function(r) {
+            var tagsHtml = (r.tags || []).map(function(t){ return '<span class="resto-tag">' + escH(t) + '</span>'; }).join('');
+            var bodyRows = '';
+            if (r.walk_text)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text">' + escH(r.walk_text || '') + '</div></div>';
+            if (r.hours)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text">' + escH(r.hours) + '</div></div>';
+            if (r.description)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">' + escH(r.description) + '</div></div>';
+            if (r.phone)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:' + escH(r.phone) + '">' + escH(r.phone) + '</a></div></div>';
+            var actHtml = '';
+            if (r.menu_url) actHtml += '<a href="' + escH(r.menu_url) + '" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Menu</a>';
+            if (r.maps_url) actHtml += '<a href="' + escH(r.maps_url) + '" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a>';
+            return '<div class="resto-card" data-rid="' + r.id + '">' +
+                '<div class="resto-header">' +
+                '<div class="resto-name"><a href="' + escH(r.website_url || '#') + '" target="_blank">' + escH(r.name) + '</a></div>' +
+                '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">' +
+                '<div class="resto-tags">' + tagsHtml + '</div>' +
+                '<button class="row-edit-btn" onclick="openRSheet(' + JSON.stringify(r.id) + ',\'' + r.meal_type + '\')" title="Edit">&#9998;</button>' +
+                '</div></div>' +
+                (bodyRows ? '<div class="resto-body">' + bodyRows + '</div>' : '') +
+                (actHtml ? '<div class="resto-actions">' + actHtml + '</div>' : '') +
+                '</div>';
+        }).join('');
+    }
+
+    function _findR(id) {
+        var found = null;
+        Object.values(EAT_DB).forEach(function(arr){ arr.forEach(function(x){ if (x.id == id) found = x; }); });
+        return found;
+    }
+
+    function openRSheet(id, mealType) {
+        var r = id ? _findR(id) : null;
+        if (r) mealType = r.meal_type;
+        document.getElementById('r-sheet-title').textContent = r ? 'Edit Place' : 'Add Place';
+        document.getElementById('r-edit-id').value       = r ? r.id : '';
+        document.getElementById('r-edit-meal').value     = r ? r.meal_type : (mealType || 'breakfast');
+        document.getElementById('r-edit-name').value     = r ? (r.name || '') : '';
+        document.getElementById('r-edit-website').value  = r ? (r.website_url || '') : '';
+        document.getElementById('r-edit-address').value  = '';
+        document.getElementById('r-edit-dist').value     = r ? (r.distance_text || '') : '';
+        document.getElementById('r-edit-hours').value    = r ? (r.hours || '') : '';
+        document.getElementById('r-edit-desc').value     = r ? (r.description || '') : '';
+        document.getElementById('r-edit-phone').value    = r ? (r.phone || '') : '';
+        document.getElementById('r-edit-menu').value     = r ? (r.menu_url || '') : '';
+        document.getElementById('r-edit-directions').value = r ? (r.maps_url || '') : '';
+        document.getElementById('r-edit-tags').value     = r ? (r.tags || []).join(', ') : '';
+        document.getElementById('r-edit-sort').value     = r ? (r.sort_order != null ? r.sort_order : 0) : 0;
+        document.getElementById('r-del-btn').style.display = r ? 'block' : 'none';
+        document.getElementById('r-backdrop').classList.add('open');
+        document.getElementById('r-edit-sheet').classList.add('open');
+    }
+
+    function closeRSheet() {
+        document.getElementById('r-backdrop').classList.remove('open');
+        document.getElementById('r-edit-sheet').classList.remove('open');
+    }
+
+    async function saveRItem() {
+        var id = document.getElementById('r-edit-id').value;
+        var tagsRaw = document.getElementById('r-edit-tags').value.trim();
+        var tags = tagsRaw ? tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
+        var payload = {
+            trip_id:       TRIP_ID,
+            meal_type:     document.getElementById('r-edit-meal').value,
+            name:          document.getElementById('r-edit-name').value.trim(),
+            website_url:   document.getElementById('r-edit-website').value.trim(),
+            walk_text:     document.getElementById('r-edit-dist').value.trim(),
+            hours:         document.getElementById('r-edit-hours').value.trim(),
+            description:   document.getElementById('r-edit-desc').value.trim(),
+            phone:         document.getElementById('r-edit-phone').value.trim(),
+            menu_url:      document.getElementById('r-edit-menu').value.trim(),
+            maps_url:      document.getElementById('r-edit-directions').value.trim(),
+            tags:          tags,
+            sort_order:    parseInt(document.getElementById('r-edit-sort').value) || 0,
+        };
+        var btn = document.getElementById('r-save-btn');
+        btn.disabled = true; btn.textContent = 'Saving…';
+        var res = id
+            ? await sb.from('eat_restaurants').update(payload).eq('id', id)
+            : await sb.from('eat_restaurants').insert(payload);
+        btn.disabled = false; btn.textContent = 'Save';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeRSheet();
+        await loadEat();
+    }
+
+    function openRDelSheet(id) {
+        if (!id) return;
+        var r = _findR(id);
+        if (!r) return;
+        closeRSheet();
+        document.getElementById('r-del-name').textContent = r.name;
+        document.getElementById('r-del-id').value = id;
+        document.getElementById('r-del-backdrop').classList.add('open');
+        document.getElementById('r-del-sheet').classList.add('open');
+    }
+
+    function closeRDelSheet() {
+        document.getElementById('r-del-backdrop').classList.remove('open');
+        document.getElementById('r-del-sheet').classList.remove('open');
+    }
+
+    async function confirmRDel() {
+        var id = document.getElementById('r-del-id').value;
+        var btn = document.getElementById('r-del-confirm-btn');
+        btn.disabled = true; btn.textContent = 'Deleting…';
+        var res = await sb.from('eat_restaurants').delete().eq('id', id);
+        btn.disabled = false; btn.textContent = 'Delete';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeRDelSheet();
+        await loadEat();
     }
 
 </script>
