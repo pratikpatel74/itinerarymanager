@@ -1169,9 +1169,15 @@ function renderDays() {
         });
 
         el.addEventListener('click', function(e) {
-            if (e.target.closest('a')) return;
             if (e.target.closest('.it-dot-wrap')) return;
-            if (rich && !el.classList.contains('done')) openSheet(key);
+            // Done item: tap anywhere on row unticks it (overrides link navigation)
+            if (el.classList.contains('done')) {
+                e.preventDefault();
+                toggleDone(el);
+                return;
+            }
+            if (e.target.closest('a')) return; // let links open normally for undone items
+            if (rich) openSheet(key);
             else toggleDone(el);
         });
     });
