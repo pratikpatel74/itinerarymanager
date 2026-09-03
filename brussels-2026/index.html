@@ -941,175 +941,89 @@
 </div><!-- /app-shell -->
 
 <script>
-// ═══════════════════════════════════════════════════════════
-//  TRIP CONFIG — edit this block to create a new trip.
-//  Duplicate this whole folder, change TRIP.id (must be
-//  unique), update the days, then edit the HTML tabs above
-//  for destination-specific Eat / Explore / Journey / Info.
-// ═══════════════════════════════════════════════════════════
-const TRIP = {
-    id:       'brussels-nov-2026',   // ← UNIQUE per trip — used as Supabase namespace
-    name:     'Brussels Guide',
-    flag:     '🇧🇪',
-    subtitle: '12–15 November · Patels + Mistrys',
-
-    days: [
-        {
-            id: 'day1', open: true,
-            date:  'Thursday 12th November',
-            label: 'Travel Day — Arrive Brussels ~16:30',
-            rows: [
-                { type:'item', key:'d1-taxi-out',    cls:'travel', time:'09:25', name:'Taxi to Leicester Station',
-                  detail:'Allow ~45 mins. Train departs 10:12.',
-                  duration: '~45 min',
-                  checklist: [
-                      { key:'d1-taxi-out-ck1', label:'Book taxi the night before' },
-                      { key:'d1-taxi-out-ck2', label:'Passports & travel documents ready' },
-                      { key:'d1-taxi-out-ck3', label:'All luggage by the door' },
-                  ]
-                },
-                { type:'item', key:'d1-train-out',   cls:'travel', time:'10:12', name:'Train — Leicester → London St Pancras',
-                  detail:'Arrives 11:27. Eurostar check-in by 11:45.',
-                  duration: '1h 15min',
-                  location: { name:'Leicester Station', address:'London Road, Leicester LE2 0QB', mapsUrl:'https://www.google.com/maps/search/?api=1&query=Leicester+Railway+Station' },
-                  cta: { label:'View Booking', url:'https://www.eastmidlandsrailway.co.uk' },
-                  checklist: [
-                      { key:'d1-train-out-ck1', label:'EMR tickets downloaded / printed' },
-                      { key:'d1-train-out-ck2', label:'Check platform on departure boards' },
-                  ]
-                },
-                { type:'item', key:'d1-eurostar-out', cls:'travel', time:'13:01', name:'Eurostar — London St Pancras → Brussels Midi',
-                  detail:'Arrives Brussels 16:06 CET. +1 hour time zone.',
-                  duration: '2h 05min',
-                  location: { name:'London St Pancras International', address:'Euston Road, London N1C 4QP', mapsUrl:'https://www.google.com/maps/search/?api=1&query=St+Pancras+International+Station' },
-                  cta: { label:'Open Eurostar Tickets', url:'https://www.eurostar.com' },
-                  checklist: [
-                      { key:'d1-eurostar-ck1', label:'At St Pancras by 11:45 for security' },
-                      { key:'d1-eurostar-ck2', label:'All 4 passports in hand' },
-                      { key:'d1-eurostar-ck3', label:'Eurostar e-tickets on phones' },
-                      { key:'d1-eurostar-ck4', label:'Currency / cards ready for Belgium' },
-                  ],
-                  notes:'Ref: WRFH37. Security & passport control can take 20–30 mins — allow time. Seating is assigned.'
-                },
-                { type:'item', key:'d1-checkin', cls:'travel', time:'16:30', name:'Check-in — Hotel Aris Grand Place',
-                  detail:'Check-in from 15:00. Ref: Expedia 72078682955721.',
-                  location: { name:'Hotel Aris Grand Place', address:'Grasmarkt 78-80, 1000 Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Brussels+Midi+Station&destination=Hotel+Aris+Grand+Place+Brussels&travelmode=transit' },
-                  cta: { label:'Hotel Website', url:'https://www.arbanyhotels.com' },
-                  checklist: [
-                      { key:'d1-checkin-ck1', label:'Expedia confirmation ref noted (72078682955721)' },
-                      { key:'d1-checkin-ck2', label:'City tax ready to pay at check-in (€28.82 total)' },
-                      { key:'d1-checkin-ck3', label:'Room allocation confirmed (2× double)' },
-                  ]
-                },
-            ]
-        },
-        {
-            id: 'day2', open: true,
-            date:  'Friday 13th November',
-            label: 'Full Day · Concert Night for Mistrys',
-            rows: [
-                { type:'empty', note:'Morning &amp; afternoon — nothing planned yet.' },
-                { type:'section', label:'Evening — Mr &amp; Mrs Mistry Only' },
-                { type:'item', key:'d2-metro-out', cls:'travel', time:'19:00', name:'Depart Hotel → ING Arena',
-                  detail:'Metro: Gare Centrale → Roi Baudouin (line 2/6, ~20 mins). Or taxi ~15 mins, €12–18.',
-                  duration: '~20 min',
-                  location: { name:'Gare Centrale (Metro)', address:'Carrefour de l\'Europe, 1000 Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=ING+Arena+Brussels&travelmode=transit' },
-                  checklist: [
-                      { key:'d2-metro-ck1', label:'MOBIB card or cash for metro tickets' },
-                      { key:'d2-metro-ck2', label:'Line 2/6 towards Roi Baudouin confirmed' },
-                  ]
-                },
-                { type:'item', key:'d2-concert', cls:'activity', time:'20:00', name:'The World of Hans Zimmer',
-                  nameUrl:'https://www.ticketmaster.be/venue/ing-arena-brussels-tickets/p12/101',
-                  detail:'A New Dimension · ING Arena · Doors 19:00 · Show 20:00',
-                  duration: '~2h 30min',
-                  location: { name:'ING Arena', address:'Avenue de l\'Impératrice Charlotte, Laeken, Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=ING+Arena+Brussels&travelmode=transit' },
-                  cta: { label:'Open Tickets', url:'https://www.ticketmaster.be/venue/ing-arena-brussels-tickets/p12/101' },
-                  checklist: [
-                      { key:'d2-concert-ck1', label:'Tickets downloaded to phone' },
-                      { key:'d2-concert-ck2', label:'Leave hotel by 19:00' },
-                      { key:'d2-concert-ck3', label:'Bring passports / ID for venue entry' },
-                      { key:'d2-concert-ck4', label:'Check ING Arena bag policy' },
-                  ],
-                  notes:'Mistrys only — Patels have a free evening. Shows typically end ~22:30.'
-                },
-                { type:'item', key:'d2-metro-return', cls:'travel', time:'~22:30', name:'Return — ING Arena → Hotel',
-                  detail:'Metro Roi Baudouin → Gare Centrale, or taxi from arena (~20 mins).',
-                  duration: '~20 min',
-                  location: { name:'ING Arena (Departure)', address:'Avenue de l\'Impératrice Charlotte, Laeken', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=ING+Arena+Brussels&destination=Hotel+Aris+Grand+Place+Brussels&travelmode=transit' },
-                },
-            ]
-        },
-        {
-            id: 'day3', open: false,
-            date:  'Saturday 14th November',
-            label: 'Full Day in Brussels',
-            rows: [
-                { type:'empty', note:'Nothing planned yet — ask Claude to add activities!' },
-            ]
-        },
-        {
-            id: 'day4', open: false,
-            date:  'Sunday 15th November',
-            label: 'Departure Day — Check-out by 11:00',
-            rows: [
-                { type:'item', key:'d4-checkout', cls:'travel', time:'10:15', name:'Hotel check-out',
-                  detail:'Must check out by 10:15. Luggage storage available if needed.',
-                  checklist: [
-                      { key:'d4-checkout-ck1', label:'All rooms cleared & luggage ready' },
-                      { key:'d4-checkout-ck2', label:'City tax paid at reception' },
-                      { key:'d4-checkout-ck3', label:'Room keys returned' },
-                      { key:'d4-checkout-ck4', label:'Nothing left in hotel safe' },
-                  ]
-                },
-                { type:'item', key:'d4-taxi-midi', cls:'travel', time:'10:20', name:'Taxi — Hotel → Brussels Midi',
-                  detail:'~15 mins to station. Eurostar check-in closes 10:41.',
-                  duration: '~15 min',
-                  location: { name:'Brussels-Midi / Zuid Station', address:'Rue de France, 1060 Sint-Gillis, Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Brussels+Midi+Station&travelmode=driving' },
-                },
-                { type:'item', key:'d4-eurostar-return', cls:'travel', time:'11:56', name:'Eurostar — Brussels Midi → London St Pancras',
-                  detail:'Arrives 12:57 UK time. Ref: WRFH37.',
-                  duration: '2h 01min',
-                  cta: { label:'Open Eurostar Tickets', url:'https://www.eurostar.com' },
-                  checklist: [
-                      { key:'d4-eurostar-ck1', label:'At Midi by 10:41 for check-in' },
-                      { key:'d4-eurostar-ck2', label:'All 4 passports in hand' },
-                      { key:'d4-eurostar-ck3', label:'Eurostar e-tickets on phones' },
-                  ],
-                  notes:'Ref: WRFH37. Remember clocks go back 1 hour to UK time on arrival.'
-                },
-                { type:'item', key:'d4-train-pancras', cls:'travel', time:'14:42', name:'Train — St Pancras → Market Harborough',
-                  detail:'Arrives 15:30. Platform from departure boards.',
-                  duration: '~48 min',
-                  location: { name:'London St Pancras International', address:'Euston Road, London N1C 4QP', mapsUrl:'https://www.google.com/maps/search/?api=1&query=St+Pancras+International+Station' },
-                  cta: { label:'View Booking', url:'https://www.eastmidlandsrailway.co.uk' },
-                },
-                { type:'item', key:'d4-taxi-home', cls:'travel', time:'15:35', name:'Taxi — Market Harborough → Home',
-                  detail:'~25 mins. Home by 16:00.',
-                  duration: '~25 min',
-                },
-            ]
-        },
-    ]
-};
-// ═══════════════════════════════════════════════════════════
-
-// Supabase (shared, namespaced via TRIP.id)
+// ── Supabase ──────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
 
-// ── Apply trip branding ──
-document.getElementById('app-flag').textContent    = TRIP.flag || '';
-document.getElementById('app-title').textContent   = TRIP.name;
-document.getElementById('app-subtitle').textContent = TRIP.subtitle;
-document.title = TRIP.flag + ' ' + TRIP.name + ' · Trip Guide';
+const TRIP_ID = 'brussels-nov-2026';
+let TRIP = null;
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── Render Days tab ──
+function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T12:00:00');
+    const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const n = d.getDate();
+    const suffix = (n > 3 && n < 21) ? 'th' : ['th','st','nd','rd','th'][Math.min(n % 10, 4)];
+    return `${dayNames[d.getDay()]} ${n}${suffix} ${monthNames[d.getMonth()]}`;
+}
+
+function rowFromDb(r) {
+    if (r.type === 'empty')   return { type: 'empty',   note: r.detail || '' };
+    if (r.type === 'section') return { type: 'section',  label: r.name  || '' };
+    return {
+        type: r.type, key: r.key, cls: r.cls, time: r.time, name: r.name,
+        detail: r.detail, duration: r.duration, notes: r.notes,
+        location: r.location_name ? { name: r.location_name, address: r.location_address, mapsUrl: r.location_maps_url } : null,
+        cta: r.cta_label ? { label: r.cta_label, url: r.cta_url } : null,
+        checklist: r.checklist || [],
+    };
+}
+
+async function init() {
+    document.getElementById('panel-days').innerHTML =
+        '<div style="padding:48px 24px;text-align:center;color:var(--sub);font-size:13px;">Loading itinerary…</div>';
+
+    const [{ data: tripData }, { data: daysData }] = await Promise.all([
+        sb.from('trips').select('*').eq('id', TRIP_ID).single(),
+        sb.from('trip_days').select('*').eq('trip_id', TRIP_ID).order('day_number'),
+    ]);
+
+    const dayIds = (daysData || []).map(d => d.id);
+    const { data: itemsData } = await sb.from('trip_items').select('*').in('day_id', dayIds).order('sort_order');
+
+    TRIP = {
+        id: tripData.id,
+        name: tripData.city + ' Guide',
+        flag: tripData.flag_svg || '',
+        subtitle: tripData.subtitle || '',
+        days: (daysData || []).map(day => ({
+            id: 'day-' + day.day_number,
+            open: day.expanded_default,
+            date: formatDate(day.date),
+            label: day.label || '',
+            rows: (itemsData || []).filter(r => r.day_id === day.id).map(rowFromDb),
+        })),
+    };
+
+    document.getElementById('app-flag').textContent     = TRIP.flag;
+    document.getElementById('app-title').textContent    = TRIP.name;
+    document.getElementById('app-subtitle').textContent = TRIP.subtitle;
+    document.title = TRIP.flag + ' ' + TRIP.name + ' · Trip Guide';
+
+    renderDays();
+    loadDone();
+
+    sb.channel('itinerary-sync-' + TRIP.id)
+        .on('postgres_changes', {
+            event: '*', schema: 'public', table: 'itinerary_done',
+            filter: 'trip_id=eq.' + TRIP.id
+        }, payload => {
+            if (payload.new && payload.new.item_key !== undefined) {
+                const key = payload.new.item_key;
+                if ((Date.now() - (_localWriteAt[key] || 0)) < 5000) return;
+                _doneState[key] = payload.new.done;
+                applyDoneState();
+            }
+        })
+        .subscribe();
+}
+
+// ── Render Days tab ───────────────────────────────────────────────
 const DOT_CLASS = { travel:'dot-travel', activity:'dot-activity', food:'dot-food', sight:'dot-sight' };
 const DOT_COLOR = { travel:'#3B82F6', activity:'#C9A227', food:'#F97316', sight:'#818CF8' };
 
-// Flat map of all items by key for sheet lookup
-const ITEM_MAP = {};
+const ITEM_MAP  = {};
 const DAY_FOR_KEY = {};
 
 function hasDetail(row) {
@@ -1117,14 +1031,12 @@ function hasDetail(row) {
 }
 
 function renderDays() {
-    // rebuild lookup maps
     TRIP.days.forEach(day => {
         (day.rows || []).forEach(row => {
             if (row.type === 'item') {
                 ITEM_MAP[row.key] = row;
                 DAY_FOR_KEY[row.key] = day;
             }
-            // checklist items also need day lookup
             (row.checklist || []).forEach(ck => { DAY_FOR_KEY[ck.key] = day; });
         });
     });
@@ -1153,8 +1065,8 @@ function renderDays() {
 
         day.rows.forEach(row => {
             if (row.type === 'item') {
-                const dotCls   = DOT_CLASS[row.cls] || 'dot-travel';
-                const rich     = hasDetail(row);
+                const dotCls  = DOT_CLASS[row.cls] || 'dot-travel';
+                const rich    = hasDetail(row);
                 const nameHtml = row.nameUrl
                     ? `<a href="${row.nameUrl}" target="_blank">${row.name}</a>`
                     : row.name;
@@ -1181,32 +1093,19 @@ function renderDays() {
 
     document.getElementById('panel-days').innerHTML = html;
 
-    // Single delegated listener — more reliable on mobile than per-item listeners
     document.getElementById('panel-days').addEventListener('click', function(e) {
         const el = e.target.closest('.it-item[data-key]');
         if (!el) return;
-
         const key  = el.dataset.key;
         const rich = el.classList.contains('has-detail');
-        const done = el.classList.contains('done');
-
-        // Dot area → always toggle
-        if (e.target.closest('.it-dot-wrap')) {
-            toggleDone(el);
-            return;
-        }
-
+        if (e.target.closest('.it-dot-wrap')) { toggleDone(el); return; }
         if (e.target.closest('a')) return;
-
-        // Rich items always open the sheet (done or not) — use the dot to toggle
         if (rich) { openSheet(key); return; }
-
-        // Simple items (no sheet): row tap toggles done
         toggleDone(el);
     });
 }
 
-// ── Bottom sheet ──
+// ── Bottom sheet ──────────────────────────────────────────────────
 let _sheetKey = null;
 
 function openSheet(key) {
@@ -1215,13 +1114,10 @@ function openSheet(key) {
     if (!item) return;
     _sheetKey = key;
 
-    // header
     const dotColor = DOT_COLOR[item.cls] || '#3B82F6';
     document.getElementById('sh-dot').style.background = dotColor;
 
-    const timeStr = item.duration
-        ? `${item.time}  ·  ${item.duration}`
-        : item.time;
+    const timeStr = item.duration ? `${item.time}  ·  ${item.duration}` : item.time;
     document.getElementById('sh-time').textContent = timeStr;
     document.getElementById('sh-name').textContent = item.name.replace(/^\p{Emoji}\s*/u, '');
 
@@ -1230,16 +1126,13 @@ function openSheet(key) {
         ? `<span class="sheet-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${day.date}</span>`
         : '';
 
-    // body
     const body = document.getElementById('sh-body');
     let html = '';
 
-    // CTA
     if (item.cta) {
         html += `<a href="${item.cta.url}" target="_blank" class="sheet-cta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> ${item.cta.label}</a>`;
     }
 
-    // Location
     if (item.location) {
         const loc = item.location;
         html += `<div>
@@ -1252,7 +1145,6 @@ function openSheet(key) {
         </div>`;
     }
 
-    // Checklist
     if (item.checklist && item.checklist.length) {
         html += `<div>
             <div class="sheet-section-label">Checklist</div>
@@ -1267,7 +1159,6 @@ function openSheet(key) {
         html += `</div></div>`;
     }
 
-    // Notes
     if (item.notes) {
         html += `<div>
             <div class="sheet-section-label">Notes</div>
@@ -1277,7 +1168,6 @@ function openSheet(key) {
 
     body.innerHTML = html;
 
-    // checklist click handlers
     body.querySelectorAll('.cl-item[data-ck]').forEach(el => {
         el.addEventListener('click', async function() {
             const ck  = el.dataset.ck;
@@ -1288,17 +1178,14 @@ function openSheet(key) {
                 { trip_id: TRIP.id, item_key: ck, done: next, updated_at: new Date().toISOString() },
                 { onConflict: 'trip_id,item_key' }
             );
-            // Sync parent ↔ sub-items
             if (_sheetKey) {
                 const parentItem = ITEM_MAP[_sheetKey];
                 if (parentItem && parentItem.checklist) {
                     const parentEl = document.querySelector(`.it-item[data-key="${_sheetKey}"]`);
                     if (next) {
-                        // All ticked → mark parent done
                         const allDone = parentItem.checklist.every(c => !!_doneState[c.key]);
                         if (allDone && !_doneState[_sheetKey] && parentEl) toggleDone(parentEl);
                     } else {
-                        // Any unticked → unmark parent if it was done
                         if (_doneState[_sheetKey] && parentEl) toggleDone(parentEl);
                     }
                 }
@@ -1317,7 +1204,6 @@ function closeSheet() {
     _sheetKey = null;
 }
 
-// Re-render checklist done state when real-time sync fires while sheet is open
 function refreshSheetChecklist() {
     if (!_sheetKey) return;
     const item = ITEM_MAP[_sheetKey];
@@ -1328,7 +1214,7 @@ function refreshSheetChecklist() {
     });
 }
 
-// ── Navigation ──
+// ── Navigation ────────────────────────────────────────────────────
 function switchTab(name) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn-top').forEach(b => b.classList.remove('active'));
@@ -1346,9 +1232,9 @@ function switchMeal(name) {
     document.getElementById('mealtab-' + name).classList.add('active');
 }
 
-// ── Supabase sync ──
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ── Done state sync ───────────────────────────────────────────────
 let _doneState = {};
+const _localWriteAt = {};
 
 function showToast(type) {
     const el = document.getElementById('sync-toast');
@@ -1368,15 +1254,13 @@ function applyDoneState() {
 }
 
 async function loadDone() {
-    const fetchStart = Date.now();   // record start time before the await
+    const fetchStart = Date.now();
     const { data } = await sb
         .from('itinerary_done')
         .select('item_key, done')
         .eq('trip_id', TRIP.id);
     if (data) {
         data.forEach(row => {
-            // Don't overwrite a local toggle that happened AFTER we started fetching
-            // (guards against slow mobile network completing loadDone after user tapped)
             if ((_localWriteAt[row.item_key] || 0) < fetchStart) {
                 _doneState[row.item_key] = row.done;
             }
@@ -1385,39 +1269,16 @@ async function loadDone() {
     }
 }
 
-// Track the ms-timestamp of each local toggle so RT echoes don't overwrite it
-const _localWriteAt = {};
-
-sb.channel('itinerary-sync-' + TRIP.id)
-    .on('postgres_changes', {
-        event: '*', schema: 'public', table: 'itinerary_done',
-        filter: 'trip_id=eq.' + TRIP.id
-    }, payload => {
-        if (payload.new && payload.new.item_key !== undefined) {
-            const key = payload.new.item_key;
-            // Ignore RT events that arrive within 5 s of our own local write
-            // (guards against delayed echo overwriting the just-toggled state)
-            const age = Date.now() - (_localWriteAt[key] || 0);
-            if (age < 5000) return;
-            _doneState[key] = payload.new.done;
-            applyDoneState();
-        }
-    })
-    .subscribe();
-
 async function toggleDone(el) {
     const key = el.dataset.key;
     if (!key) return;
     const next = !_doneState[key];
     _doneState[key]    = next;
-    _localWriteAt[key] = Date.now();    // stamp so RT echo is ignored for 5 s
+    _localWriteAt[key] = Date.now();
     el.classList.toggle('done', next);
 
-    // Cascade to sub-items when parent is marked done
     const item = ITEM_MAP[key];
     const upserts = [{ trip_id: TRIP.id, item_key: key, done: next }];
-    // Only cascade to sub-items when marking parent DONE — unticking the parent
-    // leaves sub-items as-is so the user can manage them individually
     if (next && item && item.checklist) {
         item.checklist.forEach(ck => {
             _doneState[ck.key]    = next;
@@ -1431,11 +1292,7 @@ async function toggleDone(el) {
     showToast(error ? 'error' : 'synced');
 }
 
-// ── Init ──
-renderDays();
-loadDone();
-
-// ── Hero photo slideshow ──
+// ── Hero photo slideshow ──────────────────────────────────────────
 (function() {
     const slides = document.querySelectorAll('#app-hero .hero-slide');
     if (!slides.length) return;
@@ -1446,6 +1303,9 @@ loadDone();
         slides[cur].classList.add('active');
     }, 3000);
 })();
+
+// ── Boot ──────────────────────────────────────────────────────────
+init();
 </script>
 </body>
 </html>
