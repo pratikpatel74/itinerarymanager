@@ -426,6 +426,7 @@
         position: absolute; top: 8px; right: 12px;
         font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 10px;
         z-index: 200; transition: opacity 0.4s; opacity: 0; pointer-events: none;
+        display: flex; align-items: center; gap: 4px;
     }
     #sync-toast.show { opacity: 1; }
     #sync-toast.synced { background: rgba(42,122,82,0.25); color: var(--green-text); }
@@ -552,8 +553,8 @@
     .cl-item.done .cl-box {
         background: var(--green); border-color: var(--green);
     }
-    .cl-tick { display: none; font-size: 11px; color: white; font-weight: 800; }
-    .cl-item.done .cl-tick { display: block; }
+    .cl-tick { display: none; align-items: center; justify-content: center; color: white; }
+    .cl-item.done .cl-tick { display: flex; }
     .cl-label { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; line-height: 1.35; }
 
     /* location block */
@@ -563,7 +564,7 @@
         border: 1px solid var(--border);
         display: flex; flex-direction: column; gap: 6px;
     }
-    .sheet-loc-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .sheet-loc-name { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 5px; }
     .sheet-loc-addr { font-size: 11px; color: var(--sub); line-height: 1.4; }
     .sheet-loc-btn {
         display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -693,31 +694,31 @@
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><line x1="3" y1="9" x2="3" y2="20"/><line x1="21" y1="9" x2="21" y2="20"/><rect x="3" y="19" width="18" height="2" rx="0.5"/><line x1="7" y1="9" x2="7" y2="19"/><line x1="12" y1="9" x2="12" y2="19"/><line x1="17" y1="9" x2="17" y2="19"/></svg>Nearby Attractions</div>
                 <p style="font-size: 11px; color: var(--sub); margin-bottom: 10px;">Tap name for website · Tap Map for walking directions from hotel.</p>
                 <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.brussels.be/grand-place" target="_blank" class="attraction-name-link">Grand Place (Main Square)</a></div><div class="attraction-dist">🚶 100m · 1–2 min walk</div></div>
+                    <div class="attraction-info"><div><a href="https://www.brussels.be/grand-place" target="_blank" class="attraction-name-link">Grand Place (Main Square)</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>100m · 1–2 min walk</div></div>
                     <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Grand+Place+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
                 </div>
                 <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.grsh.be/en/" target="_blank" class="attraction-name-link">Galeries Royales Saint-Hubert</a></div><div class="attraction-dist">🚶 120m · 2 min walk</div></div>
+                    <div class="attraction-info"><div><a href="https://www.grsh.be/en/" target="_blank" class="attraction-name-link">Galeries Royales Saint-Hubert</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>120m · 2 min walk</div></div>
                     <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Galeries+Royales+Saint-Hubert&travelmode=walking" target="_blank" class="map-link">Map</a>
                 </div>
                 <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.brussels.be/manneken-pis" target="_blank" class="attraction-name-link">Manneken Pis</a></div><div class="attraction-dist">🚶 450m · 5 min walk</div></div>
+                    <div class="attraction-info"><div><a href="https://www.brussels.be/manneken-pis" target="_blank" class="attraction-name-link">Manneken Pis</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>450m · 5 min walk</div></div>
                     <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Manneken+Pis&travelmode=walking" target="_blank" class="map-link">Map</a>
                 </div>
                 <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.brussels.be/mont-des-arts" target="_blank" class="attraction-name-link">Mont des Arts (Viewpoint)</a></div><div class="attraction-dist">🚶 500m · 6 min walk</div></div>
+                    <div class="attraction-info"><div><a href="https://www.brussels.be/mont-des-arts" target="_blank" class="attraction-name-link">Mont des Arts (Viewpoint)</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>500m · 6 min walk</div></div>
                     <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Mont+des+Arts+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
                 </div>
                 <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://cathedalestmichel.be" target="_blank" class="attraction-name-link">St Michael &amp; St Gudula Cathedral</a></div><div class="attraction-dist">🚶 550m · 7 min walk</div></div>
+                    <div class="attraction-info"><div><a href="https://cathedalestmichel.be" target="_blank" class="attraction-name-link">St Michael &amp; St Gudula Cathedral</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>550m · 7 min walk</div></div>
                     <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=St+Michael+and+St+Gudula+Cathedral&travelmode=walking" target="_blank" class="map-link">Map</a>
                 </div>
                 <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://www.monarchie.be/en/heritage/royal-palace-of-brussels" target="_blank" class="attraction-name-link">Royal Palace of Brussels</a></div><div class="attraction-dist">🚶 950m · 12 min walk</div></div>
+                    <div class="attraction-info"><div><a href="https://www.monarchie.be/en/heritage/royal-palace-of-brussels" target="_blank" class="attraction-name-link">Royal Palace of Brussels</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>950m · 12 min walk</div></div>
                     <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Royal+Palace+of+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
                 </div>
                 <div class="attraction-item">
-                    <div class="attraction-info"><div><a href="https://atomium.be/atomium-price" target="_blank" class="attraction-name-link">Atomium</a></div><div class="attraction-dist">🚇 ~30 min · Metro line 6 → Atomium stop · €17 adult / €9 student&amp;child · Open 10:00–17:30</div></div>
+                    <div class="attraction-info"><div><a href="https://atomium.be/atomium-price" target="_blank" class="attraction-name-link">Atomium</a></div><div class="attraction-dist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><line x1="6" y1="11" x2="6" y2="11"/><line x1="18" y1="11" x2="18" y2="11"/></svg> ~30 min · Metro line 6 → Atomium stop · €17 adult / €9 student&amp;child · Open 10:00–17:30</div></div>
                     <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Atomium+Brussels&travelmode=transit" target="_blank" class="map-link">Transit</a>
                 </div>
             </div>
@@ -749,82 +750,82 @@
             <!-- Breakfast -->
             <div class="meal-panel active" id="meal-breakfast">
                 <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="https://lloyd-coffee-eatery-grand-place.wheree.com" target="_blank">Lloyd Coffee Eatery</a></div><div class="resto-tags"><span class="resto-tag">☕ Breakfast &amp; Brunch</span><span class="resto-tag">🌱 Vegan options</span><span class="resto-tag">🥗 Vegetarian</span><span class="resto-tag price">⭐ 8.2 / 10</span></div></div>
+                    <div class="resto-header"><div class="resto-name"><a href="https://lloyd-coffee-eatery-grand-place.wheree.com" target="_blank">Lloyd Coffee Eatery</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg> Breakfast &amp; Brunch</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Vegan options</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Vegetarian</span><span class="resto-tag price"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> 8.2 / 10</span></div></div>
                     <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>In the hotel building</strong> — Rue du Marché aux Herbes 80. 0 min walk.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Thu &amp; Sun:</strong> 7:00–20:00 · <strong>Fri–Sat:</strong> 7:00–22:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Egg sandwiches, salmon gravlax toast, pancakes, speculoos pancakes, halal options.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225119064">+32 2 511 9064</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>In the hotel building</strong> — Rue du Marché aux Herbes 80. 0 min walk.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text"><strong>Mon–Thu &amp; Sun:</strong> 7:00–20:00 · <strong>Fri–Sat:</strong> 7:00–22:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Egg sandwiches, salmon gravlax toast, pancakes, speculoos pancakes, halal options.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+3225119064">+32 2 511 9064</a></div></div>
                     </div>
-                    <div class="resto-actions"><a href="https://lloyd-coffee-eatery-grand-place.wheree.com/menu" target="_blank" class="resto-btn resto-btn-secondary">📋 Menu</a><a href="https://www.google.com/maps/search/?api=1&query=Lloyd+Coffee+Eatery+Rue+du+Marche+aux+Herbes+80+Brussels" target="_blank" class="resto-btn resto-btn-primary">📍 Map</a></div>
+                    <div class="resto-actions"><a href="https://lloyd-coffee-eatery-grand-place.wheree.com/menu" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Menu</a><a href="https://www.google.com/maps/search/?api=1&query=Lloyd+Coffee+Eatery+Rue+du+Marche+aux+Herbes+80+Brussels" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Map</a></div>
                 </div>
                 <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="https://www.thesistercafe-brussels.com" target="_blank">The Sister Brussels Café</a></div><div class="resto-tags"><span class="resto-tag">☕ Breakfast until 13:00</span><span class="resto-tag">🌱 Vegan &amp; GF options</span><span class="resto-tag price">€€ €12–16</span></div></div>
+                    <div class="resto-header"><div class="resto-name"><a href="https://www.thesistercafe-brussels.com" target="_blank">The Sister Brussels Café</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg> Breakfast until 13:00</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Vegan &amp; GF options</span><span class="resto-tag price">€€ €12–16</span></div></div>
                     <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue Chair et Pain 3, on Grand Place itself.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:00–23:00 · <strong>Sat:</strong> 9:00–00:00 · <strong>Sun:</strong> 9:00–23:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Eggs &amp; bacon, avocado bowl, omelettes, vegan tofu scramble, waffles.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225132226">+32 2 513 22 26</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue Chair et Pain 3, on Grand Place itself.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:00–23:00 · <strong>Sat:</strong> 9:00–00:00 · <strong>Sun:</strong> 9:00–23:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Eggs &amp; bacon, avocado bowl, omelettes, vegan tofu scramble, waffles.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+3225132226">+32 2 513 22 26</a></div></div>
                     </div>
-                    <div class="resto-actions"><a href="https://www.thesistercafe-brussels.com/food-menu" target="_blank" class="resto-btn resto-btn-secondary">📋 Menu</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+Chair+et+Pain+3+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
+                    <div class="resto-actions"><a href="https://www.thesistercafe-brussels.com/food-menu" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Menu</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+Chair+et+Pain+3+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a></div>
                 </div>
                 <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="http://www.cappuccinobrussel.be/" target="_blank">Cappuccino Brussel</a></div><div class="resto-tags"><span class="resto-tag">☕ Breakfast &amp; Brunch</span><span class="resto-tag">🌱 Vegan options</span><span class="resto-tag price">€€ €7–13</span></div></div>
+                    <div class="resto-header"><div class="resto-name"><a href="http://www.cappuccinobrussel.be/" target="_blank">Cappuccino Brussel</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg> Breakfast &amp; Brunch</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Vegan options</span><span class="resto-tag price">€€ €7–13</span></div></div>
                     <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~10 min walk</strong> — Avenue de Stalingrad 71, 1000 Brussels.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text">Daily from 9:00 · Sun–Thu 9:00–23:00 · Fri–Sat 9:00–00:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Fluffy pancakes, waffles, omelettes, crêpes, fruit salads. Set breakfast from €7. ⭐ 4.4/5 TripAdvisor.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+32488052464">+32 488 05 24 64</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>~10 min walk</strong> — Avenue de Stalingrad 71, 1000 Brussels.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text">Daily from 9:00 · Sun–Thu 9:00–23:00 · Fri–Sat 9:00–00:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Fluffy pancakes, waffles, omelettes, crêpes, fruit salads. Set breakfast from €7. ⭐ 4.4/5 TripAdvisor.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+32488052464">+32 488 05 24 64</a></div></div>
                     </div>
-                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15007770-Reviews-Cappuccino_Brussel-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Avenue+de+Stalingrad+71+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
+                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15007770-Reviews-Cappuccino_Brussel-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Avenue+de+Stalingrad+71+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a></div>
                 </div>
             </div>
             <!-- Lunch -->
             <div class="meal-panel" id="meal-lunch">
                 <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15120847-Reviews-Yummy_Bowl-Brussels.html" target="_blank">Yummy Bowl</a></div><div class="resto-tags"><span class="resto-tag">🥗 Healthy Bowls</span><span class="resto-tag">🍜 Korean Fusion</span><span class="resto-tag price">⭐ 4.8 / 5 · #2 in Brussels</span><span class="resto-tag price">$ Budget-friendly</span></div></div>
+                    <div class="resto-header"><div class="resto-name"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15120847-Reviews-Yummy_Bowl-Brussels.html" target="_blank">Yummy Bowl</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Healthy Bowls</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg> Korean Fusion</span><span class="resto-tag price"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> 4.8 / 5 · #2 in Brussels</span><span class="resto-tag price">$ Budget-friendly</span></div></div>
                     <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~3 min walk</strong> — Rue des Éperonniers 49 (just south of Grand Place).</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:30–15:00 · <strong>Sat–Sun:</strong> 10:30–17:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🥗</div><div class="resto-row-text">Buddha bowls, Pho, Dragon Ball bowl, homemade lemonade. <strong>#2 restaurant in Brussels</strong> on TripAdvisor.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3222651802">+32 2 265 18 02</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>~3 min walk</strong> — Rue des Éperonniers 49 (just south of Grand Place).</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:30–15:00 · <strong>Sat–Sun:</strong> 10:30–17:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></div><div class="resto-row-text">Buddha bowls, Pho, Dragon Ball bowl, homemade lemonade. <strong>#2 restaurant in Brussels</strong> on TripAdvisor.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+3222651802">+32 2 265 18 02</a></div></div>
                     </div>
-                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15120847-Reviews-Yummy_Bowl-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Eperonniers+49+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
+                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15120847-Reviews-Yummy_Bowl-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Eperonniers+49+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a></div>
                 </div>
                 <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/zouzoubrussels/" target="_blank">ZouZou Brussels</a></div><div class="resto-tags"><span class="resto-tag">🍔 Brunch &amp; Burgers</span><span class="resto-tag">🌱 Halal</span><span class="resto-tag price">€€ Moderate</span></div></div>
+                    <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/zouzoubrussels/" target="_blank">ZouZou Brussels</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg> Brunch &amp; Burgers</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Halal</span><span class="resto-tag price">€€ Moderate</span></div></div>
                     <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~5 min walk</strong> — Rue des Colonies 18 (near Gare Centrale).</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Daily:</strong> 10:00–18:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Shakshouka, truffle burrata toast, fluffy pancakes, ZouZou burger, fresh salads &amp; bowls.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+32472102128">+32 472 10 21 28</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>~5 min walk</strong> — Rue des Colonies 18 (near Gare Centrale).</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text"><strong>Daily:</strong> 10:00–18:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Shakshouka, truffle burrata toast, fluffy pancakes, ZouZou burger, fresh salads &amp; bowls.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+32472102128">+32 472 10 21 28</a></div></div>
                     </div>
-                    <div class="resto-actions"><a href="https://www.instagram.com/zouzoubrussels/" target="_blank" class="resto-btn resto-btn-secondary">📸 Instagram</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Colonies+18+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
+                    <div class="resto-actions"><a href="https://www.instagram.com/zouzoubrussels/" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> Instagram</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Colonies+18+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a></div>
                 </div>
             </div>
             <!-- Dinner -->
             <div class="meal-panel" id="meal-dinner">
                 <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="http://thelobsterhouse.be/" target="_blank">The Lobster House</a></div><div class="resto-tags"><span class="resto-tag">🦞 Seafood &amp; Lobster</span><span class="resto-tag">🇧🇪 Belgian</span><span class="resto-tag price">⭐ 4.6 / 5 · #18 in Brussels</span><span class="resto-tag price">€€–€€€</span></div></div>
+                    <div class="resto-header"><div class="resto-name"><a href="http://thelobsterhouse.be/" target="_blank">The Lobster House</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7zM15.5 15.5l4-4"/><path d="m13.76 8.23 4-4"/><path d="m8.23 13.76-4 4"/><path d="M20 4 4 20"/></svg> Seafood &amp; Lobster</span><span class="resto-tag">Belgian</span><span class="resto-tag price"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> 4.6 / 5 · #18 in Brussels</span><span class="resto-tag price">€€–€€€</span></div></div>
                     <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue des Bouchers 34 (Brussels' famous restaurant street).</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Daily:</strong> 11:00–23:00</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Live lobster &amp; crab from seawater tanks, moules frites, paella, fresh oysters. Travellers' Choice 2025.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225022016">+32 2 502 20 16</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue des Bouchers 34 (Brussels' famous restaurant street).</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text"><strong>Daily:</strong> 11:00–23:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Live lobster &amp; crab from seawater tanks, moules frites, paella, fresh oysters. Travellers' Choice 2025.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:+3225022016">+32 2 502 20 16</a></div></div>
                     </div>
-                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d1910997-Reviews-The_Lobster_House-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Bouchers+34+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
+                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d1910997-Reviews-The_Lobster_House-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Bouchers+34+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a></div>
                 </div>
             </div>
             <!-- Snacks -->
             <div class="meal-panel" id="meal-snacks">
                 <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank">WAFFELIN</a></div><div class="resto-tags"><span class="resto-tag">🧇 Belgian Waffles</span><span class="resto-tag">☕ Coffee</span><span class="resto-tag" style="background:var(--gold-lt);color:var(--gold);">New — hours unconfirmed</span></div></div>
+                    <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank">WAFFELIN</a></div><div class="resto-tags"><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg> Belgian Waffles</span><span class="resto-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg> Coffee</span><span class="resto-tag" style="background:var(--gold-lt);color:var(--gold);">New — hours unconfirmed</span></div></div>
                     <div class="resto-body">
-                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>Grand Place area</strong> — easy to find on foot around the square.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text">Hours not yet confirmed — worth checking their Instagram or asking at the hotel.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">🧇</div><div class="resto-row-text">Royal Belgian waffles and specialty coffee. A must-try for authentic waffles near Grand Place.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text"><strong>Grand Place area</strong> — easy to find on foot around the square.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text">Hours not yet confirmed — worth checking their Instagram or asking at the hotel.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">Royal Belgian waffles and specialty coffee. A must-try for authentic waffles near Grand Place.</div></div>
                     </div>
-                    <div class="resto-actions"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank" class="resto-btn resto-btn-secondary">📸 Instagram</a><a href="https://www.google.com/maps/search/?api=1&query=Waffelin+Brussels+Grand+Place" target="_blank" class="resto-btn resto-btn-primary">📍 Find on Map</a></div>
+                    <div class="resto-actions"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> Instagram</a><a href="https://www.google.com/maps/search/?api=1&query=Waffelin+Brussels+Grand+Place" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Find on Map</a></div>
                 </div>
             </div>
         </div>
@@ -851,15 +852,15 @@
             </div>
             <div class="card">
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="19" rx="1"/><path d="M9 22V13h6v9"/><rect x="8.5" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="13" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="8.5" y="10" width="2.5" height="2.5" rx=".5"/><rect x="13" y="10" width="2.5" height="2.5" rx=".5"/></svg>Hotel</div>
-                <p style="font-family:'Syne',system-ui,sans-serif; font-weight:700; font-size:15px; color:var(--text);">Hotel Aris Grand Place</p>
+                <p style="font-family:'DM Sans',system-ui,sans-serif; font-weight:700; font-size:15px; color:var(--text);">Hotel Aris Grand Place</p>
                 <p style="font-size: 12px; color: var(--sub); margin: 4px 0 10px;">Grasmarkt / Rue du Marché aux Herbes 78-80, 1000 Brussels</p>
                 <div style="font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; color: var(--text);">
                     <div><strong>Rooms:</strong> 2× Double</div><div><strong>Board:</strong> Room Only</div>
                     <div><strong>Check-in:</strong> From 15:00</div><div><strong>Check-out:</strong> By 11:00</div>
                 </div>
-                <a href="https://www.arbanyhotels.com" target="_blank" class="btn">🌐 Official Website</a>
-                <a href="https://www.google.com/maps/search/?api=1&query=Hotel+Aris+Grand+Place+Brussels" target="_blank" class="btn btn-secondary">📍 Google Maps</a>
-                <a href="tel:+3225144300" class="btn btn-secondary">📞 +32 2 514 4300</a>
+                <a href="https://www.arbanyhotels.com" target="_blank" class="btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Official Website</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Hotel+Aris+Grand+Place+Brussels" target="_blank" class="btn btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Google Maps</a>
+                <a href="tel:+3225144300" class="btn btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> +32 2 514 4300</a>
             </div>
             <div class="card">
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>Cost Breakdown</div>
@@ -898,7 +899,7 @@
                 <div class="sheet-name" id="sh-name"></div>
                 <div class="sheet-meta" id="sh-meta"></div>
             </div>
-            <div class="sheet-close" onclick="closeSheet()">✕</div>
+            <div class="sheet-close" onclick="closeSheet()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
         </div>
         <div class="sheet-body" id="sh-body"></div>
     </div>
@@ -924,7 +925,7 @@ const TRIP = {
             date:  'Thursday 12th November',
             label: 'Travel Day — Arrive Brussels ~16:30',
             rows: [
-                { type:'item', key:'d1-taxi-out',    cls:'travel', time:'09:25', name:'🚕 Taxi to Leicester Station',
+                { type:'item', key:'d1-taxi-out',    cls:'travel', time:'09:25', name:'Taxi to Leicester Station',
                   detail:'Allow ~45 mins. Train departs 10:12.',
                   duration: '~45 min',
                   checklist: [
@@ -933,21 +934,21 @@ const TRIP = {
                       { key:'d1-taxi-out-ck3', label:'All luggage by the door' },
                   ]
                 },
-                { type:'item', key:'d1-train-out',   cls:'travel', time:'10:12', name:'🚄 Train — Leicester → London St Pancras',
+                { type:'item', key:'d1-train-out',   cls:'travel', time:'10:12', name:'Train — Leicester → London St Pancras',
                   detail:'Arrives 11:27. Eurostar check-in by 11:45.',
                   duration: '1h 15min',
                   location: { name:'Leicester Station', address:'London Road, Leicester LE2 0QB', mapsUrl:'https://www.google.com/maps/search/?api=1&query=Leicester+Railway+Station' },
-                  cta: { label:'📋 View Booking', url:'https://www.eastmidlandsrailway.co.uk' },
+                  cta: { label:'View Booking', url:'https://www.eastmidlandsrailway.co.uk' },
                   checklist: [
                       { key:'d1-train-out-ck1', label:'EMR tickets downloaded / printed' },
                       { key:'d1-train-out-ck2', label:'Check platform on departure boards' },
                   ]
                 },
-                { type:'item', key:'d1-eurostar-out', cls:'travel', time:'13:01', name:'🚄 Eurostar — London St Pancras → Brussels Midi',
+                { type:'item', key:'d1-eurostar-out', cls:'travel', time:'13:01', name:'Eurostar — London St Pancras → Brussels Midi',
                   detail:'Arrives Brussels 16:06 CET. +1 hour time zone.',
                   duration: '2h 05min',
                   location: { name:'London St Pancras International', address:'Euston Road, London N1C 4QP', mapsUrl:'https://www.google.com/maps/search/?api=1&query=St+Pancras+International+Station' },
-                  cta: { label:'🎟 Open Eurostar Tickets', url:'https://www.eurostar.com' },
+                  cta: { label:'Open Eurostar Tickets', url:'https://www.eurostar.com' },
                   checklist: [
                       { key:'d1-eurostar-ck1', label:'At St Pancras by 11:45 for security' },
                       { key:'d1-eurostar-ck2', label:'All 4 passports in hand' },
@@ -956,10 +957,10 @@ const TRIP = {
                   ],
                   notes:'Ref: WRFH37. Security & passport control can take 20–30 mins — allow time. Seating is assigned.'
                 },
-                { type:'item', key:'d1-checkin', cls:'travel', time:'16:30', name:'🏨 Check-in — Hotel Aris Grand Place',
+                { type:'item', key:'d1-checkin', cls:'travel', time:'16:30', name:'Check-in — Hotel Aris Grand Place',
                   detail:'Check-in from 15:00. Ref: Expedia 72078682955721.',
                   location: { name:'Hotel Aris Grand Place', address:'Grasmarkt 78-80, 1000 Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Brussels+Midi+Station&destination=Hotel+Aris+Grand+Place+Brussels&travelmode=transit' },
-                  cta: { label:'🌐 Hotel Website', url:'https://www.arbanyhotels.com' },
+                  cta: { label:'Hotel Website', url:'https://www.arbanyhotels.com' },
                   checklist: [
                       { key:'d1-checkin-ck1', label:'Expedia confirmation ref noted (72078682955721)' },
                       { key:'d1-checkin-ck2', label:'City tax ready to pay at check-in (€28.82 total)' },
@@ -971,11 +972,11 @@ const TRIP = {
         {
             id: 'day2', open: true,
             date:  'Friday 13th November',
-            label: 'Full Day · 🎵 Concert Night for Mistrys',
+            label: 'Full Day · Concert Night for Mistrys',
             rows: [
                 { type:'empty', note:'Morning &amp; afternoon — nothing planned yet.' },
-                { type:'section', label:'🎵 Evening — Mr &amp; Mrs Mistry Only' },
-                { type:'item', key:'d2-metro-out', cls:'travel', time:'19:00', name:'🚇 Depart Hotel → ING Arena',
+                { type:'section', label:'Evening — Mr &amp; Mrs Mistry Only' },
+                { type:'item', key:'d2-metro-out', cls:'travel', time:'19:00', name:'Depart Hotel → ING Arena',
                   detail:'Metro: Gare Centrale → Roi Baudouin (line 2/6, ~20 mins). Or taxi ~15 mins, €12–18.',
                   duration: '~20 min',
                   location: { name:'Gare Centrale (Metro)', address:'Carrefour de l\'Europe, 1000 Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=ING+Arena+Brussels&travelmode=transit' },
@@ -984,12 +985,12 @@ const TRIP = {
                       { key:'d2-metro-ck2', label:'Line 2/6 towards Roi Baudouin confirmed' },
                   ]
                 },
-                { type:'item', key:'d2-concert', cls:'activity', time:'20:00', name:'🎵 The World of Hans Zimmer',
+                { type:'item', key:'d2-concert', cls:'activity', time:'20:00', name:'The World of Hans Zimmer',
                   nameUrl:'https://www.ticketmaster.be/venue/ing-arena-brussels-tickets/p12/101',
                   detail:'A New Dimension · ING Arena · Doors 19:00 · Show 20:00',
                   duration: '~2h 30min',
                   location: { name:'ING Arena', address:'Avenue de l\'Impératrice Charlotte, Laeken, Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=ING+Arena+Brussels&travelmode=transit' },
-                  cta: { label:'🎟 Open Tickets', url:'https://www.ticketmaster.be/venue/ing-arena-brussels-tickets/p12/101' },
+                  cta: { label:'Open Tickets', url:'https://www.ticketmaster.be/venue/ing-arena-brussels-tickets/p12/101' },
                   checklist: [
                       { key:'d2-concert-ck1', label:'Tickets downloaded to phone' },
                       { key:'d2-concert-ck2', label:'Leave hotel by 19:00' },
@@ -998,7 +999,7 @@ const TRIP = {
                   ],
                   notes:'Mistrys only — Patels have a free evening. Shows typically end ~22:30.'
                 },
-                { type:'item', key:'d2-metro-return', cls:'travel', time:'~22:30', name:'🚇 Return — ING Arena → Hotel',
+                { type:'item', key:'d2-metro-return', cls:'travel', time:'~22:30', name:'Return — ING Arena → Hotel',
                   detail:'Metro Roi Baudouin → Gare Centrale, or taxi from arena (~20 mins).',
                   duration: '~20 min',
                   location: { name:'ING Arena (Departure)', address:'Avenue de l\'Impératrice Charlotte, Laeken', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=ING+Arena+Brussels&destination=Hotel+Aris+Grand+Place+Brussels&travelmode=transit' },
@@ -1018,7 +1019,7 @@ const TRIP = {
             date:  'Sunday 15th November',
             label: 'Departure Day — Check-out by 11:00',
             rows: [
-                { type:'item', key:'d4-checkout', cls:'travel', time:'10:15', name:'🏨 Hotel check-out',
+                { type:'item', key:'d4-checkout', cls:'travel', time:'10:15', name:'Hotel check-out',
                   detail:'Must check out by 10:15. Luggage storage available if needed.',
                   checklist: [
                       { key:'d4-checkout-ck1', label:'All rooms cleared & luggage ready' },
@@ -1027,15 +1028,15 @@ const TRIP = {
                       { key:'d4-checkout-ck4', label:'Nothing left in hotel safe' },
                   ]
                 },
-                { type:'item', key:'d4-taxi-midi', cls:'travel', time:'10:20', name:'🚕 Taxi — Hotel → Brussels Midi',
+                { type:'item', key:'d4-taxi-midi', cls:'travel', time:'10:20', name:'Taxi — Hotel → Brussels Midi',
                   detail:'~15 mins to station. Eurostar check-in closes 10:41.',
                   duration: '~15 min',
                   location: { name:'Brussels-Midi / Zuid Station', address:'Rue de France, 1060 Sint-Gillis, Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Brussels+Midi+Station&travelmode=driving' },
                 },
-                { type:'item', key:'d4-eurostar-return', cls:'travel', time:'11:56', name:'🚄 Eurostar — Brussels Midi → London St Pancras',
+                { type:'item', key:'d4-eurostar-return', cls:'travel', time:'11:56', name:'Eurostar — Brussels Midi → London St Pancras',
                   detail:'Arrives 12:57 UK time. Ref: WRFH37.',
                   duration: '2h 01min',
-                  cta: { label:'🎟 Open Eurostar Tickets', url:'https://www.eurostar.com' },
+                  cta: { label:'Open Eurostar Tickets', url:'https://www.eurostar.com' },
                   checklist: [
                       { key:'d4-eurostar-ck1', label:'At Midi by 10:41 for check-in' },
                       { key:'d4-eurostar-ck2', label:'All 4 passports in hand' },
@@ -1043,13 +1044,13 @@ const TRIP = {
                   ],
                   notes:'Ref: WRFH37. Remember clocks go back 1 hour to UK time on arrival.'
                 },
-                { type:'item', key:'d4-train-pancras', cls:'travel', time:'14:42', name:'🚄 Train — St Pancras → Market Harborough',
+                { type:'item', key:'d4-train-pancras', cls:'travel', time:'14:42', name:'Train — St Pancras → Market Harborough',
                   detail:'Arrives 15:30. Platform from departure boards.',
                   duration: '~48 min',
                   location: { name:'London St Pancras International', address:'Euston Road, London N1C 4QP', mapsUrl:'https://www.google.com/maps/search/?api=1&query=St+Pancras+International+Station' },
-                  cta: { label:'📋 View Booking', url:'https://www.eastmidlandsrailway.co.uk' },
+                  cta: { label:'View Booking', url:'https://www.eastmidlandsrailway.co.uk' },
                 },
-                { type:'item', key:'d4-taxi-home', cls:'travel', time:'15:35', name:'🚕 Taxi — Market Harborough → Home',
+                { type:'item', key:'d4-taxi-home', cls:'travel', time:'15:35', name:'Taxi — Market Harborough → Home',
                   detail:'~25 mins. Home by 16:00.',
                   duration: '~25 min',
                 },
@@ -1112,7 +1113,7 @@ function renderDays() {
                     <div class="day-date">${day.date}</div>
                     <div class="day-label">${day.label}</div>
                 </div>
-                <span class="day-chevron">▾</span>
+                <span class="day-chevron"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
             </div>
             <div class="day-body">`;
 
@@ -1186,7 +1187,7 @@ function openSheet(key) {
 
     const meta = document.getElementById('sh-meta');
     meta.innerHTML = day
-        ? `<span class="sheet-meta-item">📅 ${day.date}</span>`
+        ? `<span class="sheet-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${day.date}</span>`
         : '';
 
     // body
@@ -1195,7 +1196,7 @@ function openSheet(key) {
 
     // CTA
     if (item.cta) {
-        html += `<a href="${item.cta.url}" target="_blank" class="sheet-cta">${item.cta.label}</a>`;
+        html += `<a href="${item.cta.url}" target="_blank" class="sheet-cta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> ${item.cta.label}</a>`;
     }
 
     // Location
@@ -1204,9 +1205,9 @@ function openSheet(key) {
         html += `<div>
             <div class="sheet-section-label">Location</div>
             <div class="sheet-location">
-                <div class="sheet-loc-name">📍 ${loc.name}</div>
+                <div class="sheet-loc-name"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${loc.name}</div>
                 <div class="sheet-loc-addr">${loc.address}</div>
-                ${loc.mapsUrl ? `<a href="${loc.mapsUrl}" target="_blank" class="sheet-loc-btn">🗺 Get Directions</a>` : ''}
+                ${loc.mapsUrl ? `<a href="${loc.mapsUrl}" target="_blank" class="sheet-loc-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg> Get Directions</a>` : ''}
             </div>
         </div>`;
     }
@@ -1219,7 +1220,7 @@ function openSheet(key) {
         item.checklist.forEach(ck => {
             const done = !!_doneState[ck.key];
             html += `<div class="cl-item${done ? ' done' : ''}" data-ck="${ck.key}">
-                <div class="cl-box"><span class="cl-tick">✓</span></div>
+                <div class="cl-box"><span class="cl-tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
                 <div class="cl-label">${ck.label}</div>
             </div>`;
         });
@@ -1296,7 +1297,9 @@ let _doneState = {};
 
 function showToast(type) {
     const el = document.getElementById('sync-toast');
-    el.textContent = type === 'synced' ? '✓ Synced' : '⚠ Offline';
+    el.innerHTML = type === 'synced'
+        ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Synced'
+        : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Offline';
     el.className = 'show ' + type;
     clearTimeout(el._t);
     el._t = setTimeout(() => el.classList.remove('show'), 2000);
