@@ -293,7 +293,7 @@
     .it-item.done .it-detail { opacity: 0.45; }
     .it-item.done .it-time { color: var(--green-text); opacity: 0.7; }
     .it-item.done .it-dot { background: var(--green-text) !important; }
-    .it-item.done .it-dot::after { content: '✓'; display: block; font-size: 6px; color: #0A0A0A; font-weight: 800; line-height: 1; text-align: center; margin-top: 1px; }
+    .it-item.done .it-dot::after { content: '✓'; display: block; font-size: 9px; color: #0A0A0A; font-weight: 800; line-height: 1; text-align: center; }
 
     .it-time {
         font-size: 12px; font-weight: 500;
@@ -302,11 +302,13 @@
         padding-top: 3px; line-height: 1;
     }
     .it-dot-wrap {
-        width: 26px; flex-shrink: 0;
-        display: flex; flex-direction: column; align-items: center; padding-top: 4px;
+        width: 44px; flex-shrink: 0; margin-left: -8px;
+        display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+        padding-top: 2px; min-height: 44px;
+        cursor: pointer;
     }
     .it-dot {
-        width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
         transition: background 0.15s;
         display: flex; align-items: center; justify-content: center;
     }
@@ -653,7 +655,7 @@
             <div class="sync-dot"></div>
             <span id="sync-text">Live sync on</span>
         </div>
-        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v8</span>
+        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v9</span>
     </div>
 
     <!-- ── Scrollable content ── -->
