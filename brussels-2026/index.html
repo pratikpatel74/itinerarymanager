@@ -653,7 +653,7 @@
             <div class="sync-dot"></div>
             <span id="sync-text">Live sync on</span>
         </div>
-        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v7</span>
+        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v8</span>
     </div>
 
     <!-- ── Scrollable content ── -->
@@ -1339,12 +1339,19 @@ function applyDoneState() {
 }
 
 async function loadDone() {
+    const fetchStart = Date.now();   // record start time before the await
     const { data } = await sb
         .from('itinerary_done')
         .select('item_key, done')
         .eq('trip_id', TRIP.id);
     if (data) {
-        data.forEach(row => { _doneState[row.item_key] = row.done; });
+        data.forEach(row => {
+            // Don't overwrite a local toggle that happened AFTER we started fetching
+            // (guards against slow mobile network completing loadDone after user tapped)
+            if ((_localWriteAt[row.item_key] || 0) < fetchStart) {
+                _doneState[row.item_key] = row.done;
+            }
+        });
         applyDoneState();
     }
 }
