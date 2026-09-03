@@ -1171,7 +1171,7 @@ function renderDays() {
         el.addEventListener('click', function(e) {
             if (e.target.closest('a')) return;
             if (e.target.closest('.it-dot-wrap')) return;
-            if (rich) openSheet(key);
+            if (rich && !_doneState[key]) openSheet(key);
             else toggleDone(el);
         });
     });
