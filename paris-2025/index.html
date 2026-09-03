@@ -675,7 +675,7 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5L5 19"/><polyline points="15 19 5 19 5 9"/></svg>Return — Sunday 10th Aug</div>
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5L5 19"/><polyline points="15 19 5 19 5 9"/></svg>Return — Monday 10th Aug</div>
                 <div class="timeline">
                     <div class="timeline-event"><span class="t-time">~11:00</span> Hotel Check-out &amp; depart for Gare du Nord</div>
                     <div class="timeline-event"><span class="t-time">11:30</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
@@ -859,15 +859,24 @@ const TRIP = {
         },
         {
             id: 'day3', open: false,
-            date:  'Saturday 9th August',
+            date:  'Sunday 9th August',
             label: 'Full Day in Paris',
             rows: [
-                { type:'empty', note:'Nothing planned — free day in Paris. Explore!' },
+                { type:'item', key:'paris-d3-taxi-psg', cls:'travel', time:'10:15', name:'Taxi to Parc des Princes',
+                  detail:'From hotel · allow ~30–40 min' },
+                { type:'item', key:'paris-d3-psg-tour', cls:'activity', time:'11:00', name:'PSG Stadium Tour — Parc des Princes',
+                  detail:'Nisha, Maya &amp; Aarjan · 3 tickets · €84 total (€28pp)',
+                  notes:'Order #3037274 · Download QR tickets from personal space → "Stadium Tour tickets" before travelling',
+                  location: { name:'Parc des Princes', address:'24 Rue du Commandant Guilbaud, 75016 Paris', mapsUrl:'https://maps.google.com/?q=Parc+des+Princes+Paris' },
+                  cta: { label:'Download Tickets', url:'https://www.psg.fr/en/club/parc-des-princes/stadium-tours' },
+                },
+                { type:'item', key:'paris-d3-taxi-back', cls:'travel', time:'13:00', name:'Taxi back to Hotel',
+                  detail:'From Parc des Princes' },
             ]
         },
         {
             id: 'day4', open: false,
-            date:  'Sunday 10th August',
+            date:  'Monday 10th August',
             label: 'Departure Day',
             rows: [
                 { type:'item', key:'d4-checkout', cls:'travel', time:'~11:00', name:'Hotel check-out',
