@@ -426,11 +426,164 @@
     #sync-toast.error  { background: rgba(239,68,68,0.2); color: #F87171; }
 
     /* ── inline overrides for preserved HTML ── */
-    /* Hotel info card grid text */
     .card p { color: var(--sub); }
     .card p strong { color: var(--text); }
     ul li { color: var(--sub); }
     ul li strong { color: var(--text); }
+
+    /* ── Drilldown indicator on items ── */
+    .it-item.has-detail { cursor: pointer; }
+    .it-chevron {
+        font-size: 14px; color: var(--sub2); margin-left: 6px; flex-shrink: 0;
+        align-self: center; line-height: 1;
+    }
+
+    /* ── Bottom sheet backdrop ── */
+    .sheet-backdrop {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+        z-index: 300;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.28s ease;
+    }
+    .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    /* ── Bottom sheet panel ── */
+    .sheet {
+        position: absolute; left: 0; right: 0; bottom: 0;
+        background: var(--surface);
+        border-radius: 20px 20px 0 0;
+        border-top: 1px solid var(--border);
+        max-height: 87%;
+        display: flex; flex-direction: column;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+        z-index: 301;
+    }
+    .sheet.open { transform: translateY(0); }
+
+    /* drag handle */
+    .sheet-handle {
+        width: 36px; height: 4px; border-radius: 2px;
+        background: var(--sub2);
+        margin: 12px auto 0;
+        flex-shrink: 0;
+    }
+
+    /* sheet header */
+    .sheet-header {
+        flex-shrink: 0;
+        padding: 14px 16px 12px;
+        border-bottom: 1px solid var(--border);
+        display: flex; align-items: flex-start; gap: 10px;
+    }
+    .sheet-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        flex-shrink: 0; margin-top: 5px;
+    }
+    .sheet-hbody { flex: 1; min-width: 0; }
+    .sheet-time {
+        font-size: 11px; font-weight: 600; color: var(--gold);
+        font-variant-numeric: tabular-nums; margin-bottom: 2px;
+    }
+    .sheet-name {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 18px; font-weight: 700; color: var(--text);
+        line-height: 1.25; text-wrap: balance;
+    }
+    .sheet-meta {
+        font-size: 11px; color: var(--sub); margin-top: 4px;
+        display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .sheet-meta-item { display: flex; align-items: center; gap: 4px; }
+    .sheet-close {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--surface2); border: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 16px; color: var(--sub); cursor: pointer;
+        flex-shrink: 0; line-height: 1;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* sheet scrollable body */
+    .sheet-body {
+        flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+        padding: 14px 16px 32px;
+        display: flex; flex-direction: column; gap: 14px;
+    }
+
+    /* sheet section */
+    .sheet-section-label {
+        font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+        text-transform: uppercase; color: var(--sub2);
+        margin-bottom: 8px;
+    }
+
+    /* checklist */
+    .checklist { display: flex; flex-direction: column; gap: 1px; }
+    .cl-item {
+        display: flex; align-items: center; gap: 10px;
+        padding: 10px 12px;
+        background: var(--surface2); border-radius: 10px;
+        cursor: pointer; user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.13s;
+        margin-bottom: 4px;
+    }
+    .cl-item:active { background: rgba(255,255,255,0.06); }
+    .cl-item.done .cl-label {
+        text-decoration: line-through; color: var(--sub); opacity: 0.6;
+    }
+    .cl-box {
+        width: 20px; height: 20px; border-radius: 6px;
+        border: 2px solid var(--sub2);
+        background: transparent; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.15s, border-color 0.15s;
+    }
+    .cl-item.done .cl-box {
+        background: var(--green); border-color: var(--green);
+    }
+    .cl-tick { display: none; font-size: 11px; color: white; font-weight: 800; }
+    .cl-item.done .cl-tick { display: block; }
+    .cl-label { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; line-height: 1.35; }
+
+    /* location block */
+    .sheet-location {
+        background: var(--surface2); border-radius: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        display: flex; flex-direction: column; gap: 6px;
+    }
+    .sheet-loc-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .sheet-loc-addr { font-size: 11px; color: var(--sub); line-height: 1.4; }
+    .sheet-loc-btn {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        margin-top: 6px;
+        background: rgba(59,130,246,0.14); color: #60A5FA;
+        border: 1px solid rgba(59,130,246,0.22);
+        padding: 9px 14px; border-radius: 9px;
+        font-size: 12px; font-weight: 700; text-decoration: none;
+    }
+
+    /* sheet CTA */
+    .sheet-cta {
+        display: flex; align-items: center; justify-content: center;
+        gap: 6px; width: 100%;
+        background: var(--gold); color: #0A0A0A;
+        padding: 12px 14px; border-radius: 10px;
+        font-size: 14px; font-weight: 700; text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* notes */
+    .sheet-notes {
+        background: var(--surface2); border-radius: 12px;
+        padding: 11px 14px; font-size: 12px; color: var(--sub);
+        border: 1px solid var(--border); line-height: 1.6;
+    }
+    .sheet-notes strong { color: var(--text); }
     </style>
 </head>
 <body>
@@ -727,6 +880,22 @@
 
     </div><!-- /content-area -->
 
+    <!-- ── Event detail bottom sheet ── -->
+    <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeSheet()"></div>
+    <div class="sheet" id="event-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+            <div class="sheet-dot" id="sh-dot"></div>
+            <div class="sheet-hbody">
+                <div class="sheet-time" id="sh-time"></div>
+                <div class="sheet-name" id="sh-name"></div>
+                <div class="sheet-meta" id="sh-meta"></div>
+            </div>
+            <div class="sheet-close" onclick="closeSheet()">✕</div>
+        </div>
+        <div class="sheet-body" id="sh-body"></div>
+    </div>
+
 </div><!-- /app-shell -->
 
 <script>
@@ -748,10 +917,48 @@ const TRIP = {
             date:  'Thursday 12th November',
             label: 'Travel Day — Arrive Brussels ~16:30',
             rows: [
-                { type:'item', key:'d1-taxi-out',    cls:'travel',   time:'09:25',  name:'🚕 Taxi to Leicester Station',               detail:'Allow ~45 mins. Train departs 10:12.' },
-                { type:'item', key:'d1-train-out',   cls:'travel',   time:'10:12',  name:'🚄 Train — Leicester → London St Pancras',   detail:'Arrives 11:27. Eurostar check-in by 11:45.' },
-                { type:'item', key:'d1-eurostar-out',cls:'travel',   time:'13:01',  name:'🚄 Eurostar — London → Brussels Midi',        detail:'Arrives Brussels 16:06 (CET). Taxi to hotel ~15 mins.' },
-                { type:'item', key:'d1-checkin',     cls:'travel',   time:'16:30',  name:'🏨 Check-in — Hotel Aris Grand Place',        detail:'Check-in from 15:00.' },
+                { type:'item', key:'d1-taxi-out',    cls:'travel', time:'09:25', name:'🚕 Taxi to Leicester Station',
+                  detail:'Allow ~45 mins. Train departs 10:12.',
+                  duration: '~45 min',
+                  checklist: [
+                      { key:'d1-taxi-out-ck1', label:'Book taxi the night before' },
+                      { key:'d1-taxi-out-ck2', label:'Passports & travel documents ready' },
+                      { key:'d1-taxi-out-ck3', label:'All luggage by the door' },
+                  ]
+                },
+                { type:'item', key:'d1-train-out',   cls:'travel', time:'10:12', name:'🚄 Train — Leicester → London St Pancras',
+                  detail:'Arrives 11:27. Eurostar check-in by 11:45.',
+                  duration: '1h 15min',
+                  location: { name:'Leicester Station', address:'London Road, Leicester LE2 0QB', mapsUrl:'https://www.google.com/maps/search/?api=1&query=Leicester+Railway+Station' },
+                  cta: { label:'📋 View Booking', url:'https://www.eastmidlandsrailway.co.uk' },
+                  checklist: [
+                      { key:'d1-train-out-ck1', label:'EMR tickets downloaded / printed' },
+                      { key:'d1-train-out-ck2', label:'Check platform on departure boards' },
+                  ]
+                },
+                { type:'item', key:'d1-eurostar-out', cls:'travel', time:'13:01', name:'🚄 Eurostar — London St Pancras → Brussels Midi',
+                  detail:'Arrives Brussels 16:06 CET. +1 hour time zone.',
+                  duration: '2h 05min',
+                  location: { name:'London St Pancras International', address:'Euston Road, London N1C 4QP', mapsUrl:'https://www.google.com/maps/search/?api=1&query=St+Pancras+International+Station' },
+                  cta: { label:'🎟 Open Eurostar Tickets', url:'https://www.eurostar.com' },
+                  checklist: [
+                      { key:'d1-eurostar-ck1', label:'At St Pancras by 11:45 for security' },
+                      { key:'d1-eurostar-ck2', label:'All 4 passports in hand' },
+                      { key:'d1-eurostar-ck3', label:'Eurostar e-tickets on phones' },
+                      { key:'d1-eurostar-ck4', label:'Currency / cards ready for Belgium' },
+                  ],
+                  notes:'Ref: WRFH37. Security & passport control can take 20–30 mins — allow time. Seating is assigned.'
+                },
+                { type:'item', key:'d1-checkin', cls:'travel', time:'16:30', name:'🏨 Check-in — Hotel Aris Grand Place',
+                  detail:'Check-in from 15:00. Ref: Expedia 72078682955721.',
+                  location: { name:'Hotel Aris Grand Place', address:'Grasmarkt 78-80, 1000 Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Brussels+Midi+Station&destination=Hotel+Aris+Grand+Place+Brussels&travelmode=transit' },
+                  cta: { label:'🌐 Hotel Website', url:'https://www.arbanyhotels.com' },
+                  checklist: [
+                      { key:'d1-checkin-ck1', label:'Expedia confirmation ref noted (72078682955721)' },
+                      { key:'d1-checkin-ck2', label:'City tax ready to pay at check-in (€28.82 total)' },
+                      { key:'d1-checkin-ck3', label:'Room allocation confirmed (2× double)' },
+                  ]
+                },
             ]
         },
         {
@@ -761,10 +968,34 @@ const TRIP = {
             rows: [
                 { type:'empty', note:'Morning &amp; afternoon — nothing planned yet.' },
                 { type:'section', label:'🎵 Evening — Mr &amp; Mrs Mistry Only' },
-                { type:'item', key:'d2-metro-out',  cls:'travel',   time:'19:00',  name:'🚇 Depart Hotel → ING Arena', detail:'Metro from Gare Centrale → Roi Baudouin (line 2/6, ~20 mins). Or taxi ~15 mins, €12–18. Leave by 19:00.' },
-                { type:'item', key:'d2-concert',    cls:'activity', time:'20:00',  name:'🎵 The World of Hans Zimmer', nameUrl:'https://www.ticketmaster.be/venue/ing-arena-brussels-tickets/p12/101', detail:'A New Dimension · ING Arena, Brussels · Doors open ~19:00 · Show starts 20:00' },
-                { type:'item', key:'d2-metro-return',cls:'travel',  time:'~22:30', name:'🚇 Return — ING Arena → Hotel', detail:'Metro Roi Baudouin → Gare Centrale, or taxi from arena (~20 mins). Shows typically end ~22:30.' },
-                { type:'info', html:'<div style="background:rgba(59,130,246,0.1);border-radius:10px;padding:9px 12px;margin-top:4px;font-size:11px;color:#93C5FD;line-height:1.5;border:1px solid rgba(59,130,246,0.2);"><strong style="color:#BFDBFE;">📍 ING Arena</strong> — Avenue de l\'Impératrice Charlotte, Laeken, Brussels.<br><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=ING+Arena+Brussels&travelmode=transit" target="_blank" style="color:#60A5FA;font-weight:600;">Get directions from hotel →</a></div>' },
+                { type:'item', key:'d2-metro-out', cls:'travel', time:'19:00', name:'🚇 Depart Hotel → ING Arena',
+                  detail:'Metro: Gare Centrale → Roi Baudouin (line 2/6, ~20 mins). Or taxi ~15 mins, €12–18.',
+                  duration: '~20 min',
+                  location: { name:'Gare Centrale (Metro)', address:'Carrefour de l\'Europe, 1000 Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=ING+Arena+Brussels&travelmode=transit' },
+                  checklist: [
+                      { key:'d2-metro-ck1', label:'MOBIB card or cash for metro tickets' },
+                      { key:'d2-metro-ck2', label:'Line 2/6 towards Roi Baudouin confirmed' },
+                  ]
+                },
+                { type:'item', key:'d2-concert', cls:'activity', time:'20:00', name:'🎵 The World of Hans Zimmer',
+                  nameUrl:'https://www.ticketmaster.be/venue/ing-arena-brussels-tickets/p12/101',
+                  detail:'A New Dimension · ING Arena · Doors 19:00 · Show 20:00',
+                  duration: '~2h 30min',
+                  location: { name:'ING Arena', address:'Avenue de l\'Impératrice Charlotte, Laeken, Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=ING+Arena+Brussels&travelmode=transit' },
+                  cta: { label:'🎟 Open Tickets', url:'https://www.ticketmaster.be/venue/ing-arena-brussels-tickets/p12/101' },
+                  checklist: [
+                      { key:'d2-concert-ck1', label:'Tickets downloaded to phone' },
+                      { key:'d2-concert-ck2', label:'Leave hotel by 19:00' },
+                      { key:'d2-concert-ck3', label:'Bring passports / ID for venue entry' },
+                      { key:'d2-concert-ck4', label:'Check ING Arena bag policy' },
+                  ],
+                  notes:'Mistrys only — Patels have a free evening. Shows typically end ~22:30.'
+                },
+                { type:'item', key:'d2-metro-return', cls:'travel', time:'~22:30', name:'🚇 Return — ING Arena → Hotel',
+                  detail:'Metro Roi Baudouin → Gare Centrale, or taxi from arena (~20 mins).',
+                  duration: '~20 min',
+                  location: { name:'ING Arena (Departure)', address:'Avenue de l\'Impératrice Charlotte, Laeken', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=ING+Arena+Brussels&destination=Hotel+Aris+Grand+Place+Brussels&travelmode=transit' },
+                },
             ]
         },
         {
@@ -780,11 +1011,41 @@ const TRIP = {
             date:  'Sunday 15th November',
             label: 'Departure Day — Check-out by 11:00',
             rows: [
-                { type:'item', key:'d4-checkout',      cls:'travel', time:'10:15',  name:'🏨 Hotel check-out',                              detail:'Must check out by 10:15 to make the taxi. Luggage storage available if needed.' },
-                { type:'item', key:'d4-taxi-midi',     cls:'travel', time:'10:20',  name:'🚕 Taxi — Hotel → Brussels Midi',                 detail:'~15 mins. Eurostar check-in at 10:41.' },
-                { type:'item', key:'d4-eurostar-return',cls:'travel',time:'11:56',  name:'🚄 Eurostar — Brussels Midi → London St Pancras', detail:'Arrives 12:57 (UK time).' },
-                { type:'item', key:'d4-train-pancras', cls:'travel', time:'14:42',  name:'🚄 Train — St Pancras → Market Harborough',       detail:'Arrives 15:30.' },
-                { type:'item', key:'d4-taxi-home',     cls:'travel', time:'15:35',  name:'🚕 Taxi — Market Harborough → Home',              detail:'~25 mins. Home by 16:00.' },
+                { type:'item', key:'d4-checkout', cls:'travel', time:'10:15', name:'🏨 Hotel check-out',
+                  detail:'Must check out by 10:15. Luggage storage available if needed.',
+                  checklist: [
+                      { key:'d4-checkout-ck1', label:'All rooms cleared & luggage ready' },
+                      { key:'d4-checkout-ck2', label:'City tax paid at reception' },
+                      { key:'d4-checkout-ck3', label:'Room keys returned' },
+                      { key:'d4-checkout-ck4', label:'Nothing left in hotel safe' },
+                  ]
+                },
+                { type:'item', key:'d4-taxi-midi', cls:'travel', time:'10:20', name:'🚕 Taxi — Hotel → Brussels Midi',
+                  detail:'~15 mins to station. Eurostar check-in closes 10:41.',
+                  duration: '~15 min',
+                  location: { name:'Brussels-Midi / Zuid Station', address:'Rue de France, 1060 Sint-Gillis, Brussels', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Brussels+Midi+Station&travelmode=driving' },
+                },
+                { type:'item', key:'d4-eurostar-return', cls:'travel', time:'11:56', name:'🚄 Eurostar — Brussels Midi → London St Pancras',
+                  detail:'Arrives 12:57 UK time. Ref: WRFH37.',
+                  duration: '2h 01min',
+                  cta: { label:'🎟 Open Eurostar Tickets', url:'https://www.eurostar.com' },
+                  checklist: [
+                      { key:'d4-eurostar-ck1', label:'At Midi by 10:41 for check-in' },
+                      { key:'d4-eurostar-ck2', label:'All 4 passports in hand' },
+                      { key:'d4-eurostar-ck3', label:'Eurostar e-tickets on phones' },
+                  ],
+                  notes:'Ref: WRFH37. Remember clocks go back 1 hour to UK time on arrival.'
+                },
+                { type:'item', key:'d4-train-pancras', cls:'travel', time:'14:42', name:'🚄 Train — St Pancras → Market Harborough',
+                  detail:'Arrives 15:30. Platform from departure boards.',
+                  duration: '~48 min',
+                  location: { name:'London St Pancras International', address:'Euston Road, London N1C 4QP', mapsUrl:'https://www.google.com/maps/search/?api=1&query=St+Pancras+International+Station' },
+                  cta: { label:'📋 View Booking', url:'https://www.eastmidlandsrailway.co.uk' },
+                },
+                { type:'item', key:'d4-taxi-home', cls:'travel', time:'15:35', name:'🚕 Taxi — Market Harborough → Home',
+                  detail:'~25 mins. Home by 16:00.',
+                  duration: '~25 min',
+                },
             ]
         },
     ]
@@ -802,8 +1063,29 @@ document.getElementById('app-subtitle').textContent = TRIP.subtitle;
 document.title = TRIP.flag + ' ' + TRIP.name + ' · Trip Guide';
 
 // ── Render Days tab ──
+const DOT_CLASS = { travel:'dot-travel', activity:'dot-activity', food:'dot-food', sight:'dot-sight' };
+const DOT_COLOR = { travel:'#3B82F6', activity:'#C9A227', food:'#F97316', sight:'#818CF8' };
+
+// Flat map of all items by key for sheet lookup
+const ITEM_MAP = {};
+const DAY_FOR_KEY = {};
+
+function hasDetail(row) {
+    return !!(row.location || row.cta || (row.checklist && row.checklist.length) || row.notes);
+}
+
 function renderDays() {
-    const DOT_CLASS = { travel:'dot-travel', activity:'dot-activity', food:'dot-food', sight:'dot-sight' };
+    // rebuild lookup maps
+    TRIP.days.forEach(day => {
+        (day.rows || []).forEach(row => {
+            if (row.type === 'item') {
+                ITEM_MAP[row.key] = row;
+                DAY_FOR_KEY[row.key] = day;
+            }
+            // checklist items also need day lookup
+            (row.checklist || []).forEach(ck => { DAY_FOR_KEY[ck.key] = day; });
+        });
+    });
 
     let html = `
     <div class="card" style="margin-bottom:10px;">
@@ -813,7 +1095,7 @@ function renderDays() {
             <div class="legend-item"><div class="legend-dot" style="background:#F97316;"></div> Food</div>
             <div class="legend-item"><div class="legend-dot" style="background:#818CF8;"></div> Sight</div>
         </div>
-        <p style="font-size:11px;color:var(--sub);">Tap any item to mark it done — synced across all travellers in real time.</p>
+        <p style="font-size:11px;color:var(--sub);">Tap dot to mark done · Tap row to see details &amp; checklist.</p>
     </div>`;
 
     TRIP.days.forEach(day => {
@@ -829,17 +1111,19 @@ function renderDays() {
 
         day.rows.forEach(row => {
             if (row.type === 'item') {
-                const dotCls  = DOT_CLASS[row.cls] || 'dot-travel';
+                const dotCls   = DOT_CLASS[row.cls] || 'dot-travel';
+                const rich     = hasDetail(row);
                 const nameHtml = row.nameUrl
                     ? `<a href="${row.nameUrl}" target="_blank">${row.name}</a>`
                     : row.name;
-                html += `<div class="it-item" data-key="${row.key}">
+                html += `<div class="it-item${rich ? ' has-detail' : ''}" data-key="${row.key}">
                     <div class="it-time">${row.time}</div>
-                    <div class="it-dot-wrap"><div class="it-dot ${dotCls}"></div></div>
+                    <div class="it-dot-wrap"><div class="it-dot ${dotCls}" data-done-target="${row.key}"></div></div>
                     <div class="it-content">
                         <div class="it-name">${nameHtml}</div>
                         ${row.detail ? `<div class="it-detail">${row.detail}</div>` : ''}
                     </div>
+                    ${rich ? `<div class="it-chevron">›</div>` : ''}
                 </div>`;
             } else if (row.type === 'empty') {
                 html += `<div class="day-empty">${row.note}</div>`;
@@ -855,11 +1139,129 @@ function renderDays() {
 
     document.getElementById('panel-days').innerHTML = html;
 
+    // Dot click → toggle done. Row click → open sheet (if rich) or toggle done.
     document.querySelectorAll('.it-item[data-key]').forEach(el => {
-        el.addEventListener('click', function(e) {
-            if (e.target.closest('a')) return;
+        const key  = el.dataset.key;
+        const rich = el.classList.contains('has-detail');
+
+        el.querySelector('.it-dot-wrap').addEventListener('click', function(e) {
+            e.stopPropagation();
             toggleDone(el);
         });
+
+        el.addEventListener('click', function(e) {
+            if (e.target.closest('a')) return;
+            if (e.target.closest('.it-dot-wrap')) return;
+            if (rich) openSheet(key);
+            else toggleDone(el);
+        });
+    });
+}
+
+// ── Bottom sheet ──
+let _sheetKey = null;
+
+function openSheet(key) {
+    const item = ITEM_MAP[key];
+    const day  = DAY_FOR_KEY[key];
+    if (!item) return;
+    _sheetKey = key;
+
+    // header
+    const dotColor = DOT_COLOR[item.cls] || '#3B82F6';
+    document.getElementById('sh-dot').style.background = dotColor;
+
+    const timeStr = item.duration
+        ? `${item.time}  ·  ${item.duration}`
+        : item.time;
+    document.getElementById('sh-time').textContent = timeStr;
+    document.getElementById('sh-name').textContent = item.name.replace(/^\p{Emoji}\s*/u, '');
+
+    const meta = document.getElementById('sh-meta');
+    meta.innerHTML = day
+        ? `<span class="sheet-meta-item">📅 ${day.date}</span>`
+        : '';
+
+    // body
+    const body = document.getElementById('sh-body');
+    let html = '';
+
+    // CTA
+    if (item.cta) {
+        html += `<a href="${item.cta.url}" target="_blank" class="sheet-cta">${item.cta.label}</a>`;
+    }
+
+    // Location
+    if (item.location) {
+        const loc = item.location;
+        html += `<div>
+            <div class="sheet-section-label">Location</div>
+            <div class="sheet-location">
+                <div class="sheet-loc-name">📍 ${loc.name}</div>
+                <div class="sheet-loc-addr">${loc.address}</div>
+                ${loc.mapsUrl ? `<a href="${loc.mapsUrl}" target="_blank" class="sheet-loc-btn">🗺 Get Directions</a>` : ''}
+            </div>
+        </div>`;
+    }
+
+    // Checklist
+    if (item.checklist && item.checklist.length) {
+        html += `<div>
+            <div class="sheet-section-label">Checklist</div>
+            <div class="checklist" id="sh-checklist">`;
+        item.checklist.forEach(ck => {
+            const done = !!_doneState[ck.key];
+            html += `<div class="cl-item${done ? ' done' : ''}" data-ck="${ck.key}">
+                <div class="cl-box"><span class="cl-tick">✓</span></div>
+                <div class="cl-label">${ck.label}</div>
+            </div>`;
+        });
+        html += `</div></div>`;
+    }
+
+    // Notes
+    if (item.notes) {
+        html += `<div>
+            <div class="sheet-section-label">Notes</div>
+            <div class="sheet-notes">${item.notes}</div>
+        </div>`;
+    }
+
+    body.innerHTML = html;
+
+    // checklist click handlers
+    body.querySelectorAll('.cl-item[data-ck]').forEach(el => {
+        el.addEventListener('click', async function() {
+            const ck  = el.dataset.ck;
+            const next = !_doneState[ck];
+            _doneState[ck] = next;
+            el.classList.toggle('done', next);
+            await sb.from('itinerary_done').upsert(
+                { trip_id: TRIP.id, item_key: ck, done: next, updated_at: new Date().toISOString() },
+                { onConflict: 'trip_id,item_key' }
+            );
+        });
+    });
+
+    document.getElementById('sheet-backdrop').classList.add('open');
+    document.getElementById('event-sheet').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSheet() {
+    document.getElementById('sheet-backdrop').classList.remove('open');
+    document.getElementById('event-sheet').classList.remove('open');
+    _sheetKey = null;
+}
+
+// Re-render checklist done state when real-time sync fires while sheet is open
+function refreshSheetChecklist() {
+    if (!_sheetKey) return;
+    const item = ITEM_MAP[_sheetKey];
+    if (!item || !item.checklist) return;
+    item.checklist.forEach(ck => {
+        const el = document.querySelector(`.cl-item[data-ck="${ck.key}"]`);
+        if (el) el.classList.toggle('done', !!_doneState[ck.key]);
     });
 }
 
@@ -897,6 +1299,7 @@ function applyDoneState() {
     document.querySelectorAll('.it-item[data-key]').forEach(el => {
         el.classList.toggle('done', !!_doneState[el.dataset.key]);
     });
+    refreshSheetChecklist();
 }
 
 async function loadDone() {
