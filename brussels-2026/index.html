@@ -5,529 +5,628 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brussels 2026 · Trip Guide</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap">
     <style>
+    /* ── Tokens ── */
     :root {
-        --primary: #1e3a8a;
-        --primary-light: #3b82f6;
-        --bg: #f8fafc;
+        --navy:    #0A2463;
+        --navy-2:  #1a3a7a;
+        --gold:    #C9A227;
+        --parch:   #F7F4EE;
+        --slate:   #3D5068;
+        --sub:     #64748B;
+        --border:  #E2DDD6;
+        --text:    #1A1A2E;
+        --green:   #2A7A52;
+        --green-lt:#EEF6F1;
+        --mist:    #C8D4E8;
+        --blue-dot:#3B82F6;
+        --gold-dot:#C9A227;
+        --orange-dot:#F97316;
+        --purple-dot:#818CF8;
         --card-bg: #ffffff;
-        --text: #0f172a;
-        --text-muted: #475569;
-        --border: #e2e8f0;
-        --radius: 12px;
-        --tab-height: 64px;
-        --header-height: 64px;
+        --radius:  14px;
+        --tab-h:   60px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body { background: var(--bg); color: var(--text); line-height: 1.5; overflow-x: hidden; }
+    /* ── Body + shell ── */
+    html, body {
+        height: 100%;
+        overflow: hidden;
+        background: #070F1F;
+        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+    }
 
+    /* Centered 480px shell — fills 100% on mobile, sits centred on desktop */
+    .app-shell {
+        max-width: 480px;
+        margin: 0 auto;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--parch);
+        box-shadow: 0 0 80px rgba(0,0,0,0.55);
+        position: relative;
+    }
+
+    /* ── App header ── */
     .app-header {
-        position: fixed; top: 0; left: 0; right: 0;
-        height: var(--header-height);
-        background: linear-gradient(135deg, #1e3a8a, #2563eb);
-        color: white; display: flex; align-items: center; padding: 0 16px;
-        z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        flex-shrink: 0;
+        background: linear-gradient(155deg, var(--navy) 0%, var(--navy-2) 100%);
+        color: white;
+        padding: 14px 18px 20px;
+        padding-top: max(14px, env(safe-area-inset-top));
     }
-    .app-header h1 { font-size: 18px; font-weight: 700; }
-    .app-header p  { font-size: 12px; opacity: 0.85; margin-top: 2px; }
-    .app-header a.back-link {
-        color: rgba(255,255,255,0.75); font-size: 12px; text-decoration: none;
-        margin-right: 12px; flex-shrink: 0;
+    .header-back {
+        font-size: 11px; font-weight: 500;
+        color: rgba(255,255,255,0.45);
+        margin-bottom: 14px;
+        display: flex; align-items: center; gap: 4px;
+        text-decoration: none;
     }
-    .app-header a.back-link:hover { color: white; }
+    .header-back em { color: var(--gold); font-style: normal; }
+    .header-flag  { font-size: 26px; line-height: 1; margin-bottom: 5px; }
+    .header-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 21px; font-weight: 700;
+        line-height: 1.2; margin-bottom: 3px;
+    }
+    .header-sub {
+        font-size: 12px; font-weight: 300;
+        color: rgba(255,255,255,0.5);
+    }
 
+    /* ── Top tab bar ── */
+    .tab-bar-top {
+        flex-shrink: 0;
+        background: white;
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .tab-bar-top::-webkit-scrollbar { display: none; }
+    .tab-btn-top {
+        font-size: 11px; font-weight: 600;
+        padding: 12px 14px 10px;
+        white-space: nowrap; color: var(--sub);
+        border-bottom: 3px solid transparent;
+        flex-shrink: 0;
+        background: none; border-top: none; border-left: none; border-right: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-btn-top.active {
+        color: var(--navy);
+        border-bottom-color: var(--gold);
+    }
+
+    /* ── Sync indicator ── */
+    .sync-bar {
+        flex-shrink: 0;
+        background: var(--parch);
+        padding: 6px 16px;
+        display: flex; align-items: center; gap: 6px;
+        font-size: 10px; color: var(--green); font-weight: 600;
+        border-bottom: 1px solid var(--border);
+    }
+    .sync-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--green); flex-shrink: 0;
+        animation: blink 2s infinite;
+    }
+    .sync-bar.error { color: #991b1b; }
+    .sync-bar.error .sync-dot { background: #ef4444; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+    /* ── Scrollable content ── */
     .content-area {
-        position: fixed;
-        top: var(--header-height);
-        bottom: calc(var(--tab-height) + env(safe-area-inset-bottom, 0px));
-        left: 0; right: 0;
-        overflow-y: auto; -webkit-overflow-scrolling: touch;
-        padding: 14px 12px 8px;
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 12px 12px 8px;
     }
 
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
+    /* ── Generic card ── */
     .card {
         background: var(--card-bg); border-radius: var(--radius);
         padding: 14px; margin-bottom: 14px;
-        border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
-
     .card-title {
-        font-size: 13px; font-weight: 700; color: var(--primary);
-        text-transform: uppercase; letter-spacing: 0.5px;
+        font-size: 12px; font-weight: 700; color: var(--navy);
+        text-transform: uppercase; letter-spacing: 0.7px;
         margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
         border-bottom: 1px solid var(--border); padding-bottom: 8px;
     }
-    .card-title svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .card-title svg { width: 14px; height: 14px; flex-shrink: 0; }
 
-    .passenger-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .passenger-item {
-        background: #f1f5f9; padding: 9px; border-radius: 8px;
-        font-size: 13px; font-weight: 600; text-align: center;
+    /* ── Day cards ── */
+    .day-card {
+        background: var(--card-bg); border-radius: var(--radius);
+        margin-bottom: 10px; overflow: hidden;
+        box-shadow: 0 1px 6px rgba(10,36,99,0.07), 0 0 0 1px rgba(10,36,99,0.05);
     }
-
-    .ref-grid { display: grid; gap: 7px; }
-    .ref-item {
+    .day-header {
+        border-left: 4px solid var(--gold);
+        padding: 12px 14px;
+        cursor: pointer;
         display: flex; justify-content: space-between; align-items: center;
-        background: #f8fafc; padding: 9px 10px; border-radius: 8px;
-        border: 1px dashed var(--border); font-size: 13px; gap: 8px;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        background: white;
     }
-    .ref-label { color: var(--text-muted); font-size: 12px; }
-    .ref-code {
-        font-family: monospace; font-weight: 700;
-        background: #e0f2fe; color: #0369a1;
-        padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;
+    .day-date {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.2;
+    }
+    .day-label { font-size: 11px; color: var(--sub); margin-top: 2px; }
+    .day-chevron { color: var(--mist); font-size: 14px; transition: transform 0.2s; margin-left: 8px; flex-shrink: 0; }
+    .day-card.open .day-chevron { transform: rotate(180deg); }
+    .day-body { display: none; }
+    .day-card.open .day-body { display: block; }
+    .day-empty {
+        font-size: 12px; color: var(--sub); font-style: italic;
+        padding: 12px 14px; border-top: 1px solid rgba(226,221,214,0.5);
+    }
+    .day-section-label {
+        font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+        color: var(--sub); padding: 9px 14px 3px;
+        border-top: 1px solid rgba(226,221,214,0.5);
     }
 
-    .btn {
-        display: flex; align-items: center; justify-content: center; gap: 6px;
-        width: 100%; background: var(--primary-light); color: white;
-        text-decoration: none; padding: 10px 14px; border-radius: 8px;
-        font-size: 13px; font-weight: 600; margin-top: 8px;
-        box-shadow: 0 2px 4px rgba(59,130,246,0.3);
+    /* ── Itinerary rows — transit-board style ── */
+    .it-item {
+        display: flex; align-items: flex-start; gap: 0;
+        padding: 9px 14px;
+        border-top: 1px solid rgba(226,221,214,0.5);
+        cursor: pointer; user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.13s;
     }
-    .btn-secondary { background: #fff; color: var(--primary); border: 1px solid var(--primary-light); box-shadow: none; }
+    .it-item:first-child { border-top: none; }
+    .it-item:active { background: rgba(10,36,99,0.03); }
 
+    /* done state */
+    .it-item.done { background: var(--green-lt); }
+    .it-item.done .it-name { text-decoration: line-through; color: var(--sub); opacity: 0.65; }
+    .it-item.done .it-detail { opacity: 0.45; }
+    .it-item.done .it-time { color: var(--green); opacity: 0.7; }
+    .it-item.done .it-dot { background: var(--green) !important; }
+    .it-item.done .it-dot::after { content: '✓'; display: block; font-size: 6px; color: white; font-weight: 800; line-height: 1; text-align: center; margin-top: 1px; }
+
+    .it-time {
+        font-size: 11px; font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        color: var(--navy); width: 42px; flex-shrink: 0;
+        padding-top: 3px; line-height: 1;
+    }
+    .it-dot-wrap {
+        width: 26px; flex-shrink: 0;
+        display: flex; flex-direction: column; align-items: center; padding-top: 4px;
+    }
+    .it-dot {
+        width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        transition: background 0.15s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .dot-travel   { background: var(--blue-dot); }
+    .dot-activity { background: var(--gold-dot); }
+    .dot-food     { background: var(--orange-dot); }
+    .dot-sight    { background: var(--purple-dot); }
+
+    .it-content { flex: 1; min-width: 0; }
+    .it-name {
+        font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.35;
+    }
+    .it-name a { color: var(--navy); text-decoration: underline; }
+    .it-detail {
+        font-size: 11px; font-weight: 300; color: var(--sub);
+        margin-top: 2px; line-height: 1.4;
+    }
+
+    /* ── Legend ── */
+    .type-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--sub); font-weight: 400; }
+    .legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Journey timeline ── */
     .timeline { position: relative; padding-left: 20px; margin-top: 6px; }
-    .timeline::before { content: ''; position: absolute; left: 6px; top: 4px; bottom: 4px; width: 2px; background: #cbd5e1; }
-    .timeline-event { position: relative; margin-bottom: 14px; font-size: 13px; }
+    .timeline::before { content: ''; position: absolute; left: 6px; top: 4px; bottom: 4px; width: 2px; background: var(--border); }
+    .timeline-event { position: relative; margin-bottom: 13px; font-size: 13px; }
     .timeline-event:last-child { margin-bottom: 0; }
     .timeline-event::before {
         content: ''; position: absolute; left: -18px; top: 4px;
         width: 10px; height: 10px; border-radius: 50%;
-        background: var(--primary-light); border: 2px solid white;
-        box-shadow: 0 0 0 1px var(--primary-light);
+        background: var(--blue-dot); border: 2px solid white;
+        box-shadow: 0 0 0 1px var(--blue-dot);
     }
-    .t-time { font-weight: 700; color: var(--primary); display: inline-block; width: 42px; font-size: 13px; }
+    .t-time { font-weight: 600; color: var(--navy); display: inline-block; width: 42px; font-size: 12px; font-variant-numeric: tabular-nums; }
     .badge { background: #fef3c7; color: #92400e; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
 
+    /* ── Attractions ── */
     .attraction-item {
         display: flex; justify-content: space-between; align-items: center;
         padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; gap: 8px;
     }
     .attraction-item:last-child { border-bottom: none; }
     .attraction-info { flex: 1; min-width: 0; }
-    .attraction-name-link { font-weight: 600; color: var(--primary); text-decoration: underline; }
-    .attraction-dist { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .attraction-name-link { font-weight: 600; color: var(--navy); text-decoration: underline; }
+    .attraction-dist { font-size: 11px; color: var(--sub); margin-top: 2px; }
     .map-link {
-        color: var(--primary-light); text-decoration: none; font-weight: 600;
-        font-size: 12px; background: #eff6ff; padding: 4px 8px; border-radius: 6px;
+        color: var(--navy); text-decoration: none; font-weight: 600;
+        font-size: 12px; background: #eff6ff; padding: 4px 9px; border-radius: 7px;
         white-space: nowrap; flex-shrink: 0;
     }
 
+    /* ── Cost table ── */
     table.cost-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
     table.cost-table th, table.cost-table td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
-    table.cost-table th { background: #f1f5f9; color: var(--primary); font-weight: 700; }
+    table.cost-table th { background: var(--parch); color: var(--navy); font-weight: 700; font-size: 11px; }
     table.cost-table tr.total-row td {
-        font-weight: 700; font-size: 13px; background: #eff6ff;
-        border-top: 2px solid var(--primary-light); border-bottom: none;
+        font-weight: 700; font-size: 13px;
+        background: #eff6ff; border-top: 2px solid var(--blue-dot); border-bottom: none;
     }
-    .badge-paid { background: #dcfce7; color: #166534; font-size: 10px; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
+    .badge-paid { background: #dcfce7; color: var(--green); font-size: 10px; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
 
-    .day-card {
-        background: var(--card-bg); border-radius: var(--radius); margin-bottom: 12px;
-        border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden;
-    }
-    .day-header {
-        background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white;
-        padding: 11px 14px; cursor: pointer;
+    /* ── Passenger grid ── */
+    .passenger-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .passenger-item { background: var(--parch); padding: 9px; border-radius: 9px; font-size: 13px; font-weight: 600; text-align: center; }
+
+    /* ── Ref codes ── */
+    .ref-grid { display: grid; gap: 7px; }
+    .ref-item {
         display: flex; justify-content: space-between; align-items: center;
-        -webkit-tap-highlight-color: transparent; user-select: none;
+        background: var(--parch); padding: 9px 10px; border-radius: 9px;
+        border: 1px dashed var(--border); font-size: 13px; gap: 8px;
     }
-    .day-header h3 { font-size: 14px; font-weight: 700; }
-    .day-header p  { font-size: 11px; opacity: 0.85; margin-top: 1px; }
-    .day-chevron { font-size: 14px; transition: transform 0.2s; margin-left: 8px; flex-shrink: 0; }
-    .day-card.open .day-chevron { transform: rotate(180deg); }
-    .day-body { display: none; padding: 10px 14px; }
-    .day-card.open .day-body { display: block; }
-    .day-empty { font-size: 12px; color: var(--text-muted); font-style: italic; text-align: center; padding: 8px 0 2px; }
-
-    .it-item {
-        display: flex; align-items: flex-start; gap: 10px;
-        padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
-        cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
-        transition: opacity 0.2s;
-    }
-    .it-item:last-child { border-bottom: none; }
-    .it-item.done { opacity: 0.4; }
-    .it-item.done .it-name { text-decoration: line-through; }
-    .it-item.done .it-icon { filter: grayscale(0.4); }
-    .it-item.done .it-time { color: var(--text-muted); }
-
-    .it-icon {
-        width: 28px; height: 28px; border-radius: 6px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 14px; flex-shrink: 0; margin-top: 1px;
-    }
-    .it-icon.food     { background: #fef3c7; }
-    .it-icon.sight    { background: #dbeafe; }
-    .it-icon.travel   { background: #dcfce7; }
-    .it-icon.activity { background: #f3e8ff; }
-
-    .it-content { flex: 1; min-width: 0; }
-    .it-name { font-weight: 600; color: var(--text); }
-    .it-name a { color: var(--primary); text-decoration: underline; }
-    .it-detail { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .it-time { font-size: 11px; font-weight: 700; color: var(--primary); white-space: nowrap; padding-top: 3px; flex-shrink: 0; }
-
-    .day-section-label {
-        font-size: 11px; font-weight: 700; color: var(--text-muted);
-        text-transform: uppercase; letter-spacing: 0.5px;
-        margin: 10px 0 6px; padding-top: 6px; border-top: 1px solid var(--border);
+    .ref-label { color: var(--sub); font-size: 12px; font-weight: 300; }
+    .ref-code {
+        font-family: monospace; font-weight: 700;
+        background: #e0f2fe; color: #0369a1;
+        padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;
     }
 
-    .type-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-    .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-muted); }
-    .legend-dot { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; }
-    .legend-dot svg { width: 13px; height: 13px; }
-
-    .resto-card {
-        background: var(--card-bg); border-radius: var(--radius);
-        border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        margin-bottom: 12px; overflow: hidden;
+    /* ── Buttons ── */
+    .btn {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        width: 100%; background: var(--navy); color: white;
+        text-decoration: none; padding: 10px 14px; border-radius: 9px;
+        font-size: 13px; font-weight: 600; margin-top: 8px;
     }
+    .btn-secondary { background: var(--parch); color: var(--navy); border: 1px solid var(--border); }
+
+    /* ── Restaurants ── */
+    .resto-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 12px; overflow: hidden; }
     .resto-header { padding: 12px 14px 8px; border-bottom: 1px solid var(--border); }
-    .resto-name { font-size: 15px; font-weight: 700; color: var(--primary); }
-    .resto-name a { color: var(--primary); text-decoration: underline; }
-    .resto-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
-    .resto-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: #f1f5f9; color: var(--text-muted); }
-    .resto-tag.price  { background: #dcfce7; color: #166534; }
+    .resto-name { font-size: 15px; font-weight: 700; color: var(--navy); }
+    .resto-name a { color: var(--navy); text-decoration: underline; }
+    .resto-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+    .resto-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--parch); color: var(--sub); }
+    .resto-tag.price { background: #dcfce7; color: var(--green); }
     .resto-body { padding: 10px 14px; display: grid; gap: 7px; }
     .resto-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; }
     .resto-row-icon { width: 16px; flex-shrink: 0; text-align: center; margin-top: 1px; }
-    .resto-row-text { flex: 1; color: var(--text-muted); line-height: 1.4; }
+    .resto-row-text { flex: 1; color: var(--sub); line-height: 1.4; }
     .resto-row-text strong { color: var(--text); }
     .resto-actions { display: flex; gap: 8px; padding: 0 14px 12px; }
-    .resto-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 8px 6px; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; text-align: center; }
-    .resto-btn-primary { background: var(--primary-light); color: white; }
-    .resto-btn-secondary { background: #eff6ff; color: var(--primary); border: 1px solid #bfdbfe; }
+    .resto-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 8px 6px; border-radius: 9px; font-size: 12px; font-weight: 600; text-decoration: none; text-align: center; }
+    .resto-btn-primary { background: var(--navy); color: white; }
+    .resto-btn-secondary { background: var(--parch); color: var(--navy); border: 1px solid var(--border); }
 
+    /* ── Meal sub-tabs ── */
     .meal-tabs { display: flex; gap: 6px; padding: 0 0 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .meal-tabs::-webkit-scrollbar { display: none; }
     .meal-tab-btn {
         display: flex; align-items: center; gap: 5px; padding: 7px 14px;
-        border-radius: 20px; border: none; background: #f1f5f9; color: #64748b;
+        border-radius: 20px; border: none; background: var(--parch); color: var(--sub);
         font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
         -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s; flex-shrink: 0;
+        font-family: 'DM Sans', sans-serif;
     }
     .meal-tab-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
-    .meal-tab-btn.active { background: var(--primary-light); color: white; }
+    .meal-tab-btn.active { background: var(--navy); color: white; }
     .meal-panel { display: none; }
     .meal-panel.active { display: block; }
 
-    .tab-bar {
-        position: fixed; bottom: 0; left: 0; right: 0;
-        height: calc(var(--tab-height) + env(safe-area-inset-bottom, 0px));
-        background: white; border-top: 1px solid var(--border);
-        display: flex; align-items: flex-start; z-index: 100;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-        padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* ── Sync toast ── */
+    #sync-toast {
+        position: absolute; top: 8px; right: 12px;
+        font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 10px;
+        z-index: 200; transition: opacity 0.4s; opacity: 0; pointer-events: none;
     }
-    .tab-btn {
-        flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        gap: 4px; background: none; border: none; cursor: pointer; color: #94a3b8;
-        font-weight: 600; padding: 10px 4px 0; -webkit-tap-highlight-color: transparent; transition: color 0.15s;
-    }
-    .tab-btn.active { color: var(--primary-light); }
-    .tab-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .tab-icon svg { width: 22px; height: 22px; }
-    .tab-label { font-size: 10px; }
-    .meal-heading svg { width: 16px; height: 16px; flex-shrink: 0; }
-
-    #sync-status {
-        position: fixed; top: calc(var(--header-height) + 6px); right: 10px;
-        font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 10px;
-        z-index: 200; transition: opacity 0.5s; opacity: 0;
-    }
-    #sync-status.show { opacity: 1; }
-    #sync-status.synced { background: #dcfce7; color: #166534; }
-    #sync-status.error  { background: #fee2e2; color: #991b1b; }
+    #sync-toast.show { opacity: 1; }
+    #sync-toast.synced { background: #dcfce7; color: var(--green); }
+    #sync-toast.error  { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body>
 
-<div id="sync-status"></div>
+<div class="app-shell">
 
-<div class="app-header">
-    <a class="back-link" href="../" aria-label="All trips">◀ Trips</a>
-    <div>
-        <h1 id="app-title">Trip Guide</h1>
-        <p id="app-subtitle"></p>
-    </div>
-</div>
+    <div id="sync-toast"></div>
 
-<div class="content-area">
-
-    <!-- ══ DAYS TAB ══ -->
-    <div class="tab-panel active" id="panel-days">
-        <!-- Rendered by JS from TRIP.days config -->
+    <!-- ── Header ── -->
+    <div class="app-header">
+        <a class="header-back" href="../">◀ <em>Our Trips</em></a>
+        <div class="header-flag" id="app-flag"></div>
+        <div class="header-title" id="app-title">Trip Guide</div>
+        <div class="header-sub" id="app-subtitle"></div>
     </div>
 
-    <!-- ══ JOURNEY TAB ══ -->
-    <div class="tab-panel" id="panel-journey">
-        <div class="card">
-            <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19L19 5"/><polyline points="9 5 19 5 19 15"/></svg>Outbound — Thursday 12th Nov</div>
-            <div class="timeline">
-                <div class="timeline-event"><span class="t-time">09:25</span> Taxi departs for <strong>Leicester Station</strong></div>
-                <div class="timeline-event"><span class="t-time">10:12</span> Departs <strong>Leicester</strong></div>
-                <div class="timeline-event"><span class="t-time">11:27</span> Arrive <strong>London St Pancras</strong></div>
-                <div class="timeline-event"><span class="t-time">11:45</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
-                <div class="timeline-event"><span class="t-time">13:01</span> Eurostar Departs St Pancras</div>
-                <div class="timeline-event"><span class="t-time">16:06</span> Arrive <strong>Brussels Midi</strong> <span class="badge">+1 hr CET</span></div>
-                <div class="timeline-event"><span class="t-time">16:15</span> Taxi — Brussels Midi → Hotel Aris (~15 mins)</div>
-                <div class="timeline-event"><span class="t-time">16:30</span> Check-in Hotel Aris Grand Place</div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5L5 19"/><polyline points="15 19 5 19 5 9"/></svg>Return — Sunday 15th Nov</div>
-            <div class="timeline">
-                <div class="timeline-event"><span class="t-time">10:15</span> Hotel Check-out</div>
-                <div class="timeline-event"><span class="t-time">10:20</span> Taxi departs for <strong>Brussels Midi</strong></div>
-                <div class="timeline-event"><span class="t-time">10:41</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
-                <div class="timeline-event"><span class="t-time">11:56</span> Eurostar Departs <strong>Brussels Midi</strong></div>
-                <div class="timeline-event"><span class="t-time">12:57</span> Arrive <strong>London St Pancras</strong> <span class="badge">UK Time</span></div>
-                <div class="timeline-event"><span class="t-time">14:42</span> EMR Departs St Pancras</div>
-                <div class="timeline-event"><span class="t-time">15:30</span> Arrive <strong>Market Harborough</strong></div>
-                <div class="timeline-event"><span class="t-time">15:35</span> Taxi — Market Harborough → Home (~25 mins)</div>
-                <div class="timeline-event"><span class="t-time">16:00</span> Arrive home</div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="13" rx="3"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="9" y1="3" x2="9" y2="9"/><line x1="15" y1="3" x2="15" y2="9"/><path d="M7 16l-2 4"/><path d="M17 16l2 4"/><line x1="5" y1="20" x2="19" y2="20"/></svg>Midi Station → Hotel</div>
-            <div style="font-size: 13px; display: grid; gap: 10px;">
-                <div><strong>Local Train (Fastest)</strong><p style="color: var(--text-muted); font-size: 12px; margin-top: 3px;">SNCB train: Bruxelles-Midi → Bruxelles-Central (4 mins, every 5 mins). Hotel is 3 min walk from Central Station.</p></div>
-                <div><strong>Taxi / Uber</strong><p style="color: var(--text-muted); font-size: 12px; margin-top: 3px;">Available outside Midi terminal. ~10–15 mins, €10–€15.</p></div>
-            </div>
-        </div>
+    <!-- ── Top tabs ── -->
+    <div class="tab-bar-top">
+        <button class="tab-btn-top active" id="tab-days"    onclick="switchTab('days')">Days</button>
+        <button class="tab-btn-top"        id="tab-journey" onclick="switchTab('journey')">Journey</button>
+        <button class="tab-btn-top"        id="tab-explore" onclick="switchTab('explore')">Explore</button>
+        <button class="tab-btn-top"        id="tab-eat"     onclick="switchTab('eat')">Eat</button>
+        <button class="tab-btn-top"        id="tab-info"    onclick="switchTab('info')">Info</button>
     </div>
 
-    <!-- ══ EXPLORE TAB ══ -->
-    <div class="tab-panel" id="panel-explore">
-        <div class="card">
-            <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><line x1="3" y1="9" x2="3" y2="20"/><line x1="21" y1="9" x2="21" y2="20"/><rect x="3" y="19" width="18" height="2" rx="0.5"/><line x1="7" y1="9" x2="7" y2="19"/><line x1="12" y1="9" x2="12" y2="19"/><line x1="17" y1="9" x2="17" y2="19"/></svg>Nearby Attractions</div>
-            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Tap name for website · Tap Map for walking directions from hotel.</p>
-            <div class="attraction-item">
-                <div class="attraction-info"><div><a href="https://www.brussels.be/grand-place" target="_blank" class="attraction-name-link">Grand Place (Main Square)</a></div><div class="attraction-dist">🚶 100m · 1–2 min walk</div></div>
-                <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Grand+Place+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
-            </div>
-            <div class="attraction-item">
-                <div class="attraction-info"><div><a href="https://www.grsh.be/en/" target="_blank" class="attraction-name-link">Galeries Royales Saint-Hubert</a></div><div class="attraction-dist">🚶 120m · 2 min walk</div></div>
-                <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Galeries+Royales+Saint-Hubert&travelmode=walking" target="_blank" class="map-link">Map</a>
-            </div>
-            <div class="attraction-item">
-                <div class="attraction-info"><div><a href="https://www.brussels.be/manneken-pis" target="_blank" class="attraction-name-link">Manneken Pis</a></div><div class="attraction-dist">🚶 450m · 5 min walk</div></div>
-                <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Manneken+Pis&travelmode=walking" target="_blank" class="map-link">Map</a>
-            </div>
-            <div class="attraction-item">
-                <div class="attraction-info"><div><a href="https://www.brussels.be/mont-des-arts" target="_blank" class="attraction-name-link">Mont des Arts (Viewpoint)</a></div><div class="attraction-dist">🚶 500m · 6 min walk</div></div>
-                <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Mont+des+Arts+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
-            </div>
-            <div class="attraction-item">
-                <div class="attraction-info"><div><a href="https://cathedalestmichel.be" target="_blank" class="attraction-name-link">St Michael &amp; St Gudula Cathedral</a></div><div class="attraction-dist">🚶 550m · 7 min walk</div></div>
-                <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=St+Michael+and+St+Gudula+Cathedral&travelmode=walking" target="_blank" class="map-link">Map</a>
-            </div>
-            <div class="attraction-item">
-                <div class="attraction-info"><div><a href="https://www.monarchie.be/en/heritage/royal-palace-of-brussels" target="_blank" class="attraction-name-link">Royal Palace of Brussels</a></div><div class="attraction-dist">🚶 950m · 12 min walk</div></div>
-                <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Royal+Palace+of+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
-            </div>
-            <div class="attraction-item">
-                <div class="attraction-info"><div><a href="https://atomium.be/atomium-price" target="_blank" class="attraction-name-link">Atomium</a></div><div class="attraction-dist">🚇 ~30 min · Metro line 6 → Atomium stop · €17 adult / €9 student&amp;child · Open 10:00–17:30</div></div>
-                <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Atomium+Brussels&travelmode=transit" target="_blank" class="map-link">Transit</a>
-            </div>
-        </div>
+    <!-- ── Sync bar ── -->
+    <div class="sync-bar" id="sync-bar">
+        <div class="sync-dot"></div>
+        <span id="sync-text">Live sync on</span>
     </div>
 
-    <!-- ══ EAT TAB ══ -->
-    <div class="tab-panel" id="panel-eat">
-        <div class="card" style="margin-bottom: 12px;">
-            <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">All places are near <strong>Hotel Aris Grand Place</strong>. Tap <strong>Directions</strong> for a walking route or <strong>Menu</strong> to browse before you go.</p>
-        </div>
-        <div class="meal-tabs">
-            <button class="meal-tab-btn active" id="mealtab-breakfast" onclick="switchMeal('breakfast')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>
-                Breakfast
-            </button>
-            <button class="meal-tab-btn" id="mealtab-lunch" onclick="switchMeal('lunch')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v4a3 3 0 0 0 3 3v11"/><path d="M5 3v18"/><path d="M11 3v18"/><path d="M16 3v4c0 2 2 3 2 5v9"/></svg>
-                Lunch
-            </button>
-            <button class="meal-tab-btn" id="mealtab-dinner" onclick="switchMeal('dinner')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                Dinner
-            </button>
-            <button class="meal-tab-btn" id="mealtab-snacks" onclick="switchMeal('snacks')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h2a2 2 0 0 1 0 4h-2"/><path d="M2 8h16v8a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="5"/><line x1="10" y1="2" x2="10" y2="5"/><line x1="14" y1="2" x2="14" y2="5"/></svg>
-                Snacks
-            </button>
-        </div>
-        <!-- Breakfast -->
-        <div class="meal-panel active" id="meal-breakfast">
-            <div class="resto-card">
-                <div class="resto-header"><div class="resto-name"><a href="https://lloyd-coffee-eatery-grand-place.wheree.com" target="_blank">Lloyd Coffee Eatery</a></div><div class="resto-tags"><span class="resto-tag">☕ Breakfast &amp; Brunch</span><span class="resto-tag">🌱 Vegan options</span><span class="resto-tag">🥗 Vegetarian</span><span class="resto-tag price">⭐ 8.2 / 10</span></div></div>
-                <div class="resto-body">
-                    <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>In the hotel building</strong> — Rue du Marché aux Herbes 80. 0 min walk.</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Thu &amp; Sun:</strong> 7:00–20:00 · <strong>Fri–Sat:</strong> 7:00–22:00</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Egg sandwiches, salmon gravlax toast, pancakes, speculoos pancakes, halal options.</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225119064" style="color:var(--primary);">+32 2 511 9064</a></div></div>
-                </div>
-                <div class="resto-actions"><a href="https://lloyd-coffee-eatery-grand-place.wheree.com/menu" target="_blank" class="resto-btn resto-btn-secondary">📋 Menu</a><a href="https://www.google.com/maps/search/?api=1&query=Lloyd+Coffee+Eatery+Rue+du+Marche+aux+Herbes+80+Brussels" target="_blank" class="resto-btn resto-btn-primary">📍 Map</a></div>
-            </div>
-            <div class="resto-card">
-                <div class="resto-header"><div class="resto-name"><a href="https://www.thesistercafe-brussels.com" target="_blank">The Sister Brussels Café</a></div><div class="resto-tags"><span class="resto-tag">☕ Breakfast until 13:00</span><span class="resto-tag">🌱 Vegan &amp; GF options</span><span class="resto-tag price">€€ €12–16</span></div></div>
-                <div class="resto-body">
-                    <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue Chair et Pain 3, on Grand Place itself.</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:00–23:00 · <strong>Sat:</strong> 9:00–00:00 · <strong>Sun:</strong> 9:00–23:00</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Eggs &amp; bacon, avocado bowl, omelettes, vegan tofu scramble, waffles.</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225132226" style="color:var(--primary);">+32 2 513 22 26</a></div></div>
-                </div>
-                <div class="resto-actions"><a href="https://www.thesistercafe-brussels.com/food-menu" target="_blank" class="resto-btn resto-btn-secondary">📋 Menu</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+Chair+et+Pain+3+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
-            </div>
-            <div class="resto-card">
-                <div class="resto-header"><div class="resto-name"><a href="http://www.cappuccinobrussel.be/" target="_blank">Cappuccino Brussel</a></div><div class="resto-tags"><span class="resto-tag">☕ Breakfast &amp; Brunch</span><span class="resto-tag">🌱 Vegan options</span><span class="resto-tag price">€€ €7–13</span></div></div>
-                <div class="resto-body">
-                    <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~10 min walk</strong> — Avenue de Stalingrad 71, 1000 Brussels.</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text">Daily from 9:00 · Sun–Thu 9:00–23:00 · Fri–Sat 9:00–00:00</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Fluffy pancakes, waffles, omelettes, crêpes, fruit salads. Set breakfast from €7. ⭐ 4.4/5 TripAdvisor.</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+32488052464" style="color:var(--primary);">+32 488 05 24 64</a></div></div>
-                </div>
-                <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15007770-Reviews-Cappuccino_Brussel-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Avenue+de+Stalingrad+71+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
-            </div>
-        </div>
-        <!-- Lunch -->
-        <div class="meal-panel" id="meal-lunch">
-            <div class="resto-card">
-                <div class="resto-header"><div class="resto-name"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15120847-Reviews-Yummy_Bowl-Brussels.html" target="_blank">Yummy Bowl</a></div><div class="resto-tags"><span class="resto-tag">🥗 Healthy Bowls</span><span class="resto-tag">🍜 Korean Fusion</span><span class="resto-tag price">⭐ 4.8 / 5 · #2 in Brussels</span><span class="resto-tag price">$ Budget-friendly</span></div></div>
-                <div class="resto-body">
-                    <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~3 min walk</strong> — Rue des Éperonniers 49 (just south of Grand Place).</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:30–15:00 · <strong>Sat–Sun:</strong> 10:30–17:00</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🥗</div><div class="resto-row-text">Buddha bowls, Pho, Dragon Ball bowl, homemade lemonade. <strong>#2 restaurant in Brussels</strong> on TripAdvisor.</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3222651802" style="color:var(--primary);">+32 2 265 18 02</a></div></div>
-                </div>
-                <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15120847-Reviews-Yummy_Bowl-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Eperonniers+49+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
-            </div>
-            <div class="resto-card">
-                <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/zouzoubrussels/" target="_blank">ZouZou Brussels</a></div><div class="resto-tags"><span class="resto-tag">🍔 Brunch &amp; Burgers</span><span class="resto-tag">🌱 Halal</span><span class="resto-tag price">€€ Moderate</span></div></div>
-                <div class="resto-body">
-                    <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~5 min walk</strong> — Rue des Colonies 18 (near Gare Centrale).</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Daily:</strong> 10:00–18:00</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Shakshouka, truffle burrata toast, fluffy pancakes, ZouZou burger, fresh salads &amp; bowls.</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+32472102128" style="color:var(--primary);">+32 472 10 21 28</a></div></div>
-                </div>
-                <div class="resto-actions"><a href="https://www.instagram.com/zouzoubrussels/" target="_blank" class="resto-btn resto-btn-secondary">📸 Instagram</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Colonies+18+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
-            </div>
-        </div>
-        <!-- Dinner -->
-        <div class="meal-panel" id="meal-dinner">
-            <div class="resto-card">
-                <div class="resto-header"><div class="resto-name"><a href="http://thelobsterhouse.be/" target="_blank">The Lobster House</a></div><div class="resto-tags"><span class="resto-tag">🦞 Seafood &amp; Lobster</span><span class="resto-tag">🇧🇪 Belgian</span><span class="resto-tag price">⭐ 4.6 / 5 · #18 in Brussels</span><span class="resto-tag price">€€–€€€</span></div></div>
-                <div class="resto-body">
-                    <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue des Bouchers 34 (Brussels' famous restaurant street).</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Daily:</strong> 11:00–23:00</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Live lobster &amp; crab from seawater tanks, moules frites, paella, fresh oysters. Travellers' Choice 2025.</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225022016" style="color:var(--primary);">+32 2 502 20 16</a></div></div>
-                </div>
-                <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d1910997-Reviews-The_Lobster_House-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Bouchers+34+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
-            </div>
-        </div>
-        <!-- Snacks -->
-        <div class="meal-panel" id="meal-snacks">
-            <div class="resto-card">
-                <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank">WAFFELIN</a></div><div class="resto-tags"><span class="resto-tag">🧇 Belgian Waffles</span><span class="resto-tag">☕ Coffee</span><span class="resto-tag" style="background:#fef3c7;color:#92400e;">New — hours unconfirmed</span></div></div>
-                <div class="resto-body">
-                    <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>Grand Place area</strong> — easy to find on foot around the square.</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text">Hours not yet confirmed — worth checking their Instagram or asking at the hotel.</div></div>
-                    <div class="resto-row"><div class="resto-row-icon">🧇</div><div class="resto-row-text">Royal Belgian waffles and specialty coffee. A must-try for authentic waffles near Grand Place.</div></div>
-                </div>
-                <div class="resto-actions"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank" class="resto-btn resto-btn-secondary">📸 Instagram</a><a href="https://www.google.com/maps/search/?api=1&query=Waffelin+Brussels+Grand+Place" target="_blank" class="resto-btn resto-btn-primary">📍 Find on Map</a></div>
-            </div>
-        </div>
-    </div>
+    <!-- ── Scrollable content ── -->
+    <div class="content-area">
 
-    <!-- ══ INFO TAB ══ -->
-    <div class="tab-panel" id="panel-info">
-        <div class="card">
-            <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a6 6 0 0 1 12 0v2"/><circle cx="17" cy="7" r="2.5"/><path d="M21 21v-1.5a4 4 0 0 0-3-3.87"/></svg>Passengers</div>
-            <div class="passenger-list">
-                <div class="passenger-item">Pratik Patel</div>
-                <div class="passenger-item">Nisha Patel</div>
-                <div class="passenger-item">Sanjay Mistry</div>
-                <div class="passenger-item">Divya Mistry</div>
-            </div>
+        <!-- ══ DAYS TAB ══ -->
+        <div class="tab-panel active" id="panel-days">
+            <!-- Rendered by JS from TRIP.days config -->
         </div>
-        <div class="card">
-            <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2" fill="currentColor" stroke="none"/></svg>Confirmation Codes</div>
-            <div class="ref-grid">
-                <div class="ref-item"><span class="ref-label">Hotel (Expedia)</span><span class="ref-code">72078682955721</span></div>
-                <div class="ref-item"><span class="ref-label">Eurostar Return</span><span class="ref-code">WRFH37</span></div>
-                <div class="ref-item"><span class="ref-label">EMR Outbound</span><span class="ref-code">045833975476</span></div>
-                <div class="ref-item"><span class="ref-label">EMR Return</span><span class="ref-code">892399035850</span></div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="19" rx="1"/><path d="M9 22V13h6v9"/><rect x="8.5" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="13" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="8.5" y="10" width="2.5" height="2.5" rx=".5"/><rect x="13" y="10" width="2.5" height="2.5" rx=".5"/></svg>Hotel</div>
-            <p style="font-weight: 700; font-size: 15px;">Hotel Aris Grand Place</p>
-            <p style="font-size: 12px; color: var(--text-muted); margin: 4px 0 10px;">Grasmarkt / Rue du Marché aux Herbes 78-80, 1000 Brussels</p>
-            <div style="font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;">
-                <div><strong>Rooms:</strong> 2× Double</div><div><strong>Board:</strong> Room Only</div>
-                <div><strong>Check-in:</strong> From 15:00</div><div><strong>Check-out:</strong> By 11:00</div>
-            </div>
-            <a href="https://www.arbanyhotels.com" target="_blank" class="btn">🌐 Official Website</a>
-            <a href="https://www.google.com/maps/search/?api=1&query=Hotel+Aris+Grand+Place+Brussels" target="_blank" class="btn btn-secondary">📍 Google Maps</a>
-            <a href="tel:+3225144300" class="btn btn-secondary">📞 +32 2 514 4300</a>
-        </div>
-        <div class="card">
-            <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>Cost Breakdown</div>
-            <table class="cost-table">
-                <thead><tr><th>Item</th><th>Total</th><th>Per Couple</th></tr></thead>
-                <tbody>
-                    <tr><td><strong>Hotel</strong> <span class="badge-paid">PAID</span></td><td>£685.25</td><td>£342.63</td></tr>
-                    <tr><td><strong>Eurostar</strong> <span class="badge-paid">PAID</span></td><td>£560.00</td><td>£280.00</td></tr>
-                    <tr><td><strong>EMR Trains</strong> <span class="badge-paid">PAID</span></td><td>£160.00</td><td>£80.00</td></tr>
-                    <tr><td><strong>City Tax</strong> <em style="font-size:11px">(pay at hotel)</em></td><td>£28.82</td><td>£14.41</td></tr>
-                    <tr class="total-row"><td>TOTAL</td><td>£1,434.07</td><td>£717.04</td></tr>
-                </tbody>
-            </table>
-            <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Split 50/50 — £717.04 per couple · £358.52 per person. City tax due at check-in only.</p>
-        </div>
-        <div class="card">
-            <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 1 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"/></svg>Travel Notes</div>
-            <ul style="font-size: 12px; padding-left: 18px; line-height: 1.8; color: var(--text-muted);">
-                <li>Belgium is <strong>1 hour ahead</strong> of UK time (CET).</li>
-                <li>Arrive at St Pancras by <strong>11:45</strong> for Eurostar security.</li>
-                <li>All 4 passports required for check-in and transit.</li>
-            </ul>
-        </div>
-    </div>
 
-</div><!-- /content-area -->
+        <!-- ══ JOURNEY TAB ══ -->
+        <div class="tab-panel" id="panel-journey">
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19L19 5"/><polyline points="9 5 19 5 19 15"/></svg>Outbound — Thursday 12th Nov</div>
+                <div class="timeline">
+                    <div class="timeline-event"><span class="t-time">09:25</span> Taxi departs for <strong>Leicester Station</strong></div>
+                    <div class="timeline-event"><span class="t-time">10:12</span> Departs <strong>Leicester</strong></div>
+                    <div class="timeline-event"><span class="t-time">11:27</span> Arrive <strong>London St Pancras</strong></div>
+                    <div class="timeline-event"><span class="t-time">11:45</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
+                    <div class="timeline-event"><span class="t-time">13:01</span> Eurostar Departs St Pancras</div>
+                    <div class="timeline-event"><span class="t-time">16:06</span> Arrive <strong>Brussels Midi</strong> <span class="badge">+1 hr CET</span></div>
+                    <div class="timeline-event"><span class="t-time">16:15</span> Taxi — Brussels Midi → Hotel Aris (~15 mins)</div>
+                    <div class="timeline-event"><span class="t-time">16:30</span> Check-in Hotel Aris Grand Place</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5L5 19"/><polyline points="15 19 5 19 5 9"/></svg>Return — Sunday 15th Nov</div>
+                <div class="timeline">
+                    <div class="timeline-event"><span class="t-time">10:15</span> Hotel Check-out</div>
+                    <div class="timeline-event"><span class="t-time">10:20</span> Taxi departs for <strong>Brussels Midi</strong></div>
+                    <div class="timeline-event"><span class="t-time">10:41</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
+                    <div class="timeline-event"><span class="t-time">11:56</span> Eurostar Departs <strong>Brussels Midi</strong></div>
+                    <div class="timeline-event"><span class="t-time">12:57</span> Arrive <strong>London St Pancras</strong> <span class="badge">UK Time</span></div>
+                    <div class="timeline-event"><span class="t-time">14:42</span> EMR Departs St Pancras</div>
+                    <div class="timeline-event"><span class="t-time">15:30</span> Arrive <strong>Market Harborough</strong></div>
+                    <div class="timeline-event"><span class="t-time">15:35</span> Taxi — Market Harborough → Home (~25 mins)</div>
+                    <div class="timeline-event"><span class="t-time">16:00</span> Arrive home</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="13" rx="3"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="9" y1="3" x2="9" y2="9"/><line x1="15" y1="3" x2="15" y2="9"/><path d="M7 16l-2 4"/><path d="M17 16l2 4"/><line x1="5" y1="20" x2="19" y2="20"/></svg>Midi Station → Hotel</div>
+                <div style="font-size: 13px; display: grid; gap: 10px;">
+                    <div><strong>Local Train (Fastest)</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">SNCB train: Bruxelles-Midi → Bruxelles-Central (4 mins, every 5 mins). Hotel is 3 min walk from Central Station.</p></div>
+                    <div><strong>Taxi / Uber</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">Available outside Midi terminal. ~10–15 mins, €10–€15.</p></div>
+                </div>
+            </div>
+        </div>
 
-<!-- Bottom Tab Bar -->
-<nav class="tab-bar">
-    <button class="tab-btn active" id="tab-days" onclick="switchTab('days')">
-        <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="15" r="1" fill="currentColor" stroke="none"/></svg></span>
-        <span class="tab-label">Days</span>
-    </button>
-    <button class="tab-btn" id="tab-journey" onclick="switchTab('journey')">
-        <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="13" rx="3"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="9" y1="3" x2="9" y2="9"/><line x1="15" y1="3" x2="15" y2="9"/><path d="M7 16l-2 4"/><path d="M17 16l2 4"/><line x1="5" y1="20" x2="19" y2="20"/></svg></span>
-        <span class="tab-label">Journey</span>
-    </button>
-    <button class="tab-btn" id="tab-explore" onclick="switchTab('explore')">
-        <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.686 2 6 4.686 6 8c0 5.25 6 13 6 13s6-7.75 6-13c0-3.314-2.686-6-6-6z"/><circle cx="12" cy="8" r="2.2"/></svg></span>
-        <span class="tab-label">Explore</span>
-    </button>
-    <button class="tab-btn" id="tab-eat" onclick="switchTab('eat')">
-        <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v4a3 3 0 0 0 3 3v11"/><path d="M5 3v18"/><path d="M11 3v18"/><path d="M16 3v4c0 2 2 3 2 5v9"/></svg></span>
-        <span class="tab-label">Eat</span>
-    </button>
-    <button class="tab-btn" id="tab-info" onclick="switchTab('info')">
-        <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="17"/><circle cx="12" cy="7.5" r="0.8" fill="currentColor" stroke="none"/></svg></span>
-        <span class="tab-label">Info</span>
-    </button>
-</nav>
+        <!-- ══ EXPLORE TAB ══ -->
+        <div class="tab-panel" id="panel-explore">
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><line x1="3" y1="9" x2="3" y2="20"/><line x1="21" y1="9" x2="21" y2="20"/><rect x="3" y="19" width="18" height="2" rx="0.5"/><line x1="7" y1="9" x2="7" y2="19"/><line x1="12" y1="9" x2="12" y2="19"/><line x1="17" y1="9" x2="17" y2="19"/></svg>Nearby Attractions</div>
+                <p style="font-size: 11px; color: var(--sub); margin-bottom: 10px;">Tap name for website · Tap Map for walking directions from hotel.</p>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://www.brussels.be/grand-place" target="_blank" class="attraction-name-link">Grand Place (Main Square)</a></div><div class="attraction-dist">🚶 100m · 1–2 min walk</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Grand+Place+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://www.grsh.be/en/" target="_blank" class="attraction-name-link">Galeries Royales Saint-Hubert</a></div><div class="attraction-dist">🚶 120m · 2 min walk</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Galeries+Royales+Saint-Hubert&travelmode=walking" target="_blank" class="map-link">Map</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://www.brussels.be/manneken-pis" target="_blank" class="attraction-name-link">Manneken Pis</a></div><div class="attraction-dist">🚶 450m · 5 min walk</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Manneken+Pis&travelmode=walking" target="_blank" class="map-link">Map</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://www.brussels.be/mont-des-arts" target="_blank" class="attraction-name-link">Mont des Arts (Viewpoint)</a></div><div class="attraction-dist">🚶 500m · 6 min walk</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Mont+des+Arts+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://cathedalestmichel.be" target="_blank" class="attraction-name-link">St Michael &amp; St Gudula Cathedral</a></div><div class="attraction-dist">🚶 550m · 7 min walk</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=St+Michael+and+St+Gudula+Cathedral&travelmode=walking" target="_blank" class="map-link">Map</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://www.monarchie.be/en/heritage/royal-palace-of-brussels" target="_blank" class="attraction-name-link">Royal Palace of Brussels</a></div><div class="attraction-dist">🚶 950m · 12 min walk</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Royal+Palace+of+Brussels&travelmode=walking" target="_blank" class="map-link">Map</a>
+                </div>
+                <div class="attraction-item">
+                    <div class="attraction-info"><div><a href="https://atomium.be/atomium-price" target="_blank" class="attraction-name-link">Atomium</a></div><div class="attraction-dist">🚇 ~30 min · Metro line 6 → Atomium stop · €17 adult / €9 student&amp;child · Open 10:00–17:30</div></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Atomium+Brussels&travelmode=transit" target="_blank" class="map-link">Transit</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ EAT TAB ══ -->
+        <div class="tab-panel" id="panel-eat">
+            <div class="card" style="margin-bottom: 12px;">
+                <p style="font-size: 12px; color: var(--sub); line-height: 1.6;">All places are near <strong>Hotel Aris Grand Place</strong>. Tap <strong>Directions</strong> for a walking route or <strong>Menu</strong> to browse before you go.</p>
+            </div>
+            <div class="meal-tabs">
+                <button class="meal-tab-btn active" id="mealtab-breakfast" onclick="switchMeal('breakfast')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>
+                    Breakfast
+                </button>
+                <button class="meal-tab-btn" id="mealtab-lunch" onclick="switchMeal('lunch')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v4a3 3 0 0 0 3 3v11"/><path d="M5 3v18"/><path d="M11 3v18"/><path d="M16 3v4c0 2 2 3 2 5v9"/></svg>
+                    Lunch
+                </button>
+                <button class="meal-tab-btn" id="mealtab-dinner" onclick="switchMeal('dinner')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    Dinner
+                </button>
+                <button class="meal-tab-btn" id="mealtab-snacks" onclick="switchMeal('snacks')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h2a2 2 0 0 1 0 4h-2"/><path d="M2 8h16v8a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="5"/><line x1="10" y1="2" x2="10" y2="5"/><line x1="14" y1="2" x2="14" y2="5"/></svg>
+                    Snacks
+                </button>
+            </div>
+            <!-- Breakfast -->
+            <div class="meal-panel active" id="meal-breakfast">
+                <div class="resto-card">
+                    <div class="resto-header"><div class="resto-name"><a href="https://lloyd-coffee-eatery-grand-place.wheree.com" target="_blank">Lloyd Coffee Eatery</a></div><div class="resto-tags"><span class="resto-tag">☕ Breakfast &amp; Brunch</span><span class="resto-tag">🌱 Vegan options</span><span class="resto-tag">🥗 Vegetarian</span><span class="resto-tag price">⭐ 8.2 / 10</span></div></div>
+                    <div class="resto-body">
+                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>In the hotel building</strong> — Rue du Marché aux Herbes 80. 0 min walk.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Thu &amp; Sun:</strong> 7:00–20:00 · <strong>Fri–Sat:</strong> 7:00–22:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Egg sandwiches, salmon gravlax toast, pancakes, speculoos pancakes, halal options.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225119064" style="color:var(--navy);">+32 2 511 9064</a></div></div>
+                    </div>
+                    <div class="resto-actions"><a href="https://lloyd-coffee-eatery-grand-place.wheree.com/menu" target="_blank" class="resto-btn resto-btn-secondary">📋 Menu</a><a href="https://www.google.com/maps/search/?api=1&query=Lloyd+Coffee+Eatery+Rue+du+Marche+aux+Herbes+80+Brussels" target="_blank" class="resto-btn resto-btn-primary">📍 Map</a></div>
+                </div>
+                <div class="resto-card">
+                    <div class="resto-header"><div class="resto-name"><a href="https://www.thesistercafe-brussels.com" target="_blank">The Sister Brussels Café</a></div><div class="resto-tags"><span class="resto-tag">☕ Breakfast until 13:00</span><span class="resto-tag">🌱 Vegan &amp; GF options</span><span class="resto-tag price">€€ €12–16</span></div></div>
+                    <div class="resto-body">
+                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue Chair et Pain 3, on Grand Place itself.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:00–23:00 · <strong>Sat:</strong> 9:00–00:00 · <strong>Sun:</strong> 9:00–23:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Eggs &amp; bacon, avocado bowl, omelettes, vegan tofu scramble, waffles.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225132226" style="color:var(--navy);">+32 2 513 22 26</a></div></div>
+                    </div>
+                    <div class="resto-actions"><a href="https://www.thesistercafe-brussels.com/food-menu" target="_blank" class="resto-btn resto-btn-secondary">📋 Menu</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+Chair+et+Pain+3+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
+                </div>
+                <div class="resto-card">
+                    <div class="resto-header"><div class="resto-name"><a href="http://www.cappuccinobrussel.be/" target="_blank">Cappuccino Brussel</a></div><div class="resto-tags"><span class="resto-tag">☕ Breakfast &amp; Brunch</span><span class="resto-tag">🌱 Vegan options</span><span class="resto-tag price">€€ €7–13</span></div></div>
+                    <div class="resto-body">
+                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~10 min walk</strong> — Avenue de Stalingrad 71, 1000 Brussels.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text">Daily from 9:00 · Sun–Thu 9:00–23:00 · Fri–Sat 9:00–00:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Fluffy pancakes, waffles, omelettes, crêpes, fruit salads. Set breakfast from €7. ⭐ 4.4/5 TripAdvisor.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+32488052464" style="color:var(--navy);">+32 488 05 24 64</a></div></div>
+                    </div>
+                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15007770-Reviews-Cappuccino_Brussel-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Avenue+de+Stalingrad+71+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
+                </div>
+            </div>
+            <!-- Lunch -->
+            <div class="meal-panel" id="meal-lunch">
+                <div class="resto-card">
+                    <div class="resto-header"><div class="resto-name"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15120847-Reviews-Yummy_Bowl-Brussels.html" target="_blank">Yummy Bowl</a></div><div class="resto-tags"><span class="resto-tag">🥗 Healthy Bowls</span><span class="resto-tag">🍜 Korean Fusion</span><span class="resto-tag price">⭐ 4.8 / 5 · #2 in Brussels</span><span class="resto-tag price">$ Budget-friendly</span></div></div>
+                    <div class="resto-body">
+                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~3 min walk</strong> — Rue des Éperonniers 49 (just south of Grand Place).</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:30–15:00 · <strong>Sat–Sun:</strong> 10:30–17:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🥗</div><div class="resto-row-text">Buddha bowls, Pho, Dragon Ball bowl, homemade lemonade. <strong>#2 restaurant in Brussels</strong> on TripAdvisor.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3222651802" style="color:var(--navy);">+32 2 265 18 02</a></div></div>
+                    </div>
+                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15120847-Reviews-Yummy_Bowl-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Eperonniers+49+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
+                </div>
+                <div class="resto-card">
+                    <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/zouzoubrussels/" target="_blank">ZouZou Brussels</a></div><div class="resto-tags"><span class="resto-tag">🍔 Brunch &amp; Burgers</span><span class="resto-tag">🌱 Halal</span><span class="resto-tag price">€€ Moderate</span></div></div>
+                    <div class="resto-body">
+                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~5 min walk</strong> — Rue des Colonies 18 (near Gare Centrale).</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Daily:</strong> 10:00–18:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Shakshouka, truffle burrata toast, fluffy pancakes, ZouZou burger, fresh salads &amp; bowls.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+32472102128" style="color:var(--navy);">+32 472 10 21 28</a></div></div>
+                    </div>
+                    <div class="resto-actions"><a href="https://www.instagram.com/zouzoubrussels/" target="_blank" class="resto-btn resto-btn-secondary">📸 Instagram</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Colonies+18+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
+                </div>
+            </div>
+            <!-- Dinner -->
+            <div class="meal-panel" id="meal-dinner">
+                <div class="resto-card">
+                    <div class="resto-header"><div class="resto-name"><a href="http://thelobsterhouse.be/" target="_blank">The Lobster House</a></div><div class="resto-tags"><span class="resto-tag">🦞 Seafood &amp; Lobster</span><span class="resto-tag">🇧🇪 Belgian</span><span class="resto-tag price">⭐ 4.6 / 5 · #18 in Brussels</span><span class="resto-tag price">€€–€€€</span></div></div>
+                    <div class="resto-body">
+                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue des Bouchers 34 (Brussels' famous restaurant street).</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Daily:</strong> 11:00–23:00</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Live lobster &amp; crab from seawater tanks, moules frites, paella, fresh oysters. Travellers' Choice 2025.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225022016" style="color:var(--navy);">+32 2 502 20 16</a></div></div>
+                    </div>
+                    <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d1910997-Reviews-The_Lobster_House-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Bouchers+34+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
+                </div>
+            </div>
+            <!-- Snacks -->
+            <div class="meal-panel" id="meal-snacks">
+                <div class="resto-card">
+                    <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank">WAFFELIN</a></div><div class="resto-tags"><span class="resto-tag">🧇 Belgian Waffles</span><span class="resto-tag">☕ Coffee</span><span class="resto-tag" style="background:#fef3c7;color:#92400e;">New — hours unconfirmed</span></div></div>
+                    <div class="resto-body">
+                        <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>Grand Place area</strong> — easy to find on foot around the square.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text">Hours not yet confirmed — worth checking their Instagram or asking at the hotel.</div></div>
+                        <div class="resto-row"><div class="resto-row-icon">🧇</div><div class="resto-row-text">Royal Belgian waffles and specialty coffee. A must-try for authentic waffles near Grand Place.</div></div>
+                    </div>
+                    <div class="resto-actions"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank" class="resto-btn resto-btn-secondary">📸 Instagram</a><a href="https://www.google.com/maps/search/?api=1&query=Waffelin+Brussels+Grand+Place" target="_blank" class="resto-btn resto-btn-primary">📍 Find on Map</a></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ INFO TAB ══ -->
+        <div class="tab-panel" id="panel-info">
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a6 6 0 0 1 12 0v2"/><circle cx="17" cy="7" r="2.5"/><path d="M21 21v-1.5a4 4 0 0 0-3-3.87"/></svg>Passengers</div>
+                <div class="passenger-list">
+                    <div class="passenger-item">Pratik Patel</div>
+                    <div class="passenger-item">Nisha Patel</div>
+                    <div class="passenger-item">Sanjay Mistry</div>
+                    <div class="passenger-item">Divya Mistry</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2" fill="currentColor" stroke="none"/></svg>Confirmation Codes</div>
+                <div class="ref-grid">
+                    <div class="ref-item"><span class="ref-label">Hotel (Expedia)</span><span class="ref-code">72078682955721</span></div>
+                    <div class="ref-item"><span class="ref-label">Eurostar Return</span><span class="ref-code">WRFH37</span></div>
+                    <div class="ref-item"><span class="ref-label">EMR Outbound</span><span class="ref-code">045833975476</span></div>
+                    <div class="ref-item"><span class="ref-label">EMR Return</span><span class="ref-code">892399035850</span></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="19" rx="1"/><path d="M9 22V13h6v9"/><rect x="8.5" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="13" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="8.5" y="10" width="2.5" height="2.5" rx=".5"/><rect x="13" y="10" width="2.5" height="2.5" rx=".5"/></svg>Hotel</div>
+                <p style="font-family:'Playfair Display',Georgia,serif; font-weight:600; font-size:15px;">Hotel Aris Grand Place</p>
+                <p style="font-size: 12px; color: var(--sub); margin: 4px 0 10px;">Grasmarkt / Rue du Marché aux Herbes 78-80, 1000 Brussels</p>
+                <div style="font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;">
+                    <div><strong>Rooms:</strong> 2× Double</div><div><strong>Board:</strong> Room Only</div>
+                    <div><strong>Check-in:</strong> From 15:00</div><div><strong>Check-out:</strong> By 11:00</div>
+                </div>
+                <a href="https://www.arbanyhotels.com" target="_blank" class="btn">🌐 Official Website</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Hotel+Aris+Grand+Place+Brussels" target="_blank" class="btn btn-secondary">📍 Google Maps</a>
+                <a href="tel:+3225144300" class="btn btn-secondary">📞 +32 2 514 4300</a>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>Cost Breakdown</div>
+                <table class="cost-table">
+                    <thead><tr><th>Item</th><th>Total</th><th>Per Couple</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Hotel</strong> <span class="badge-paid">PAID</span></td><td>£685.25</td><td>£342.63</td></tr>
+                        <tr><td><strong>Eurostar</strong> <span class="badge-paid">PAID</span></td><td>£560.00</td><td>£280.00</td></tr>
+                        <tr><td><strong>EMR Trains</strong> <span class="badge-paid">PAID</span></td><td>£160.00</td><td>£80.00</td></tr>
+                        <tr><td><strong>City Tax</strong> <em style="font-size:11px">(pay at hotel)</em></td><td>£28.82</td><td>£14.41</td></tr>
+                        <tr class="total-row"><td>TOTAL</td><td>£1,434.07</td><td>£717.04</td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 11px; color: var(--sub); margin-top: 8px;">Split 50/50 — £717.04 per couple · £358.52 per person. City tax due at check-in only.</p>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 1 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"/></svg>Travel Notes</div>
+                <ul style="font-size: 12px; padding-left: 18px; line-height: 1.9; color: var(--sub);">
+                    <li>Belgium is <strong>1 hour ahead</strong> of UK time (CET).</li>
+                    <li>Arrive at St Pancras by <strong>11:45</strong> for Eurostar security.</li>
+                    <li>All 4 passports required for check-in and transit.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div><!-- /content-area -->
+
+</div><!-- /app-shell -->
 
 <script>
 // ═══════════════════════════════════════════════════════════
@@ -538,7 +637,8 @@
 // ═══════════════════════════════════════════════════════════
 const TRIP = {
     id:       'brussels-nov-2026',   // ← UNIQUE per trip — used as Supabase namespace
-    name:     '🇧🇪 Brussels Guide',
+    name:     'Brussels Guide',
+    flag:     '🇧🇪',
     subtitle: '12–15 November · Patels + Mistrys',
 
     days: [
@@ -547,10 +647,10 @@ const TRIP = {
             date:  'Thursday 12th November',
             label: 'Travel Day — Arrive Brussels ~16:30',
             rows: [
-                { type:'item', key:'d1-taxi-out',    icon:'🚕', cls:'travel',   time:'09:25',  name:'Taxi to Leicester Station',               detail:'Allow ~45 mins. Train departs 10:12.' },
-                { type:'item', key:'d1-train-out',   icon:'🚄', cls:'travel',   time:'10:12',  name:'Train — Leicester → London St Pancras',   detail:'Arrives 11:27. Eurostar check-in by 11:45.' },
-                { type:'item', key:'d1-eurostar-out',icon:'🚄', cls:'travel',   time:'13:01',  name:'Eurostar — London → Brussels Midi',        detail:'Arrives Brussels 16:06 (CET). Taxi to hotel ~15 mins.' },
-                { type:'item', key:'d1-checkin',     icon:'🏨', cls:'travel',   time:'16:30',  name:'Check-in — Hotel Aris Grand Place',        detail:'Check-in from 15:00.' },
+                { type:'item', key:'d1-taxi-out',    cls:'travel',   time:'09:25',  name:'🚕 Taxi to Leicester Station',               detail:'Allow ~45 mins. Train departs 10:12.' },
+                { type:'item', key:'d1-train-out',   cls:'travel',   time:'10:12',  name:'🚄 Train — Leicester → London St Pancras',   detail:'Arrives 11:27. Eurostar check-in by 11:45.' },
+                { type:'item', key:'d1-eurostar-out',cls:'travel',   time:'13:01',  name:'🚄 Eurostar — London → Brussels Midi',        detail:'Arrives Brussels 16:06 (CET). Taxi to hotel ~15 mins.' },
+                { type:'item', key:'d1-checkin',     cls:'travel',   time:'16:30',  name:'🏨 Check-in — Hotel Aris Grand Place',        detail:'Check-in from 15:00.' },
             ]
         },
         {
@@ -560,10 +660,10 @@ const TRIP = {
             rows: [
                 { type:'empty', note:'Morning &amp; afternoon — nothing planned yet.' },
                 { type:'section', label:'🎵 Evening — Mr &amp; Mrs Mistry Only' },
-                { type:'item', key:'d2-metro-out',  icon:'🚇', cls:'travel',   time:'19:00',  name:'Depart Hotel → ING Arena', detail:'Metro from Gare Centrale → Roi Baudouin (line 2/6, ~20 mins). Or taxi ~15 mins, €12–18. Leave by 19:00.' },
-                { type:'item', key:'d2-concert',    icon:'🎵', cls:'activity', time:'20:00',  name:'The World of Hans Zimmer', nameUrl:'https://www.ticketmaster.be/venue/ing-arena-brussels-tickets/p12/101', detail:'A New Dimension · ING Arena, Brussels<br>Doors open ~19:00 · Show starts 20:00' },
-                { type:'item', key:'d2-metro-return',icon:'🚇',cls:'travel',   time:'~22:30', name:'Return — ING Arena → Hotel', detail:'Metro Roi Baudouin → Gare Centrale, or taxi from arena (~20 mins). Shows typically end ~22:30.' },
-                { type:'info', html:'<div style="background:#eff6ff;border-radius:8px;padding:9px 10px;margin-top:6px;font-size:11px;color:#1e40af;line-height:1.5;"><strong>📍 ING Arena</strong> — Avenue de l\'Impératrice Charlotte, Laeken, Brussels.<br><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=ING+Arena+Brussels&travelmode=transit" target="_blank" style="color:#2563eb;font-weight:600;">Get directions from hotel →</a></div>' },
+                { type:'item', key:'d2-metro-out',  cls:'travel',   time:'19:00',  name:'🚇 Depart Hotel → ING Arena', detail:'Metro from Gare Centrale → Roi Baudouin (line 2/6, ~20 mins). Or taxi ~15 mins, €12–18. Leave by 19:00.' },
+                { type:'item', key:'d2-concert',    cls:'activity', time:'20:00',  name:'🎵 The World of Hans Zimmer', nameUrl:'https://www.ticketmaster.be/venue/ing-arena-brussels-tickets/p12/101', detail:'A New Dimension · ING Arena, Brussels · Doors open ~19:00 · Show starts 20:00' },
+                { type:'item', key:'d2-metro-return',cls:'travel',  time:'~22:30', name:'🚇 Return — ING Arena → Hotel', detail:'Metro Roi Baudouin → Gare Centrale, or taxi from arena (~20 mins). Shows typically end ~22:30.' },
+                { type:'info', html:'<div style="background:#eff6ff;border-radius:10px;padding:9px 12px;margin-top:4px;font-size:11px;color:#1e40af;line-height:1.5;"><strong>📍 ING Arena</strong> — Avenue de l\'Impératrice Charlotte, Laeken, Brussels.<br><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=ING+Arena+Brussels&travelmode=transit" target="_blank" style="color:#2563eb;font-weight:600;">Get directions from hotel →</a></div>' },
             ]
         },
         {
@@ -579,66 +679,66 @@ const TRIP = {
             date:  'Sunday 15th November',
             label: 'Departure Day — Check-out by 11:00',
             rows: [
-                { type:'item', key:'d4-checkout',      icon:'🏨', cls:'travel', time:'10:15',  name:'Hotel check-out',                              detail:'Must check out by 10:15 to make the taxi. Luggage storage available if needed.' },
-                { type:'item', key:'d4-taxi-midi',     icon:'🚕', cls:'travel', time:'10:20',  name:'Taxi — Hotel → Brussels Midi',                 detail:'~15 mins. Eurostar check-in at 10:41.' },
-                { type:'item', key:'d4-eurostar-return',icon:'🚄',cls:'travel', time:'11:56',  name:'Eurostar — Brussels Midi → London St Pancras', detail:'Arrives 12:57 (UK time).' },
-                { type:'item', key:'d4-train-pancras', icon:'🚄', cls:'travel', time:'14:42',  name:'Train — St Pancras → Market Harborough',       detail:'Arrives 15:30.' },
-                { type:'item', key:'d4-taxi-home',     icon:'🚕', cls:'travel', time:'15:35',  name:'Taxi — Market Harborough → Home',              detail:'~25 mins. Home by 16:00.' },
+                { type:'item', key:'d4-checkout',      cls:'travel', time:'10:15',  name:'🏨 Hotel check-out',                              detail:'Must check out by 10:15 to make the taxi. Luggage storage available if needed.' },
+                { type:'item', key:'d4-taxi-midi',     cls:'travel', time:'10:20',  name:'🚕 Taxi — Hotel → Brussels Midi',                 detail:'~15 mins. Eurostar check-in at 10:41.' },
+                { type:'item', key:'d4-eurostar-return',cls:'travel',time:'11:56',  name:'🚄 Eurostar — Brussels Midi → London St Pancras', detail:'Arrives 12:57 (UK time).' },
+                { type:'item', key:'d4-train-pancras', cls:'travel', time:'14:42',  name:'🚄 Train — St Pancras → Market Harborough',       detail:'Arrives 15:30.' },
+                { type:'item', key:'d4-taxi-home',     cls:'travel', time:'15:35',  name:'🚕 Taxi — Market Harborough → Home',              detail:'~25 mins. Home by 16:00.' },
             ]
         },
     ]
 };
 // ═══════════════════════════════════════════════════════════
 
-// Supabase credentials (shared across all trips — namespace via TRIP.id)
+// Supabase (shared, namespaced via TRIP.id)
 const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
 
 // ── Apply trip branding ──
+document.getElementById('app-flag').textContent    = TRIP.flag || '';
 document.getElementById('app-title').textContent   = TRIP.name;
 document.getElementById('app-subtitle').textContent = TRIP.subtitle;
-document.title = TRIP.name + ' · Trip Guide';
+document.title = TRIP.flag + ' ' + TRIP.name + ' · Trip Guide';
 
-// ── Render Days tab from config ──
+// ── Render Days tab ──
 function renderDays() {
-    const LEGEND_SVGs = {
-        food:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v4a3 3 0 0 0 3 3v11"/><path d="M5 3v18"/><path d="M11 3v18"/><path d="M16 3v4c0 2 2 3 2 5v9"/></svg>',
-        sight:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><line x1="3" y1="9" x2="3" y2="20"/><line x1="21" y1="9" x2="21" y2="20"/><rect x="3" y="19" width="18" height="2" rx="0.5"/><line x1="7" y1="9" x2="7" y2="19"/><line x1="12" y1="9" x2="12" y2="19"/><line x1="17" y1="9" x2="17" y2="19"/></svg>',
-        travel:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="13" rx="3"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="9" y1="3" x2="9" y2="9"/><line x1="15" y1="3" x2="15" y2="9"/><path d="M7 16l-2 4"/><path d="M17 16l2 4"/><line x1="5" y1="20" x2="19" y2="20"/></svg>',
-        activity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>',
-    };
+    const DOT_CLASS = { travel:'dot-travel', activity:'dot-activity', food:'dot-food', sight:'dot-sight' };
 
     let html = `
-    <div class="card" style="margin-bottom:12px;">
+    <div class="card" style="margin-bottom:10px;">
         <div class="type-legend">
-            <div class="legend-item"><div class="legend-dot food">${LEGEND_SVGs.food}</div> Food &amp; Drink</div>
-            <div class="legend-item"><div class="legend-dot sight">${LEGEND_SVGs.sight}</div> Sightseeing</div>
-            <div class="legend-item"><div class="legend-dot travel">${LEGEND_SVGs.travel}</div> Travel</div>
-            <div class="legend-item"><div class="legend-dot activity">${LEGEND_SVGs.activity}</div> Activity</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#3B82F6;"></div> Travel</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#C9A227;"></div> Activity</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#F97316;"></div> Food</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#818CF8;"></div> Sight</div>
         </div>
-        <p style="font-size:11px;color:var(--text-muted);">Tap a day to expand. Tap any item to mark it done — shared across all travellers in real time.</p>
+        <p style="font-size:11px;color:var(--sub);">Tap any item to mark it done — synced across all travellers in real time.</p>
     </div>`;
 
     TRIP.days.forEach(day => {
         html += `<div class="day-card${day.open ? ' open' : ''}" id="${day.id}">
             <div class="day-header" onclick="toggleDay('${day.id}')">
-                <div><h3>${day.date}</h3><p>${day.label}</p></div>
+                <div>
+                    <div class="day-date">${day.date}</div>
+                    <div class="day-label">${day.label}</div>
+                </div>
                 <span class="day-chevron">▾</span>
             </div>
             <div class="day-body">`;
 
         day.rows.forEach(row => {
             if (row.type === 'item') {
+                const dotCls  = DOT_CLASS[row.cls] || 'dot-travel';
                 const nameHtml = row.nameUrl
                     ? `<a href="${row.nameUrl}" target="_blank">${row.name}</a>`
                     : row.name;
                 html += `<div class="it-item" data-key="${row.key}">
-                    <div class="it-icon ${row.cls}">${row.icon}</div>
+                    <div class="it-time">${row.time}</div>
+                    <div class="it-dot-wrap"><div class="it-dot ${dotCls}"></div></div>
                     <div class="it-content">
                         <div class="it-name">${nameHtml}</div>
                         ${row.detail ? `<div class="it-detail">${row.detail}</div>` : ''}
                     </div>
-                    <div class="it-time">${row.time}</div>
                 </div>`;
             } else if (row.type === 'empty') {
                 html += `<div class="day-empty">${row.note}</div>`;
@@ -654,7 +754,6 @@ function renderDays() {
 
     document.getElementById('panel-days').innerHTML = html;
 
-    // Wire tick handlers after rendering
     document.querySelectorAll('.it-item[data-key]').forEach(el => {
         el.addEventListener('click', function(e) {
             if (e.target.closest('a')) return;
@@ -663,18 +762,16 @@ function renderDays() {
     });
 }
 
-// ── Tab & UI navigation ──
+// ── Navigation ──
 function switchTab(name) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-btn-top').forEach(b => b.classList.remove('active'));
     document.getElementById('panel-' + name).classList.add('active');
     document.getElementById('tab-' + name).classList.add('active');
     document.querySelector('.content-area').scrollTop = 0;
 }
 
-function toggleDay(id) {
-    document.getElementById(id).classList.toggle('open');
-}
+function toggleDay(id) { document.getElementById(id).classList.toggle('open'); }
 
 function switchMeal(name) {
     document.querySelectorAll('.meal-panel').forEach(p => p.classList.remove('active'));
@@ -683,12 +780,12 @@ function switchMeal(name) {
     document.getElementById('mealtab-' + name).classList.add('active');
 }
 
-// ── Shared done-state via Supabase (namespaced by TRIP.id) ──
+// ── Supabase sync ──
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let _doneState = {};
 
-function showSync(type) {
-    const el = document.getElementById('sync-status');
+function showToast(type) {
+    const el = document.getElementById('sync-toast');
     el.textContent = type === 'synced' ? '✓ Synced' : '⚠ Offline';
     el.className = 'show ' + type;
     clearTimeout(el._t);
@@ -712,7 +809,6 @@ async function loadDone() {
     }
 }
 
-// Realtime — scoped to this trip only
 sb.channel('itinerary-sync-' + TRIP.id)
     .on('postgres_changes', {
         event: '*', schema: 'public', table: 'itinerary_done',
@@ -735,7 +831,7 @@ async function toggleDone(el) {
         { trip_id: TRIP.id, item_key: key, done: next, updated_at: new Date().toISOString() },
         { onConflict: 'trip_id,item_key' }
     );
-    showSync(error ? 'error' : 'synced');
+    showToast(error ? 'error' : 'synced');
 }
 
 // ── Init ──
