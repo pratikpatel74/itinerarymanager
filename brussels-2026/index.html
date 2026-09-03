@@ -655,7 +655,7 @@
             <div class="sync-dot"></div>
             <span id="sync-text">Live sync on</span>
         </div>
-        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v10</span>
+        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v11</span>
     </div>
 
     <!-- ── Scrollable content ── -->
@@ -1276,14 +1276,18 @@ function openSheet(key) {
                 { trip_id: TRIP.id, item_key: ck, done: next, updated_at: new Date().toISOString() },
                 { onConflict: 'trip_id,item_key' }
             );
-            // Auto-mark parent done when all checklist items are ticked
-            if (next && _sheetKey && !_doneState[_sheetKey]) {
+            // Sync parent ↔ sub-items
+            if (_sheetKey) {
                 const parentItem = ITEM_MAP[_sheetKey];
                 if (parentItem && parentItem.checklist) {
-                    const allDone = parentItem.checklist.every(c => !!_doneState[c.key]);
-                    if (allDone) {
-                        const parentEl = document.querySelector(`.it-item[data-key="${_sheetKey}"]`);
-                        if (parentEl) toggleDone(parentEl);
+                    const parentEl = document.querySelector(`.it-item[data-key="${_sheetKey}"]`);
+                    if (next) {
+                        // All ticked → mark parent done
+                        const allDone = parentItem.checklist.every(c => !!_doneState[c.key]);
+                        if (allDone && !_doneState[_sheetKey] && parentEl) toggleDone(parentEl);
+                    } else {
+                        // Any unticked → unmark parent if it was done
+                        if (_doneState[_sheetKey] && parentEl) toggleDone(parentEl);
                     }
                 }
             }
@@ -1396,10 +1400,20 @@ async function toggleDone(el) {
     _doneState[key]    = next;
     _localWriteAt[key] = Date.now();    // stamp so RT echo is ignored for 5 s
     el.classList.toggle('done', next);
-    const { error } = await sb.from('itinerary_done').upsert(
-        { trip_id: TRIP.id, item_key: key, done: next },
-        { onConflict: 'trip_id,item_key' }
-    );
+
+    // Cascade to sub-items when parent is marked done
+    const item = ITEM_MAP[key];
+    const upserts = [{ trip_id: TRIP.id, item_key: key, done: next }];
+    if (item && item.checklist) {
+        item.checklist.forEach(ck => {
+            _doneState[ck.key]    = next;
+            _localWriteAt[ck.key] = Date.now();
+            upserts.push({ trip_id: TRIP.id, item_key: ck.key, done: next });
+        });
+        refreshSheetChecklist();
+    }
+
+    const { error } = await sb.from('itinerary_done').upsert(upserts, { onConflict: 'trip_id,item_key' });
     showToast(error ? 'error' : 'synced');
 }
 
