@@ -248,7 +248,7 @@
         letter-spacing: -0.5px;
     }
     .day-label { font-size: 12px; color: var(--sub); margin-top: 2px; }
-    .day-chevron { color: var(--sub); font-size: 20px; transition: transform 0.2s; margin-left: 8px; flex-shrink: 0; line-height: 1; }
+    .day-chevron { color: var(--sub); font-size: 24px; transition: transform 0.2s; margin-left: 8px; flex-shrink: 0; line-height: 1; }
     .day-card.open .day-chevron { transform: rotate(180deg); }
     .day-body { display: none; }
     .day-card.open .day-body { display: block; }
@@ -440,7 +440,8 @@
     /* ── Drilldown indicator on items ── */
     .it-item.has-detail { cursor: pointer; }
     .it-chevron {
-        font-size: 14px; color: var(--sub2); margin-left: 6px; flex-shrink: 0;
+        display: flex; align-items: center;
+        color: var(--sub); margin-left: 8px; flex-shrink: 0;
         align-self: center; line-height: 1;
     }
 
@@ -1129,7 +1130,7 @@ function renderDays() {
                         <div class="it-name">${nameHtml}</div>
                         ${row.detail ? `<div class="it-detail">${row.detail}</div>` : ''}
                     </div>
-                    ${rich ? `<div class="it-chevron">›</div>` : ''}
+                    ${rich ? `<div class="it-chevron"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>` : ''}
                 </div>`;
             } else if (row.type === 'empty') {
                 html += `<div class="day-empty">${row.note}</div>`;
