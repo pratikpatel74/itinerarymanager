@@ -653,7 +653,7 @@
             <div class="sync-dot"></div>
             <span id="sync-text">Live sync on</span>
         </div>
-        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v6</span>
+        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v7</span>
     </div>
 
     <!-- ── Scrollable content ── -->
@@ -1170,20 +1170,6 @@ function renderDays() {
         const rich = el.classList.contains('has-detail');
         const done = el.classList.contains('done');
 
-        // DEBUG v6 — show exact state on screen
-        (function() {
-            let d = document.getElementById('_dbg');
-            if (!d) {
-                d = document.createElement('div');
-                d.id = '_dbg';
-                d.style.cssText = 'position:fixed;top:60px;left:10px;right:10px;background:rgba(0,0,0,0.9);color:#0f0;padding:10px 12px;font-size:12px;font-family:monospace;z-index:9999;border-radius:8px;white-space:pre;pointer-events:none;';
-                document.body.appendChild(d);
-            }
-            d.textContent = 'key=' + key + '\ndone=' + done + '\nelClass=' + el.className + '\n_state=' + _doneState[key];
-            clearTimeout(d._t);
-            d._t = setTimeout(function(){ d.textContent = ''; }, 6000);
-        })();
-
         // Dot area → always toggle
         if (e.target.closest('.it-dot-wrap')) {
             toggleDone(el);
@@ -1363,8 +1349,8 @@ async function loadDone() {
     }
 }
 
-// Track the timestamp of each local toggle so stale RT events don't overwrite it
-const _doneWrittenAt = {};
+// Track the ms-timestamp of each local toggle so RT echoes don't overwrite it
+const _localWriteAt = {};
 
 sb.channel('itinerary-sync-' + TRIP.id)
     .on('postgres_changes', {
@@ -1373,14 +1359,12 @@ sb.channel('itinerary-sync-' + TRIP.id)
     }, payload => {
         if (payload.new && payload.new.item_key !== undefined) {
             const key = payload.new.item_key;
-            const payloadTs = payload.new.updated_at || '';
-            const localTs   = _doneWrittenAt[key]  || '';
-            // Only apply if the RT event is strictly newer than our last local write
-            // (guards against a delayed "mark-done" event arriving after "row-untick")
-            if (payloadTs >= localTs) {
-                _doneState[key] = payload.new.done;
-                applyDoneState();
-            }
+            // Ignore RT events that arrive within 5 s of our own local write
+            // (guards against delayed echo overwriting the just-toggled state)
+            const age = Date.now() - (_localWriteAt[key] || 0);
+            if (age < 5000) return;
+            _doneState[key] = payload.new.done;
+            applyDoneState();
         }
     })
     .subscribe();
@@ -1389,12 +1373,11 @@ async function toggleDone(el) {
     const key = el.dataset.key;
     if (!key) return;
     const next = !_doneState[key];
-    const now  = new Date().toISOString();
-    _doneState[key]     = next;
-    _doneWrittenAt[key] = now;          // record when we wrote locally
+    _doneState[key]    = next;
+    _localWriteAt[key] = Date.now();    // stamp so RT echo is ignored for 5 s
     el.classList.toggle('done', next);
     const { error } = await sb.from('itinerary_done').upsert(
-        { trip_id: TRIP.id, item_key: key, done: next, updated_at: now },
+        { trip_id: TRIP.id, item_key: key, done: next },
         { onConflict: 'trip_id,item_key' }
     );
     showToast(error ? 'error' : 'synced');
