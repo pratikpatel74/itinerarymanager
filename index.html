@@ -161,11 +161,21 @@
         inset: 0;
     }
     .tc-photo.brussels {
+        background: #080E23;
+        overflow: hidden;
+    }
+    .tc-slide {
+        position: absolute; inset: 0;
+        background-size: cover; background-position: center;
+        opacity: 0; transition: opacity 1.2s ease; z-index: 0;
+    }
+    .tc-slide.active { opacity: 1; }
+    .tc-slide-gradient {
+        position: absolute; inset: 0; z-index: 1;
         background:
             linear-gradient(180deg, rgba(8,14,35,0.15) 0%, rgba(8,14,35,0.88) 62%, #080E23 100%),
             radial-gradient(ellipse at 68% 28%, rgba(50,70,130,0.55) 0%, transparent 58%),
-            radial-gradient(ellipse at 25% 65%, rgba(201,162,39,0.06) 0%, transparent 48%),
-            url('https://images.unsplash.com/photo-1607894379039-89be884f69df?auto=format&fit=crop&w=600&q=80') center/cover;
+            radial-gradient(ellipse at 25% 65%, rgba(201,162,39,0.06) 0%, transparent 48%);
     }
     .tc-photo.past-generic {
         background:
@@ -311,7 +321,15 @@
 
         <!-- Brussels -->
         <a class="trip-card" href="brussels-2026/">
-            <div class="tc-photo brussels"></div>
+            <div class="tc-photo brussels" id="brussels-card-photo">
+                <div class="tc-slide active" style="background-image:url('https://images.unsplash.com/photo-1607894379039-89be884f69df?auto=format&fit=crop&w=800&q=80')"></div>
+                <div class="tc-slide" style="background-image:url('https://images.unsplash.com/photo-v5j_fxYUwaI?auto=format&fit=crop&w=800&q=80')"></div>
+                <div class="tc-slide" style="background-image:url('https://images.unsplash.com/photo-X845vHnQCLM?auto=format&fit=crop&w=800&q=80')"></div>
+                <div class="tc-slide" style="background-image:url('https://images.unsplash.com/photo-swARUEStCQc?auto=format&fit=crop&w=800&q=80')"></div>
+                <div class="tc-slide" style="background-image:url('https://images.unsplash.com/photo-vNpf7niWXeI?auto=format&fit=crop&w=800&q=80')"></div>
+                <div class="tc-slide" style="background-image:url('https://images.unsplash.com/photo-JAEog_jEAo0?auto=format&fit=crop&w=800&q=80')"></div>
+                <div class="tc-slide-gradient"></div>
+            </div>
             <div class="tc-flag-badge">
                 <!-- Belgium: black / yellow / red vertical thirds -->
                 <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
@@ -374,6 +392,18 @@ document.querySelectorAll('.chip').forEach(c => {
         c.classList.add('active');
     });
 });
+
+// Brussels card photo slideshow (offset start so it's different from the trip page)
+(function() {
+    const slides = document.querySelectorAll('#brussels-card-photo .tc-slide');
+    if (!slides.length) return;
+    let cur = 0;
+    setInterval(() => {
+        slides[cur].classList.remove('active');
+        cur = (cur + 1) % slides.length;
+        slides[cur].classList.add('active');
+    }, 3000);
+})();
 </script>
 
 </body>
