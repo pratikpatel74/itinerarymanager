@@ -2040,7 +2040,7 @@ init();
                 '<div class="resto-name"><a href="' + escH(r.website_url || '#') + '" target="_blank">' + escH(r.name) + '</a></div>' +
                 '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">' +
                 '<div class="resto-tags">' + tagsHtml + '</div>' +
-                '<button class="row-edit-btn" onclick="openRSheet(' + JSON.stringify(r.id) + ','' + r.meal_type + '')" title="Edit">&#9998;</button>' +
+                '<button class="row-edit-btn" onclick="openRSheet(' + JSON.stringify(r.id) + ',\'' + r.meal_type + '\')" title="Edit">&#9998;</button>' +
                 '</div></div>' +
                 (bodyRows ? '<div class="resto-body">' + bodyRows + '</div>' : '') +
                 (actHtml ? '<div class="resto-actions">' + actHtml + '</div>' : '') +
