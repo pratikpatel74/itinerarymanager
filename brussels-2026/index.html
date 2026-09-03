@@ -1170,8 +1170,19 @@ function renderDays() {
         const rich = el.classList.contains('has-detail');
         const done = el.classList.contains('done');
 
-        // DEBUG v6 — green = done detected, white = NOT done detected
-        showToast(done ? 'synced' : 'error');
+        // DEBUG v6 — show exact state on screen
+        (function() {
+            let d = document.getElementById('_dbg');
+            if (!d) {
+                d = document.createElement('div');
+                d.id = '_dbg';
+                d.style.cssText = 'position:fixed;top:60px;left:10px;right:10px;background:rgba(0,0,0,0.9);color:#0f0;padding:10px 12px;font-size:12px;font-family:monospace;z-index:9999;border-radius:8px;white-space:pre;pointer-events:none;';
+                document.body.appendChild(d);
+            }
+            d.textContent = 'key=' + key + '\ndone=' + done + '\nelClass=' + el.className + '\n_state=' + _doneState[key];
+            clearTimeout(d._t);
+            d._t = setTimeout(function(){ d.textContent = ''; }, 6000);
+        })();
 
         // Dot area → always toggle
         if (e.target.closest('.it-dot-wrap')) {
