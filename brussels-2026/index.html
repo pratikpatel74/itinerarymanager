@@ -6,28 +6,39 @@
     <title>Brussels 2026 · Trip Guide</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap">
     <style>
     /* ── Tokens ── */
     :root {
-        --navy:    #0A2463;
-        --navy-2:  #1a3a7a;
-        --gold:    #C9A227;
-        --parch:   #F7F4EE;
-        --slate:   #3D5068;
-        --sub:     #64748B;
-        --border:  #E2DDD6;
-        --text:    #1A1A2E;
-        --green:   #2A7A52;
-        --green-lt:#EEF6F1;
-        --mist:    #C8D4E8;
-        --blue-dot:#3B82F6;
-        --gold-dot:#C9A227;
-        --orange-dot:#F97316;
-        --purple-dot:#818CF8;
-        --card-bg: #ffffff;
-        --radius:  14px;
-        --tab-h:   60px;
+        --gold:       #C9A227;
+        --gold-lt:    rgba(201,162,39,0.15);
+        --gold-md:    rgba(201,162,39,0.3);
+        --bg:         #0A0A0A;
+        --surface:    #1C1C1E;
+        --surface2:   #242426;
+        --border:     rgba(255,255,255,0.08);
+        --text:       #F2F2F2;
+        --sub:        #8E8E93;
+        --sub2:       #48484A;
+        --green:      #2A7A52;
+        --green-lt:   rgba(42,122,82,0.14);
+        --green-text: #4ADE80;
+        --blue-dot:   #3B82F6;
+        --gold-dot:   #C9A227;
+        --orange-dot: #F97316;
+        --purple-dot: #818CF8;
+        --radius:     14px;
+        --tab-h:      60px;
+
+        /* legacy aliases so inline var() references in preserved HTML still work */
+        --navy:    #C9A227;   /* links/accents in dark theme → gold */
+        --parch:   #242426;   /* background surfaces → dark surface2 */
+        --slate:   #8E8E93;
+        --sub-old: #8E8E93;
+        --border-old: rgba(255,255,255,0.08);
+        --card-bg: #1C1C1E;
+        --mist:    #48484A;
+        --text-old:#F2F2F2;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,13 +47,13 @@
     html, body {
         height: 100%;
         overflow: hidden;
-        background: #070F1F;
+        background: #0A0A0A;
         font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         color: var(--text);
         -webkit-font-smoothing: antialiased;
     }
 
-    /* Centered 480px shell — fills 100% on mobile, sits centred on desktop */
+    /* Centered 480px shell */
     .app-shell {
         max-width: 480px;
         margin: 0 auto;
@@ -50,42 +61,89 @@
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        background: var(--parch);
-        box-shadow: 0 0 80px rgba(0,0,0,0.55);
+        background: var(--bg);
+        box-shadow: 0 0 80px rgba(0,0,0,0.8);
         position: relative;
     }
 
-    /* ── App header ── */
-    .app-header {
+    /* ── Hero header ── */
+    .app-hero {
         flex-shrink: 0;
-        background: linear-gradient(155deg, var(--navy) 0%, var(--navy-2) 100%);
-        color: white;
-        padding: 14px 18px 20px;
-        padding-top: max(14px, env(safe-area-inset-top));
+        position: relative;
+        height: 186px;
+        background:
+            linear-gradient(180deg, rgba(8,14,35,0.12) 0%, rgba(8,14,35,0.85) 58%, #080E23 100%),
+            radial-gradient(ellipse at 68% 28%, rgba(50,70,130,0.55) 0%, transparent 58%),
+            radial-gradient(ellipse at 25% 65%, rgba(201,162,39,0.06) 0%, transparent 48%),
+            linear-gradient(135deg, #162240 0%, #0c1830 45%, #060f22 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: max(14px, env(safe-area-inset-top)) 16px 16px;
     }
-    .header-back {
-        font-size: 11px; font-weight: 500;
-        color: rgba(255,255,255,0.45);
-        margin-bottom: 14px;
-        display: flex; align-items: center; gap: 4px;
+
+    .hero-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .hero-back {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--gold);
         text-decoration: none;
+        letter-spacing: -0.2px;
+        -webkit-tap-highlight-color: transparent;
     }
-    .header-back em { color: var(--gold); font-style: normal; }
-    .header-flag  { font-size: 26px; line-height: 1; margin-bottom: 5px; }
-    .header-title {
+
+    .hero-pill {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: var(--gold);
+        color: #0a0a0a;
+    }
+
+    .hero-mid {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .hero-flag-badge {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid rgba(255,255,255,0.22);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+        flex-shrink: 0;
+    }
+
+    .hero-body { }
+
+    .hero-city {
         font-family: 'Playfair Display', Georgia, serif;
-        font-size: 21px; font-weight: 700;
-        line-height: 1.2; margin-bottom: 3px;
+        font-size: 30px;
+        font-weight: 900;
+        color: white;
+        line-height: 1.1;
+        text-shadow: 0 1px 10px rgba(0,0,0,0.5);
     }
-    .header-sub {
-        font-size: 12px; font-weight: 300;
-        color: rgba(255,255,255,0.5);
+
+    .hero-dates {
+        font-size: 12px;
+        color: rgba(255,255,255,0.55);
+        margin-top: 3px;
+        font-weight: 400;
     }
 
     /* ── Top tab bar ── */
     .tab-bar-top {
         flex-shrink: 0;
-        background: white;
+        background: var(--surface);
         display: flex;
         border-bottom: 1px solid var(--border);
         overflow-x: auto;
@@ -93,38 +151,42 @@
         -webkit-overflow-scrolling: touch;
     }
     .tab-bar-top::-webkit-scrollbar { display: none; }
+
     .tab-btn-top {
         font-size: 11px; font-weight: 600;
         padding: 12px 14px 10px;
-        white-space: nowrap; color: var(--sub);
+        white-space: nowrap;
+        color: var(--sub);
         border-bottom: 3px solid transparent;
         flex-shrink: 0;
-        background: none; border-top: none; border-left: none; border-right: none;
+        background: none;
+        border-top: none; border-left: none; border-right: none;
         cursor: pointer;
         -webkit-tap-highlight-color: transparent;
         transition: color 0.15s, border-color 0.15s;
+        letter-spacing: 0.3px;
     }
     .tab-btn-top.active {
-        color: var(--navy);
+        color: var(--text);
         border-bottom-color: var(--gold);
     }
 
     /* ── Sync indicator ── */
     .sync-bar {
         flex-shrink: 0;
-        background: var(--parch);
+        background: var(--surface);
         padding: 6px 16px;
         display: flex; align-items: center; gap: 6px;
-        font-size: 10px; color: var(--green); font-weight: 600;
+        font-size: 10px; color: var(--green-text); font-weight: 600;
         border-bottom: 1px solid var(--border);
     }
     .sync-dot {
         width: 6px; height: 6px; border-radius: 50%;
-        background: var(--green); flex-shrink: 0;
+        background: var(--green-text); flex-shrink: 0;
         animation: blink 2s infinite;
     }
-    .sync-bar.error { color: #991b1b; }
-    .sync-bar.error .sync-dot { background: #ef4444; }
+    .sync-bar.error { color: #F87171; }
+    .sync-bar.error .sync-dot { background: #F87171; }
     @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
     /* ── Scrollable content ── */
@@ -133,6 +195,7 @@
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         padding: 12px 12px 8px;
+        background: var(--bg);
     }
 
     .tab-panel { display: none; }
@@ -140,23 +203,30 @@
 
     /* ── Generic card ── */
     .card {
-        background: var(--card-bg); border-radius: var(--radius);
+        background: var(--surface);
+        border-radius: var(--radius);
         padding: 14px; margin-bottom: 14px;
-        border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.3);
     }
     .card-title {
-        font-size: 12px; font-weight: 700; color: var(--navy);
+        font-size: 12px; font-weight: 700;
+        color: var(--gold);
         text-transform: uppercase; letter-spacing: 0.7px;
-        margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
-        border-bottom: 1px solid var(--border); padding-bottom: 8px;
+        margin-bottom: 10px;
+        display: flex; align-items: center; gap: 6px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 8px;
     }
     .card-title svg { width: 14px; height: 14px; flex-shrink: 0; }
 
     /* ── Day cards ── */
     .day-card {
-        background: var(--card-bg); border-radius: var(--radius);
+        background: var(--surface);
+        border-radius: var(--radius);
         margin-bottom: 10px; overflow: hidden;
-        box-shadow: 0 1px 6px rgba(10,36,99,0.07), 0 0 0 1px rgba(10,36,99,0.05);
+        box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+        border: 1px solid var(--border);
     }
     .day-header {
         border-left: 4px solid var(--gold);
@@ -165,51 +235,53 @@
         display: flex; justify-content: space-between; align-items: center;
         -webkit-tap-highlight-color: transparent;
         user-select: none;
-        background: white;
+        background: var(--surface);
     }
     .day-date {
         font-family: 'Playfair Display', Georgia, serif;
         font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.2;
     }
     .day-label { font-size: 11px; color: var(--sub); margin-top: 2px; }
-    .day-chevron { color: var(--mist); font-size: 14px; transition: transform 0.2s; margin-left: 8px; flex-shrink: 0; }
+    .day-chevron { color: var(--sub2); font-size: 14px; transition: transform 0.2s; margin-left: 8px; flex-shrink: 0; }
     .day-card.open .day-chevron { transform: rotate(180deg); }
     .day-body { display: none; }
     .day-card.open .day-body { display: block; }
+
     .day-empty {
         font-size: 12px; color: var(--sub); font-style: italic;
-        padding: 12px 14px; border-top: 1px solid rgba(226,221,214,0.5);
+        padding: 12px 14px;
+        border-top: 1px solid var(--border);
     }
     .day-section-label {
         font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-        color: var(--sub); padding: 9px 14px 3px;
-        border-top: 1px solid rgba(226,221,214,0.5);
+        color: var(--sub2); padding: 9px 14px 3px;
+        border-top: 1px solid var(--border);
     }
 
-    /* ── Itinerary rows — transit-board style ── */
+    /* ── Itinerary rows ── */
     .it-item {
         display: flex; align-items: flex-start; gap: 0;
         padding: 9px 14px;
-        border-top: 1px solid rgba(226,221,214,0.5);
+        border-top: 1px solid var(--border);
         cursor: pointer; user-select: none;
         -webkit-tap-highlight-color: transparent;
         transition: background 0.13s;
     }
     .it-item:first-child { border-top: none; }
-    .it-item:active { background: rgba(10,36,99,0.03); }
+    .it-item:active { background: rgba(255,255,255,0.04); }
 
     /* done state */
     .it-item.done { background: var(--green-lt); }
     .it-item.done .it-name { text-decoration: line-through; color: var(--sub); opacity: 0.65; }
     .it-item.done .it-detail { opacity: 0.45; }
-    .it-item.done .it-time { color: var(--green); opacity: 0.7; }
-    .it-item.done .it-dot { background: var(--green) !important; }
-    .it-item.done .it-dot::after { content: '✓'; display: block; font-size: 6px; color: white; font-weight: 800; line-height: 1; text-align: center; margin-top: 1px; }
+    .it-item.done .it-time { color: var(--green-text); opacity: 0.7; }
+    .it-item.done .it-dot { background: var(--green-text) !important; }
+    .it-item.done .it-dot::after { content: '✓'; display: block; font-size: 6px; color: #0A0A0A; font-weight: 800; line-height: 1; text-align: center; margin-top: 1px; }
 
     .it-time {
         font-size: 11px; font-weight: 500;
         font-variant-numeric: tabular-nums;
-        color: var(--navy); width: 42px; flex-shrink: 0;
+        color: var(--gold); width: 42px; flex-shrink: 0;
         padding-top: 3px; line-height: 1;
     }
     .it-dot-wrap {
@@ -230,7 +302,7 @@
     .it-name {
         font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.35;
     }
-    .it-name a { color: var(--navy); text-decoration: underline; }
+    .it-name a { color: var(--gold); text-decoration: underline; }
     .it-detail {
         font-size: 11px; font-weight: 300; color: var(--sub);
         margin-top: 2px; line-height: 1.4;
@@ -244,16 +316,16 @@
     /* ── Journey timeline ── */
     .timeline { position: relative; padding-left: 20px; margin-top: 6px; }
     .timeline::before { content: ''; position: absolute; left: 6px; top: 4px; bottom: 4px; width: 2px; background: var(--border); }
-    .timeline-event { position: relative; margin-bottom: 13px; font-size: 13px; }
+    .timeline-event { position: relative; margin-bottom: 13px; font-size: 13px; color: var(--text); }
     .timeline-event:last-child { margin-bottom: 0; }
     .timeline-event::before {
         content: ''; position: absolute; left: -18px; top: 4px;
         width: 10px; height: 10px; border-radius: 50%;
-        background: var(--blue-dot); border: 2px solid white;
+        background: var(--blue-dot); border: 2px solid var(--surface);
         box-shadow: 0 0 0 1px var(--blue-dot);
     }
-    .t-time { font-weight: 600; color: var(--navy); display: inline-block; width: 42px; font-size: 12px; font-variant-numeric: tabular-nums; }
-    .badge { background: #fef3c7; color: #92400e; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+    .t-time { font-weight: 600; color: var(--gold); display: inline-block; width: 42px; font-size: 12px; font-variant-numeric: tabular-nums; }
+    .badge { background: var(--gold-lt); color: var(--gold); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
 
     /* ── Attractions ── */
     .attraction-item {
@@ -262,81 +334,84 @@
     }
     .attraction-item:last-child { border-bottom: none; }
     .attraction-info { flex: 1; min-width: 0; }
-    .attraction-name-link { font-weight: 600; color: var(--navy); text-decoration: underline; }
+    .attraction-name-link { font-weight: 600; color: var(--gold); text-decoration: underline; }
     .attraction-dist { font-size: 11px; color: var(--sub); margin-top: 2px; }
     .map-link {
-        color: var(--navy); text-decoration: none; font-weight: 600;
-        font-size: 12px; background: #eff6ff; padding: 4px 9px; border-radius: 7px;
+        color: #60A5FA; text-decoration: none; font-weight: 600;
+        font-size: 12px; background: rgba(59,130,246,0.12); padding: 4px 9px; border-radius: 7px;
         white-space: nowrap; flex-shrink: 0;
+        border: 1px solid rgba(59,130,246,0.2);
     }
 
     /* ── Cost table ── */
     table.cost-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
-    table.cost-table th, table.cost-table td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
-    table.cost-table th { background: var(--parch); color: var(--navy); font-weight: 700; font-size: 11px; }
+    table.cost-table th, table.cost-table td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); color: var(--text); }
+    table.cost-table th { background: var(--surface2); color: var(--sub); font-weight: 700; font-size: 11px; }
     table.cost-table tr.total-row td {
         font-weight: 700; font-size: 13px;
-        background: #eff6ff; border-top: 2px solid var(--blue-dot); border-bottom: none;
+        background: rgba(59,130,246,0.1); border-top: 2px solid var(--blue-dot); border-bottom: none;
     }
-    .badge-paid { background: #dcfce7; color: var(--green); font-size: 10px; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
+    .badge-paid { background: rgba(42,122,82,0.2); color: var(--green-text); font-size: 10px; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
 
     /* ── Passenger grid ── */
     .passenger-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .passenger-item { background: var(--parch); padding: 9px; border-radius: 9px; font-size: 13px; font-weight: 600; text-align: center; }
+    .passenger-item { background: var(--surface2); padding: 9px; border-radius: 9px; font-size: 13px; font-weight: 600; text-align: center; color: var(--text); }
 
     /* ── Ref codes ── */
     .ref-grid { display: grid; gap: 7px; }
     .ref-item {
         display: flex; justify-content: space-between; align-items: center;
-        background: var(--parch); padding: 9px 10px; border-radius: 9px;
+        background: var(--surface2); padding: 9px 10px; border-radius: 9px;
         border: 1px dashed var(--border); font-size: 13px; gap: 8px;
     }
     .ref-label { color: var(--sub); font-size: 12px; font-weight: 300; }
     .ref-code {
         font-family: monospace; font-weight: 700;
-        background: #e0f2fe; color: #0369a1;
+        background: rgba(14,165,233,0.15); color: #38BDF8;
         padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;
     }
 
     /* ── Buttons ── */
     .btn {
         display: flex; align-items: center; justify-content: center; gap: 6px;
-        width: 100%; background: var(--navy); color: white;
+        width: 100%; background: var(--gold); color: #0A0A0A;
         text-decoration: none; padding: 10px 14px; border-radius: 9px;
-        font-size: 13px; font-weight: 600; margin-top: 8px;
+        font-size: 13px; font-weight: 700; margin-top: 8px;
     }
-    .btn-secondary { background: var(--parch); color: var(--navy); border: 1px solid var(--border); }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); font-weight: 600; }
 
     /* ── Restaurants ── */
-    .resto-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 12px; overflow: hidden; }
+    .resto-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.3); margin-bottom: 12px; overflow: hidden; }
     .resto-header { padding: 12px 14px 8px; border-bottom: 1px solid var(--border); }
-    .resto-name { font-size: 15px; font-weight: 700; color: var(--navy); }
-    .resto-name a { color: var(--navy); text-decoration: underline; }
+    .resto-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .resto-name a { color: var(--gold); text-decoration: underline; }
     .resto-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
-    .resto-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--parch); color: var(--sub); }
-    .resto-tag.price { background: #dcfce7; color: var(--green); }
+    .resto-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--surface2); color: var(--sub); }
+    .resto-tag.price { background: rgba(42,122,82,0.2); color: var(--green-text); }
     .resto-body { padding: 10px 14px; display: grid; gap: 7px; }
     .resto-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; }
     .resto-row-icon { width: 16px; flex-shrink: 0; text-align: center; margin-top: 1px; }
     .resto-row-text { flex: 1; color: var(--sub); line-height: 1.4; }
     .resto-row-text strong { color: var(--text); }
+    .resto-row-text a { color: var(--gold); }
     .resto-actions { display: flex; gap: 8px; padding: 0 14px 12px; }
     .resto-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 8px 6px; border-radius: 9px; font-size: 12px; font-weight: 600; text-decoration: none; text-align: center; }
-    .resto-btn-primary { background: var(--navy); color: white; }
-    .resto-btn-secondary { background: var(--parch); color: var(--navy); border: 1px solid var(--border); }
+    .resto-btn-primary { background: var(--gold); color: #0A0A0A; font-weight: 700; }
+    .resto-btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 
     /* ── Meal sub-tabs ── */
     .meal-tabs { display: flex; gap: 6px; padding: 0 0 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .meal-tabs::-webkit-scrollbar { display: none; }
     .meal-tab-btn {
         display: flex; align-items: center; gap: 5px; padding: 7px 14px;
-        border-radius: 20px; border: none; background: var(--parch); color: var(--sub);
+        border-radius: 20px; border: 1px solid var(--border);
+        background: var(--surface); color: var(--sub);
         font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
-        -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s; flex-shrink: 0;
+        -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s, border-color 0.15s; flex-shrink: 0;
         font-family: 'DM Sans', sans-serif;
     }
     .meal-tab-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
-    .meal-tab-btn.active { background: var(--navy); color: white; }
+    .meal-tab-btn.active { background: var(--gold); color: #0A0A0A; border-color: var(--gold); }
     .meal-panel { display: none; }
     .meal-panel.active { display: block; }
 
@@ -347,8 +422,15 @@
         z-index: 200; transition: opacity 0.4s; opacity: 0; pointer-events: none;
     }
     #sync-toast.show { opacity: 1; }
-    #sync-toast.synced { background: #dcfce7; color: var(--green); }
-    #sync-toast.error  { background: #fee2e2; color: #991b1b; }
+    #sync-toast.synced { background: rgba(42,122,82,0.25); color: var(--green-text); }
+    #sync-toast.error  { background: rgba(239,68,68,0.2); color: #F87171; }
+
+    /* ── inline overrides for preserved HTML ── */
+    /* Hotel info card grid text */
+    .card p { color: var(--sub); }
+    .card p strong { color: var(--text); }
+    ul li { color: var(--sub); }
+    ul li strong { color: var(--text); }
     </style>
 </head>
 <body>
@@ -357,13 +439,32 @@
 
     <div id="sync-toast"></div>
 
-    <!-- ── Header ── -->
-    <div class="app-header">
-        <a class="header-back" href="../">◀ <em>Our Trips</em></a>
-        <div class="header-flag" id="app-flag"></div>
-        <div class="header-title" id="app-title">Trip Guide</div>
-        <div class="header-sub" id="app-subtitle"></div>
+    <!-- ── Hero header ── -->
+    <div class="app-hero">
+        <div class="hero-top-row">
+            <a class="hero-back" href="../">‹ Our Trips</a>
+            <div class="hero-pill">Upcoming</div>
+        </div>
+        <div class="hero-mid">
+            <div class="hero-flag-badge">
+                <!-- Belgium: black / yellow / red vertical thirds -->
+                <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
+                    <clipPath id="cl-be"><circle cx="20" cy="20" r="20"/></clipPath>
+                    <g clip-path="url(#cl-be)">
+                        <rect width="40" height="40" fill="#1A1A1A"/>
+                        <rect x="13.33" y="0" width="13.34" height="40" fill="#F5D800"/>
+                        <rect x="26.67" y="0" width="13.33" height="40" fill="#EF3340"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="hero-body">
+                <div class="hero-city" id="app-title">Brussels Guide</div>
+                <div class="hero-dates" id="app-subtitle">12–15 November · Patels + Mistrys</div>
+            </div>
+        </div>
     </div>
+    <!-- hidden flag element so JS can still update it -->
+    <div id="app-flag" hidden></div>
 
     <!-- ── Top tabs ── -->
     <div class="tab-bar-top">
@@ -419,7 +520,7 @@
             </div>
             <div class="card">
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="13" rx="3"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="9" y1="3" x2="9" y2="9"/><line x1="15" y1="3" x2="15" y2="9"/><path d="M7 16l-2 4"/><path d="M17 16l2 4"/><line x1="5" y1="20" x2="19" y2="20"/></svg>Midi Station → Hotel</div>
-                <div style="font-size: 13px; display: grid; gap: 10px;">
+                <div style="font-size: 13px; display: grid; gap: 10px; color: var(--text);">
                     <div><strong>Local Train (Fastest)</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">SNCB train: Bruxelles-Midi → Bruxelles-Central (4 mins, every 5 mins). Hotel is 3 min walk from Central Station.</p></div>
                     <div><strong>Taxi / Uber</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">Available outside Midi terminal. ~10–15 mins, €10–€15.</p></div>
                 </div>
@@ -465,7 +566,7 @@
         <!-- ══ EAT TAB ══ -->
         <div class="tab-panel" id="panel-eat">
             <div class="card" style="margin-bottom: 12px;">
-                <p style="font-size: 12px; color: var(--sub); line-height: 1.6;">All places are near <strong>Hotel Aris Grand Place</strong>. Tap <strong>Directions</strong> for a walking route or <strong>Menu</strong> to browse before you go.</p>
+                <p style="font-size: 12px; color: var(--sub); line-height: 1.6;">All places are near <strong style="color:var(--text);">Hotel Aris Grand Place</strong>. Tap <strong style="color:var(--text);">Directions</strong> for a walking route or <strong style="color:var(--text);">Menu</strong> to browse before you go.</p>
             </div>
             <div class="meal-tabs">
                 <button class="meal-tab-btn active" id="mealtab-breakfast" onclick="switchMeal('breakfast')">
@@ -493,7 +594,7 @@
                         <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>In the hotel building</strong> — Rue du Marché aux Herbes 80. 0 min walk.</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Thu &amp; Sun:</strong> 7:00–20:00 · <strong>Fri–Sat:</strong> 7:00–22:00</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Egg sandwiches, salmon gravlax toast, pancakes, speculoos pancakes, halal options.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225119064" style="color:var(--navy);">+32 2 511 9064</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225119064">+32 2 511 9064</a></div></div>
                     </div>
                     <div class="resto-actions"><a href="https://lloyd-coffee-eatery-grand-place.wheree.com/menu" target="_blank" class="resto-btn resto-btn-secondary">📋 Menu</a><a href="https://www.google.com/maps/search/?api=1&query=Lloyd+Coffee+Eatery+Rue+du+Marche+aux+Herbes+80+Brussels" target="_blank" class="resto-btn resto-btn-primary">📍 Map</a></div>
                 </div>
@@ -503,7 +604,7 @@
                         <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue Chair et Pain 3, on Grand Place itself.</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:00–23:00 · <strong>Sat:</strong> 9:00–00:00 · <strong>Sun:</strong> 9:00–23:00</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Eggs &amp; bacon, avocado bowl, omelettes, vegan tofu scramble, waffles.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225132226" style="color:var(--navy);">+32 2 513 22 26</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225132226">+32 2 513 22 26</a></div></div>
                     </div>
                     <div class="resto-actions"><a href="https://www.thesistercafe-brussels.com/food-menu" target="_blank" class="resto-btn resto-btn-secondary">📋 Menu</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+Chair+et+Pain+3+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
                 </div>
@@ -513,7 +614,7 @@
                         <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~10 min walk</strong> — Avenue de Stalingrad 71, 1000 Brussels.</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text">Daily from 9:00 · Sun–Thu 9:00–23:00 · Fri–Sat 9:00–00:00</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Fluffy pancakes, waffles, omelettes, crêpes, fruit salads. Set breakfast from €7. ⭐ 4.4/5 TripAdvisor.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+32488052464" style="color:var(--navy);">+32 488 05 24 64</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+32488052464">+32 488 05 24 64</a></div></div>
                     </div>
                     <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15007770-Reviews-Cappuccino_Brussel-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Avenue+de+Stalingrad+71+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
                 </div>
@@ -526,7 +627,7 @@
                         <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~3 min walk</strong> — Rue des Éperonniers 49 (just south of Grand Place).</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Mon–Fri:</strong> 10:30–15:00 · <strong>Sat–Sun:</strong> 10:30–17:00</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🥗</div><div class="resto-row-text">Buddha bowls, Pho, Dragon Ball bowl, homemade lemonade. <strong>#2 restaurant in Brussels</strong> on TripAdvisor.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3222651802" style="color:var(--navy);">+32 2 265 18 02</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3222651802">+32 2 265 18 02</a></div></div>
                     </div>
                     <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d15120847-Reviews-Yummy_Bowl-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Eperonniers+49+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
                 </div>
@@ -536,7 +637,7 @@
                         <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~5 min walk</strong> — Rue des Colonies 18 (near Gare Centrale).</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Daily:</strong> 10:00–18:00</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Shakshouka, truffle burrata toast, fluffy pancakes, ZouZou burger, fresh salads &amp; bowls.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+32472102128" style="color:var(--navy);">+32 472 10 21 28</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+32472102128">+32 472 10 21 28</a></div></div>
                     </div>
                     <div class="resto-actions"><a href="https://www.instagram.com/zouzoubrussels/" target="_blank" class="resto-btn resto-btn-secondary">📸 Instagram</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Colonies+18+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
                 </div>
@@ -549,7 +650,7 @@
                         <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>~2 min walk</strong> — Rue des Bouchers 34 (Brussels' famous restaurant street).</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text"><strong>Daily:</strong> 11:00–23:00</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🍳</div><div class="resto-row-text">Live lobster &amp; crab from seawater tanks, moules frites, paella, fresh oysters. Travellers' Choice 2025.</div></div>
-                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225022016" style="color:var(--navy);">+32 2 502 20 16</a></div></div>
+                        <div class="resto-row"><div class="resto-row-icon">📞</div><div class="resto-row-text"><a href="tel:+3225022016">+32 2 502 20 16</a></div></div>
                     </div>
                     <div class="resto-actions"><a href="https://www.tripadvisor.com/Restaurant_Review-g188644-d1910997-Reviews-The_Lobster_House-Brussels.html" target="_blank" class="resto-btn resto-btn-secondary">📋 Reviews</a><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=Rue+des+Bouchers+34+Brussels&travelmode=walking" target="_blank" class="resto-btn resto-btn-primary">📍 Directions</a></div>
                 </div>
@@ -557,7 +658,7 @@
             <!-- Snacks -->
             <div class="meal-panel" id="meal-snacks">
                 <div class="resto-card">
-                    <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank">WAFFELIN</a></div><div class="resto-tags"><span class="resto-tag">🧇 Belgian Waffles</span><span class="resto-tag">☕ Coffee</span><span class="resto-tag" style="background:#fef3c7;color:#92400e;">New — hours unconfirmed</span></div></div>
+                    <div class="resto-header"><div class="resto-name"><a href="https://www.instagram.com/waffelin.bxl/" target="_blank">WAFFELIN</a></div><div class="resto-tags"><span class="resto-tag">🧇 Belgian Waffles</span><span class="resto-tag">☕ Coffee</span><span class="resto-tag" style="background:var(--gold-lt);color:var(--gold);">New — hours unconfirmed</span></div></div>
                     <div class="resto-body">
                         <div class="resto-row"><div class="resto-row-icon">📍</div><div class="resto-row-text"><strong>Grand Place area</strong> — easy to find on foot around the square.</div></div>
                         <div class="resto-row"><div class="resto-row-icon">🕐</div><div class="resto-row-text">Hours not yet confirmed — worth checking their Instagram or asking at the hotel.</div></div>
@@ -590,9 +691,9 @@
             </div>
             <div class="card">
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="19" rx="1"/><path d="M9 22V13h6v9"/><rect x="8.5" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="13" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="8.5" y="10" width="2.5" height="2.5" rx=".5"/><rect x="13" y="10" width="2.5" height="2.5" rx=".5"/></svg>Hotel</div>
-                <p style="font-family:'Playfair Display',Georgia,serif; font-weight:600; font-size:15px;">Hotel Aris Grand Place</p>
+                <p style="font-family:'Playfair Display',Georgia,serif; font-weight:600; font-size:15px; color:var(--text);">Hotel Aris Grand Place</p>
                 <p style="font-size: 12px; color: var(--sub); margin: 4px 0 10px;">Grasmarkt / Rue du Marché aux Herbes 78-80, 1000 Brussels</p>
-                <div style="font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;">
+                <div style="font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; color: var(--text);">
                     <div><strong>Rooms:</strong> 2× Double</div><div><strong>Board:</strong> Room Only</div>
                     <div><strong>Check-in:</strong> From 15:00</div><div><strong>Check-out:</strong> By 11:00</div>
                 </div>
@@ -608,7 +709,7 @@
                         <tr><td><strong>Hotel</strong> <span class="badge-paid">PAID</span></td><td>£685.25</td><td>£342.63</td></tr>
                         <tr><td><strong>Eurostar</strong> <span class="badge-paid">PAID</span></td><td>£560.00</td><td>£280.00</td></tr>
                         <tr><td><strong>EMR Trains</strong> <span class="badge-paid">PAID</span></td><td>£160.00</td><td>£80.00</td></tr>
-                        <tr><td><strong>City Tax</strong> <em style="font-size:11px">(pay at hotel)</em></td><td>£28.82</td><td>£14.41</td></tr>
+                        <tr><td><strong>City Tax</strong> <em style="font-size:11px;color:var(--sub);">(pay at hotel)</em></td><td>£28.82</td><td>£14.41</td></tr>
                         <tr class="total-row"><td>TOTAL</td><td>£1,434.07</td><td>£717.04</td></tr>
                     </tbody>
                 </table>
@@ -617,8 +718,8 @@
             <div class="card">
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 1 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"/></svg>Travel Notes</div>
                 <ul style="font-size: 12px; padding-left: 18px; line-height: 1.9; color: var(--sub);">
-                    <li>Belgium is <strong>1 hour ahead</strong> of UK time (CET).</li>
-                    <li>Arrive at St Pancras by <strong>11:45</strong> for Eurostar security.</li>
+                    <li>Belgium is <strong style="color:var(--text);">1 hour ahead</strong> of UK time (CET).</li>
+                    <li>Arrive at St Pancras by <strong style="color:var(--text);">11:45</strong> for Eurostar security.</li>
                     <li>All 4 passports required for check-in and transit.</li>
                 </ul>
             </div>
@@ -663,7 +764,7 @@ const TRIP = {
                 { type:'item', key:'d2-metro-out',  cls:'travel',   time:'19:00',  name:'🚇 Depart Hotel → ING Arena', detail:'Metro from Gare Centrale → Roi Baudouin (line 2/6, ~20 mins). Or taxi ~15 mins, €12–18. Leave by 19:00.' },
                 { type:'item', key:'d2-concert',    cls:'activity', time:'20:00',  name:'🎵 The World of Hans Zimmer', nameUrl:'https://www.ticketmaster.be/venue/ing-arena-brussels-tickets/p12/101', detail:'A New Dimension · ING Arena, Brussels · Doors open ~19:00 · Show starts 20:00' },
                 { type:'item', key:'d2-metro-return',cls:'travel',  time:'~22:30', name:'🚇 Return — ING Arena → Hotel', detail:'Metro Roi Baudouin → Gare Centrale, or taxi from arena (~20 mins). Shows typically end ~22:30.' },
-                { type:'info', html:'<div style="background:#eff6ff;border-radius:10px;padding:9px 12px;margin-top:4px;font-size:11px;color:#1e40af;line-height:1.5;"><strong>📍 ING Arena</strong> — Avenue de l\'Impératrice Charlotte, Laeken, Brussels.<br><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=ING+Arena+Brussels&travelmode=transit" target="_blank" style="color:#2563eb;font-weight:600;">Get directions from hotel →</a></div>' },
+                { type:'info', html:'<div style="background:rgba(59,130,246,0.1);border-radius:10px;padding:9px 12px;margin-top:4px;font-size:11px;color:#93C5FD;line-height:1.5;border:1px solid rgba(59,130,246,0.2);"><strong style="color:#BFDBFE;">📍 ING Arena</strong> — Avenue de l\'Impératrice Charlotte, Laeken, Brussels.<br><a href="https://www.google.com/maps/dir/?api=1&origin=Hotel+Aris+Grand+Place+Brussels&destination=ING+Arena+Brussels&travelmode=transit" target="_blank" style="color:#60A5FA;font-weight:600;">Get directions from hotel →</a></div>' },
             ]
         },
         {
