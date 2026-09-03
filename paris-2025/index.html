@@ -804,133 +804,62 @@
 </div><!-- /app-shell -->
 
 <script>
-const TRIP = {
-    id:       'paris-aug-2025',
-    name:     'Paris Guide',
-    flag:     '🇫🇷',
-    subtitle: '7–10 August · The Patels',
-
-    days: [
-        {
-            id: 'day1', open: true,
-            date:  'Thursday 7th August',
-            label: 'Travel Day — Arrive Paris ~16:30',
-            rows: [
-                { type:'item', key:'d1-train-out', cls:'travel', time:'09:12', name:'Train — Leicester → London St Pancras',
-                  detail:'Arrives 10:27. Eurostar check-in by 11:30.',
-                  duration: '1h 15min',
-                  location: { name:'Leicester Station', address:'London Road, Leicester LE2 0QB', mapsUrl:'https://www.google.com/maps/search/?api=1&query=Leicester+Railway+Station' },
-                  checklist: [
-                      { key:'d1-train-ck1', label:'Train tickets downloaded / printed' },
-                      { key:'d1-train-ck2', label:'All 6 passports & travel documents ready' },
-                      { key:'d1-train-ck3', label:'All luggage ready at the door' },
-                  ]
-                },
-                { type:'item', key:'d1-eurostar-out', cls:'travel', time:'12:31', name:'Eurostar — London St Pancras → Paris Gare du Nord',
-                  detail:'Arrives Paris 15:49 (French time). Journey ~2h 15min.',
-                  duration: '~2h 15min',
-                  location: { name:'London St Pancras International', address:'Euston Road, London N1C 4QP', mapsUrl:'https://www.google.com/maps/search/?api=1&query=St+Pancras+International+Station' },
-                  cta: { label:'Open Eurostar Tickets', url:'https://www.eurostar.com' },
-                  checklist: [
-                      { key:'d1-eurostar-ck1', label:'At St Pancras by 11:30 for security' },
-                      { key:'d1-eurostar-ck2', label:'All 6 passports in hand' },
-                      { key:'d1-eurostar-ck3', label:'Eurostar e-tickets on phones' },
-                  ]
-                },
-                { type:'item', key:'d1-checkin', cls:'travel', time:'~16:30', name:'Check-in — Hôtel du Bois Champs-Elysées',
-                  detail:'Check-in from 15:00. Expedia ref: 72076823141769.',
-                  location: { name:'Hôtel du Bois Champs-Elysées', address:'11 Rue du Dôme, 75116 Paris', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Gare+du+Nord+Paris&destination=Hotel+du+Bois+Paris+11+Rue+du+Dome&travelmode=transit' },
-                  cta: { label:'Hotel Website', url:'https://www.hoteldubois.com' },
-                  checklist: [
-                      { key:'d1-checkin-ck1', label:'Expedia ref noted (72076823141769)' },
-                      { key:'d1-checkin-ck2', label:'Hotel conf 1BRFN5 confirmed at desk' },
-                      { key:'d1-checkin-ck3', label:'Room allocation confirmed (2 rooms)' },
-                  ]
-                },
-            ]
-        },
-        {
-            id: 'day2', open: false,
-            date:  'Friday 8th August',
-            label: 'Full Day in Paris',
-            rows: [
-                { type:'empty', note:'Nothing planned — free day in Paris. Explore!' },
-            ]
-        },
-        {
-            id: 'day3', open: false,
-            date:  'Sunday 9th August',
-            label: 'Full Day in Paris',
-            rows: [
-                { type:'item', key:'paris-d3-taxi-psg', cls:'travel', time:'10:15', name:'Taxi to Parc des Princes',
-                  detail:'From hotel · allow ~30–40 min' },
-                { type:'item', key:'paris-d3-psg-tour', cls:'activity', time:'11:00', name:'PSG Stadium Tour — Parc des Princes',
-                  detail:'Nisha, Maya &amp; Aarjan · 3 tickets · €84 total (€28pp)',
-                  notes:'Order #3037274 · Download QR tickets from personal space → "Stadium Tour tickets" before travelling',
-                  location: { name:'Parc des Princes', address:'24 Rue du Commandant Guilbaud, 75016 Paris', mapsUrl:'https://maps.google.com/?q=Parc+des+Princes+Paris' },
-                  cta: { label:'Download Tickets', url:'https://www.psg.fr/en/club/parc-des-princes/stadium-tours' },
-                },
-                { type:'item', key:'paris-d3-taxi-back', cls:'travel', time:'13:00', name:'Taxi back to Hotel',
-                  detail:'From Parc des Princes' },
-            ]
-        },
-        {
-            id: 'day4', open: false,
-            date:  'Monday 10th August',
-            label: 'Departure Day',
-            rows: [
-                { type:'item', key:'d4-checkout', cls:'travel', time:'~11:00', name:'Hotel check-out',
-                  detail:'Check-out by 12:00. Allow time to get to Gare du Nord.',
-                  checklist: [
-                      { key:'d4-checkout-ck1', label:'All rooms cleared & luggage ready' },
-                      { key:'d4-checkout-ck2', label:'Room keys returned at desk' },
-                      { key:'d4-checkout-ck3', label:'Nothing left in hotel safe' },
-                  ]
-                },
-                { type:'item', key:'d4-eurostar-return', cls:'travel', time:'12:42', name:'Eurostar — Paris Gare du Nord → London St Pancras',
-                  detail:'Arrives London 14:00 UK time. Check-in by ~11:30.',
-                  duration: '~2h 15min',
-                  location: { name:'Paris Gare du Nord', address:'18 Rue de Dunkerque, 75010 Paris', mapsUrl:'https://www.google.com/maps/dir/?api=1&origin=Hotel+du+Bois+Paris&destination=Gare+du+Nord+Paris&travelmode=transit' },
-                  cta: { label:'Open Eurostar Tickets', url:'https://www.eurostar.com' },
-                  checklist: [
-                      { key:'d4-eurostar-ck1', label:'At Gare du Nord by 11:30 for check-in' },
-                      { key:'d4-eurostar-ck2', label:'All 6 passports in hand' },
-                      { key:'d4-eurostar-ck3', label:'Eurostar e-tickets on phones' },
-                  ]
-                },
-                { type:'item', key:'d4-train-home', cls:'travel', time:'15:05', name:'Train — London St Pancras → Leicester',
-                  detail:'Arrives 16:15. Check platform on departure boards.',
-                  duration: '~1h 10min',
-                  location: { name:'London St Pancras International', address:'Euston Road, London N1C 4QP', mapsUrl:'https://www.google.com/maps/search/?api=1&query=St+Pancras+International+Station' },
-                },
-            ]
-        },
-    ]
-};
-
 const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
+const TRIP_ID = 'paris-aug-2025';
 
-document.getElementById('app-flag').textContent    = TRIP.flag || '';
-document.getElementById('app-title').textContent   = TRIP.name;
-document.getElementById('app-subtitle').textContent = TRIP.subtitle;
-document.title = TRIP.flag + ' ' + TRIP.name + ' · Trip Guide';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let TRIP = null;
+let _doneState = {};
+const _localWriteAt = {};
 
 const DOT_CLASS = { travel:'dot-travel', activity:'dot-activity', food:'dot-food', sight:'dot-sight' };
-const DOT_COLOR = { travel:'#3B82F6', activity:'#C9A227', food:'#F97316', sight:'#818CF8' };
+const DOT_COLOR  = { travel:'#3B82F6',   activity:'#C9A227',      food:'#F97316',  sight:'#818CF8' };
 
-const ITEM_MAP = {};
+const ITEM_MAP   = {};
 const DAY_FOR_KEY = {};
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T12:00:00');
+    const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const n = d.getDate();
+    const suffix = (n > 3 && n < 21) ? 'th' : ['th','st','nd','rd','th'][Math.min(n % 10, 4)];
+    return `${dayNames[d.getDay()]} ${n}${suffix} ${monthNames[d.getMonth()]}`;
+}
+
+function rowFromDb(r) {
+    if (r.type === 'empty')   return { type:'empty',   note: r.detail || '' };
+    if (r.type === 'section') return { type:'section',  label: r.name  || '' };
+    return {
+        type:      r.type,
+        key:       r.key,
+        cls:       r.cls,
+        time:      r.time,
+        name:      r.name,
+        detail:    r.detail,
+        duration:  r.duration,
+        notes:     r.notes,
+        location:  r.location_name ? { name: r.location_name, address: r.location_address, mapsUrl: r.location_maps_url } : null,
+        cta:       r.cta_label     ? { label: r.cta_label,    url: r.cta_url }                                           : null,
+        checklist: r.checklist || [],
+    };
+}
 
 function hasDetail(row) {
     return !!(row.location || row.cta || (row.checklist && row.checklist.length) || row.notes);
 }
 
+// ── Render ────────────────────────────────────────────────────────────────────
+
 function renderDays() {
     TRIP.days.forEach(day => {
         (day.rows || []).forEach(row => {
             if (row.type === 'item') {
-                ITEM_MAP[row.key] = row;
+                ITEM_MAP[row.key]    = row;
                 DAY_FOR_KEY[row.key] = day;
             }
             (row.checklist || []).forEach(ck => { DAY_FOR_KEY[ck.key] = day; });
@@ -961,8 +890,8 @@ function renderDays() {
 
         day.rows.forEach(row => {
             if (row.type === 'item') {
-                const dotCls = DOT_CLASS[row.cls] || 'dot-travel';
-                const rich   = hasDetail(row);
+                const dotCls  = DOT_CLASS[row.cls] || 'dot-travel';
+                const rich    = hasDetail(row);
                 const nameHtml = row.nameUrl
                     ? `<a href="${row.nameUrl}" target="_blank">${row.name}</a>`
                     : row.name;
@@ -998,6 +927,8 @@ function renderDays() {
         toggleDone(el);
     });
 }
+
+// ── Sheet ─────────────────────────────────────────────────────────────────────
 
 let _sheetKey = null;
 
@@ -1063,7 +994,7 @@ function openSheet(key) {
 
     body.querySelectorAll('.cl-item[data-ck]').forEach(el => {
         el.addEventListener('click', async function() {
-            const ck  = el.dataset.ck;
+            const ck   = el.dataset.ck;
             const next = !_doneState[ck];
             _doneState[ck] = next;
             el.classList.toggle('done', next);
@@ -1106,6 +1037,8 @@ function refreshSheetChecklist() {
     });
 }
 
+// ── Nav ───────────────────────────────────────────────────────────────────────
+
 function switchTab(name) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn-top').forEach(b => b.classList.remove('active'));
@@ -1116,8 +1049,7 @@ function switchTab(name) {
 
 function toggleDay(id) { document.getElementById(id).classList.toggle('open'); }
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let _doneState = {};
+// ── Done state ────────────────────────────────────────────────────────────────
 
 function showToast(type) {
     const el = document.getElementById('sync-toast');
@@ -1152,23 +1084,6 @@ async function loadDone() {
     }
 }
 
-const _localWriteAt = {};
-
-sb.channel('itinerary-sync-' + TRIP.id)
-    .on('postgres_changes', {
-        event: '*', schema: 'public', table: 'itinerary_done',
-        filter: 'trip_id=eq.' + TRIP.id
-    }, payload => {
-        if (payload.new && payload.new.item_key !== undefined) {
-            const key = payload.new.item_key;
-            const age = Date.now() - (_localWriteAt[key] || 0);
-            if (age < 5000) return;
-            _doneState[key] = payload.new.done;
-            applyDoneState();
-        }
-    })
-    .subscribe();
-
 async function toggleDone(el) {
     const key = el.dataset.key;
     if (!key) return;
@@ -1192,8 +1107,60 @@ async function toggleDone(el) {
     showToast(error ? 'error' : 'synced');
 }
 
-renderDays();
-loadDone();
+// ── Init: load everything from Supabase ───────────────────────────────────────
+
+async function init() {
+    document.getElementById('panel-days').innerHTML =
+        '<div style="padding:48px 24px;text-align:center;color:var(--sub);font-size:13px;">Loading itinerary…</div>';
+
+    const [{ data: tripData }, { data: daysData }] = await Promise.all([
+        sb.from('trips').select('*').eq('id', TRIP_ID).single(),
+        sb.from('trip_days').select('*').eq('trip_id', TRIP_ID).order('day_number'),
+    ]);
+
+    const dayIds = (daysData || []).map(d => d.id);
+    const { data: itemsData } = await sb.from('trip_items').select('*').in('day_id', dayIds).order('sort_order');
+
+    TRIP = {
+        id:       tripData.id,
+        name:     tripData.city + ' Guide',
+        flag:     tripData.flag_svg || '',
+        subtitle: tripData.subtitle || '',
+        days: (daysData || []).map(day => ({
+            id:    'day-' + day.day_number,
+            open:  day.expanded_default,
+            date:  formatDate(day.date),
+            label: day.label || '',
+            rows:  (itemsData || []).filter(r => r.day_id === day.id).map(rowFromDb),
+        })),
+    };
+
+    document.getElementById('app-flag').textContent     = TRIP.flag;
+    document.getElementById('app-title').textContent    = TRIP.name;
+    document.getElementById('app-subtitle').textContent = TRIP.subtitle;
+    document.title = TRIP.flag + ' ' + TRIP.name + ' · Trip Guide';
+
+    renderDays();
+    loadDone();
+
+    sb.channel('itinerary-sync-' + TRIP.id)
+        .on('postgres_changes', {
+            event: '*', schema: 'public', table: 'itinerary_done',
+            filter: 'trip_id=eq.' + TRIP.id
+        }, payload => {
+            if (payload.new && payload.new.item_key !== undefined) {
+                const key = payload.new.item_key;
+                if ((Date.now() - (_localWriteAt[key] || 0)) < 5000) return;
+                _doneState[key] = payload.new.done;
+                applyDoneState();
+            }
+        })
+        .subscribe();
+}
+
+init();
+
+// ── Hero slideshow ────────────────────────────────────────────────────────────
 
 (function() {
     const slides = document.querySelectorAll('#app-hero .hero-slide');
