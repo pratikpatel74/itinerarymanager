@@ -366,7 +366,7 @@
         <div class="header-top">
             <div class="greeting">Good to see you, <strong>Pratik!</strong></div>
             <div class="avatar-wrapper">
-                <button class="avatar-ring" onclick="toggleUserMenu(event)" title="Account">PP</button>
+                <button class="avatar-ring" id="avatar-btn" onclick="toggleUserMenu(event)" title="Account">PP</button>
                 <div class="user-menu" id="user-menu" hidden>
                     <div class="user-menu-email" id="user-menu-email">—</div>
                     <button class="user-menu-item danger" onclick="signOut()">Sign out</button>
@@ -567,11 +567,21 @@ const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+const USER_PROFILES = {
+    'pratikpatel74@hotmail.com':  { initials: 'PP', name: 'Pratik' },
+    'nishapatel@hotmail.co.uk':   { initials: 'NP', name: 'Nisha' },
+    'sanjay@skmdesign.co.uk':     { initials: 'SM', name: 'Sanjay' },
+};
+
 (async function() {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { window.location.replace('login.html'); return; }
+    const email = session.user.email.toLowerCase();
+    const profile = USER_PROFILES[email] || { initials: email[0].toUpperCase(), name: email };
+    const avatarBtn = document.getElementById('avatar-btn');
+    if (avatarBtn) avatarBtn.textContent = profile.initials;
     const emailEl = document.getElementById('user-menu-email');
-    if (emailEl && session.user) emailEl.textContent = session.user.email;
+    if (emailEl) emailEl.textContent = profile.name + ' · ' + session.user.email;
 })();
 
 function toggleUserMenu(e) {
