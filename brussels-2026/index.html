@@ -1936,7 +1936,7 @@ init();
                 '</div>' +
                 '<div style="display:flex;gap:4px;align-items:center;">' +
                 '<a href="' + escH(mUrl) + '" target="_blank" class="map-link">' + mapLabel + '</a>' +
-                '<button class="row-edit-btn" onclick="openXSheet(' + JSON.stringify(a.id) + ')" title="Edit">' + PENCIL_SVG + '</button>' +
+                '<button class="row-edit-btn" onclick="openXSheet(\'' + a.id + '\')" title="Edit">' + PENCIL_SVG + '</button>' +
                 '</div></div>';
         }).join('');
     }
@@ -2056,7 +2056,7 @@ init();
                 '<div class="resto-name"><a href="' + escH(r.website_url || '#') + '" target="_blank">' + escH(r.name) + '</a></div>' +
                 '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">' +
                 '<div class="resto-tags">' + tagsHtml + '</div>' +
-                '<button class="row-edit-btn" onclick="openRSheet(' + JSON.stringify(r.id) + ',\'' + r.meal_type + '\')" title="Edit">' + PENCIL_SVG + '</button>' +
+                '<button class="row-edit-btn" onclick="openRSheet(\'' + r.id + '\',\'' + r.meal_type + '\')" title="Edit">' + PENCIL_SVG + '</button>' +
                 '</div></div>' +
                 (bodyRows ? '<div class="resto-body">' + bodyRows + '</div>' : '') +
                 (actHtml ? '<div class="resto-actions">' + actHtml + '</div>' : '') +
