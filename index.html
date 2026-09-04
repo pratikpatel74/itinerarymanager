@@ -630,11 +630,14 @@ const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-(async function() {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) { window.location.replace('login.html'); return; }
+sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'INITIAL_SESSION') {
+        if (!session) { window.location.replace('login.html'); return; }
+        initHomepage(session);
+    }
+});
 
-    // Fetch profile from Supabase
+async function initHomepage(session) {
     const { data: profile } = await sb.from('profiles')
         .select('name, initials, allowed_trips')
         .eq('user_id', session.user.id)
@@ -658,8 +661,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             card.hidden = true;
         }
     });
-
-})();
+}
 
 function toggleUserMenu(e) {
     e.stopPropagation();
