@@ -249,11 +249,13 @@
     <!-- Background slideshow -->
     <div class="bg-stage" id="bg-stage">
         <div class="bg-slide active" style="background-image:url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=70')"></div>
-        <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1607894379039-89be884f69df?auto=format&fit=crop&w=1200&q=70')"></div>
-        <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=70')"></div>
-        <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1548092304-e0205cb0031b?auto=format&fit=crop&w=1200&q=70')"></div>
         <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=1200&q=70')"></div>
-        <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1559113202-c916b8e44373?auto=format&fit=crop&w=1200&q=70')"></div>
+        <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1607894379039-89be884f69df?auto=format&fit=crop&w=1200&q=70')"></div>
+        <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1548092304-e0205cb0031b?auto=format&fit=crop&w=1200&q=70')"></div>
+        <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=1200&q=70')"></div>
+        <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&q=70')"></div>
+        <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1585208798174-6cedd4b8d824?auto=format&fit=crop&w=1200&q=70')"></div>
+        <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=1200&q=70')"></div>
         <div class="bg-overlay"></div>
     </div>
 
@@ -279,6 +281,22 @@
                         <rect x="29.33" width="14.67" height="44" fill="#EF3340"/>
                     </g>
                 </svg>
+                <!-- Spain flag circle -->
+                <svg class="flag-circle" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+                    <clipPath id="cl-es"><circle cx="22" cy="22" r="22"/></clipPath>
+                    <g clip-path="url(#cl-es)">
+                        <rect width="44" height="44" fill="#c60b1e"/>
+                        <rect y="11" width="44" height="22" fill="#ffc400"/>
+                    </g>
+                </svg>
+                <!-- Portugal flag circle -->
+                <svg class="flag-circle" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+                    <clipPath id="cl-pt"><circle cx="22" cy="22" r="22"/></clipPath>
+                    <g clip-path="url(#cl-pt)">
+                        <rect width="44" height="44" fill="#006600"/>
+                        <rect x="17.6" width="26.4" height="44" fill="#FF0000"/>
+                    </g>
+                </svg>
             </div>
             <div class="brand-title">Trip Guide</div>
             <div class="brand-sub">Family Travel · 2025–2026</div>
@@ -301,7 +319,7 @@
         <p class="footer-note">No account? Contact Pratik to get access.</p>
     </div>
 
-    <div class="city-strip" id="city-strip">Paris · Brussels</div>
+    <div class="city-strip" id="city-strip">Paris · Brussels · Barcelona · Lisbon</div>
 
     <script>
         const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
@@ -316,7 +334,7 @@
         // Background slideshow
         (function() {
             const slides = Array.from(document.querySelectorAll('.bg-slide'));
-            const labels = ['Paris', 'Brussels', 'Paris', 'Brussels', 'Paris', 'Brussels'];
+            const labels = ['Paris', 'Paris', 'Brussels', 'Brussels', 'Barcelona', 'Barcelona', 'Lisbon', 'Lisbon'];
             const strip  = document.getElementById('city-strip');
             let cur = 0;
             setInterval(() => {

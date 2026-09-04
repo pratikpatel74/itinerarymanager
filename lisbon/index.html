@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🇵🇹 Lisbon · Trip Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap">
+    <style>
+    :root {
+        --gold:#C9A227;--gold-lt:rgba(201,162,39,0.15);--gold-md:rgba(201,162,39,0.3);
+        --bg:#0A0A0A;--surface:#1C1C1E;--surface2:#242426;--border:rgba(255,255,255,0.08);
+        --text:#F2F2F2;--sub:#8E8E93;--sub2:#48484A;
+        --radius:14px;--tab-h:60px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;overflow:hidden;background:#0A0A0A;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;}
+
+    .app-shell{max-width:480px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);box-shadow:0 0 80px rgba(0,0,0,0.8);position:relative;}
+
+    .app-hero{flex-shrink:0;position:relative;height:186px;overflow:hidden;background:#080808;}
+    .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.2s ease;}
+    .hero-slide.active{opacity:1;}
+    .hero-gradient{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.25) 0%,rgba(0,0,0,0.55) 100%);pointer-events:none;}
+    .hero-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:16px 20px 14px;}
+    .hero-title{font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.3px;line-height:1.1;}
+    .hero-sub{font-size:12px;color:rgba(255,255,255,0.65);margin-top:3px;}
+    .hero-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(139,92,246,0.25);color:#C4B5FD;border:1px solid rgba(139,92,246,0.35);margin-bottom:8px;}
+    .back-btn{position:absolute;top:14px;left:14px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;}
+
+    .tab-bar-top{display:flex;overflow-x:auto;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;scrollbar-width:none;}
+    .tab-bar-top::-webkit-scrollbar{display:none;}
+    .tab-btn-top{flex-shrink:0;padding:0 18px;height:var(--tab-h);border:none;background:none;color:var(--sub);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2.5px solid transparent;transition:color .15s,border-color .15s;}
+    .tab-btn-top.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+    .content-area{flex:1;overflow-y:auto;padding:16px 16px 80px;scrollbar-width:none;}
+    .content-area::-webkit-scrollbar{display:none;}
+    .tab-panel{display:none;}.tab-panel.active{display:block;}
+
+    .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:12px;}
+    .card-title{font-size:12px;font-weight:600;color:var(--sub);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+    .attraction-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+    .attraction-item:last-child{border-bottom:none;}
+    .attraction-info{flex:1;min-width:0;}
+    .attraction-name-link{font-size:14px;font-weight:500;color:var(--text);text-decoration:none;display:block;}
+    .attraction-name-link:hover{color:var(--gold);}
+    .attraction-dist{font-size:11px;color:var(--sub);margin-top:2px;display:flex;align-items:center;gap:4px;}
+    .attraction-cat{font-size:10px;font-weight:600;letter-spacing:0.4px;padding:2px 7px;border-radius:10px;margin-left:6px;}
+    .cat-icon{background:rgba(201,162,39,0.12);color:var(--gold);}
+    .cat-arch{background:rgba(139,92,246,0.12);color:#C4B5FD;}
+    .cat-nature{background:rgba(34,197,94,0.12);color:#86EFAC;}
+    .cat-food{background:rgba(236,72,153,0.12);color:#F9A8D4;}
+    .cat-art{background:rgba(59,130,246,0.12);color:#93C5FD;}
+    .map-link{flex-shrink:0;font-size:11px;font-weight:600;color:var(--gold);text-decoration:none;padding:4px 10px;border:1px solid var(--gold-md);border-radius:8px;margin-left:8px;white-space:nowrap;}
+    .map-link:hover{background:var(--gold-lt);}
+
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+    .info-tile{background:var(--surface2);border-radius:10px;padding:12px;border:1px solid var(--border);}
+    .info-tile-label{font-size:10px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+    .info-tile-val{font-size:14px;font-weight:600;color:var(--text);}
+    .info-tile-sub{font-size:11px;color:var(--sub);margin-top:2px;}
+
+    @media(min-width:900px){
+        .app-shell{max-width:100%;box-shadow:none;display:grid;grid-template-columns:220px 1fr;grid-template-rows:180px auto 1fr;height:100dvh;overflow:hidden;}
+        .app-hero{grid-column:1/-1;grid-row:1;height:180px;}
+        .tab-bar-top{grid-column:1;grid-row:2/4;flex-direction:column;border-bottom:none;border-right:1px solid var(--border);padding:12px 0;align-items:stretch;height:auto;overflow-y:auto;}
+        .tab-btn-top{flex-direction:row;gap:10px;justify-content:flex-start;text-align:left;padding:13px 20px;border-bottom:none!important;border-left:3px solid transparent;height:auto;}
+        .tab-btn-top.active{border-left-color:var(--gold);background:rgba(201,162,39,0.09);color:var(--gold);}
+        .content-area{grid-column:2;grid-row:2/4;padding:28px 48px 32px;}
+    }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+
+    <div class="app-hero">
+        <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1548160560-d5e95a46a289?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1564960055240-0ec49a8c11e5?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1555952237-4e13294b1b03?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1596989900377-16e0c7f53c90?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-gradient"></div>
+        <a class="back-btn" href="../" aria-label="Back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </a>
+        <div class="hero-content">
+            <div class="hero-pill">Recommended</div>
+            <div class="hero-title">🇵🇹 Lisbon</div>
+            <div class="hero-sub">Portugal · City Guide</div>
+        </div>
+    </div>
+
+    <nav class="tab-bar-top">
+        <button class="tab-btn-top active" onclick="switchTab('explore')">Explore</button>
+        <button class="tab-btn-top" onclick="switchTab('info')">City Info</button>
+    </nav>
+
+    <div class="content-area">
+
+        <div class="tab-panel active" id="panel-explore">
+            <div class="card">
+                <div class="card-title">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                    Top Attractions
+                </div>
+                <div id="explore-list"></div>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="panel-info">
+            <div class="info-grid">
+                <div class="info-tile"><div class="info-tile-label">Country</div><div class="info-tile-val">Portugal</div><div class="info-tile-sub">Capital city</div></div>
+                <div class="info-tile"><div class="info-tile-label">Language</div><div class="info-tile-val">Portuguese</div><div class="info-tile-sub">English widely spoken</div></div>
+                <div class="info-tile"><div class="info-tile-label">Currency</div><div class="info-tile-val">Euro (€)</div><div class="info-tile-sub">Very affordable EU city</div></div>
+                <div class="info-tile"><div class="info-tile-label">Time Zone</div><div class="info-tile-val">WET / WEST</div><div class="info-tile-sub">UTC+0 / UTC+1</div></div>
+                <div class="info-tile"><div class="info-tile-label">Airport</div><div class="info-tile-val">LIS</div><div class="info-tile-sub">Humberto Delgado · 20 min</div></div>
+                <div class="info-tile"><div class="info-tile-label">Best Time</div><div class="info-tile-val">Mar – Jun</div><div class="info-tile-sub">Sep–Oct also great</div></div>
+            </div>
+            <div class="card">
+                <div class="card-title">Getting Around</div>
+                <p style="font-size:13px;color:var(--sub);line-height:1.7;">Lisbon's hills are best navigated by <strong style="color:var(--text)">tram, metro and funicular</strong>. The Viva Viagem card covers all public transport. Tram 28 is iconic but crowded — walk the route at least once. Uber is cheap and reliable for the steeper neighbourhoods.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Neighbourhoods</div>
+                <p style="font-size:13px;color:var(--sub);line-height:1.7;"><strong style="color:var(--text)">Alfama</strong> – oldest district, Fado music, castles. <strong style="color:var(--text)">Belém</strong> – UNESCO monuments and pastéis. <strong style="color:var(--text)">Príncipe Real</strong> – boutiques and miradouros. <strong style="color:var(--text)">LX Factory</strong> – weekend market and street art. <strong style="color:var(--text)">Sintra</strong> – day trip, palaces and forests.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Must Eat</div>
+                <p style="font-size:13px;color:var(--sub);line-height:1.7;"><strong style="color:var(--text)">Pastel de nata</strong> at Pastéis de Belém (the original since 1837). <strong style="color:var(--text)">Bacalhau</strong> (salt cod — said to have 365 recipes). <strong style="color:var(--text)">Bifanas</strong> (pork sandwiches). Time Out Market Lisboa for a curated tasting of the best local chefs.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+const SPOTS = [
+    { name:'Belém Tower', cat:'arch', catLabel:'UNESCO', dist:'16th-century fortress on the Tagus — the symbol of Lisbon', url:'https://torrebelem.gov.pt', maps:'https://maps.google.com/?q=Torre+de+Belem+Lisbon' },
+    { name:'Jerónimos Monastery', cat:'arch', catLabel:'UNESCO', dist:'Stunning Manueline architecture, Vasco da Gama\'s tomb', url:'https://patrimoniocultural.gov.pt', maps:'https://maps.google.com/?q=Jeronimos+Monastery+Lisbon' },
+    { name:'São Jorge Castle', cat:'icon', catLabel:'Historic', dist:'Moorish castle with sweeping city panoramas', url:'https://castelodesaojorge.pt', maps:'https://maps.google.com/?q=Castelo+Sao+Jorge+Lisbon' },
+    { name:'Alfama District', cat:'icon', catLabel:'Neighbourhood', dist:'Oldest quarter — Fado houses, tiled facades, steep alleys', url:'https://www.visitlisboa.com', maps:'https://maps.google.com/?q=Alfama+Lisbon' },
+    { name:'Praça do Comércio', cat:'icon', catLabel:'Landmark', dist:'Grand waterfront square opening onto the Tagus', url:'https://www.visitlisboa.com', maps:'https://maps.google.com/?q=Praca+do+Comercio+Lisbon' },
+    { name:'LX Factory', cat:'art', catLabel:'Culture', dist:'Industrial complex reborn as market, cafés & street art', url:'https://lxfactory.com', maps:'https://maps.google.com/?q=LX+Factory+Lisbon' },
+    { name:'MAAT Museum', cat:'art', catLabel:'Art', dist:'Contemporary art beside the river in Belém', url:'https://maat.pt', maps:'https://maps.google.com/?q=MAAT+Museum+Lisbon' },
+    { name:'Miradouro da Graça', cat:'nature', catLabel:'Viewpoint', dist:'Best sunset viewpoint, locals\' favourite over Alfama', url:'https://www.visitlisboa.com', maps:'https://maps.google.com/?q=Miradouro+da+Graca+Lisbon' },
+    { name:'Time Out Market Lisboa', cat:'food', catLabel:'Food', dist:'Top chefs, local produce — Mercado da Ribeira', url:'https://www.timeoutmarket.com/lisboa', maps:'https://maps.google.com/?q=Time+Out+Market+Lisboa' },
+    { name:'Sintra', cat:'nature', catLabel:'Day Trip', dist:'Palaces, castles and forests — 40 min by train from Rossio', url:'https://www.parquesdesintra.pt', maps:'https://maps.google.com/?q=Sintra+Portugal' },
+];
+
+const CAT_CLS = { icon:'cat-icon', arch:'cat-arch', nature:'cat-nature', food:'cat-food', art:'cat-art' };
+const walkSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>';
+
+document.getElementById('explore-list').innerHTML = SPOTS.map(s =>
+    `<div class="attraction-item">
+        <div class="attraction-info">
+            <a href="${s.url}" target="_blank" class="attraction-name-link">${s.name}
+                <span class="attraction-cat ${CAT_CLS[s.cat]}">${s.catLabel}</span>
+            </a>
+            <div class="attraction-dist">${walkSvg} ${s.dist}</div>
+        </div>
+        <a href="${s.maps}" target="_blank" class="map-link">Map</a>
+    </div>`
+).join('');
+
+function switchTab(id) {
+    document.querySelectorAll('.tab-btn-top').forEach((b,i) => {
+        b.classList.toggle('active', ['explore','info'][i] === id);
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+}
+
+(function() {
+    const slides = Array.from(document.querySelectorAll('.hero-slide'));
+    let cur = 0;
+    setInterval(() => {
+        slides[cur].classList.remove('active');
+        cur = (cur + 1) % slides.length;
+        slides[cur].classList.add('active');
+    }, 4000);
+})();
+
+const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'INITIAL_SESSION' && !session) window.location.replace('../login.html');
+});
+</script>
+</body>
+</html>
