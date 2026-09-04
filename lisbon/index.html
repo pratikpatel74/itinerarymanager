@@ -27,7 +27,7 @@
     .hero-title{font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.3px;line-height:1.1;}
     .hero-sub{font-size:12px;color:rgba(255,255,255,0.65);margin-top:3px;}
     .hero-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(139,92,246,0.25);color:#C4B5FD;border:1px solid rgba(139,92,246,0.35);margin-bottom:8px;}
-    .back-btn{position:absolute;top:14px;left:14px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;}
+    .back-btn{position:absolute;top:14px;left:14px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;z-index:10;}
 
     .tab-bar-top{display:flex;overflow-x:auto;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;scrollbar-width:none;}
     .tab-bar-top::-webkit-scrollbar{display:none;}
@@ -70,6 +70,11 @@
         .tab-btn-top.active{border-left-color:var(--gold);background:rgba(201,162,39,0.09);color:var(--gold);}
         .content-area{grid-column:2;grid-row:2/4;padding:28px 48px 32px;}
     }
+    
+    .hero-mid{display:flex;align-items:center;gap:10px;}
+    .hero-flag-badge{width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,0.22);box-shadow:0 2px 10px rgba(0,0,0,0.45);background:#111;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .hero-city{font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.3px;line-height:1.1;text-shadow:0 1px 8px rgba(0,0,0,0.5);}
+    .hero-dates{font-size:12px;color:rgba(255,255,255,0.65);margin-top:3px;}
     </style>
 </head>
 <body>
@@ -83,13 +88,26 @@
         <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=1200&q=80')"></div>
         <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1513735492246-483525079686?auto=format&fit=crop&w=1200&q=80')"></div>
         <div class="hero-gradient"></div>
-        <a class="back-btn" href="../" onclick="event.preventDefault();history.back()" aria-label="Back">
+        <a class="back-btn" href="../" aria-label="Back">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
         <div class="hero-content">
             <div class="hero-pill">Recommended</div>
-            <div class="hero-title">🇵🇹 Lisbon</div>
-            <div class="hero-sub">Portugal · City Guide</div>
+            <div class="hero-mid">
+                <div class="hero-flag-badge">
+                    <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
+                        <clipPath id="cl-pt"><circle cx="20" cy="20" r="20"/></clipPath>
+                        <g clip-path="url(#cl-pt)">
+                            <rect width="40" height="40" fill="#FF0000"/>
+                            <rect width="16" height="40" fill="#006600"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="hero-body">
+                    <div class="hero-city">Lisbon</div>
+                    <div class="hero-dates">Portugal · City Guide</div>
+                </div>
+            </div>
         </div>
     </div>
 
