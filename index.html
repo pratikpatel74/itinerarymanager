@@ -577,8 +577,9 @@
     function applyFilters() {
         const q = searchEl ? searchEl.value.trim().toLowerCase() : '';
 
-        // Show/hide cards
+        // Show/hide cards (skip auth-hidden cards)
         cards.forEach(card => {
+            if (card.dataset.authHidden === 'true') return;
             const tags   = (card.dataset.tags || '').toLowerCase();
             const cityEl = card.querySelector('.tc-city');
             const city   = cityEl ? cityEl.textContent.toLowerCase() : '';
@@ -658,7 +659,8 @@ async function initHomepage(session) {
     // Hide trip cards the user isn't allowed to see
     document.querySelectorAll('.trip-card[data-trip-id]').forEach(card => {
         if (allowed.length && !allowed.includes(card.dataset.tripId)) {
-            card.hidden = true;
+            card.classList.add('hidden');
+            card.dataset.authHidden = 'true';
         }
     });
 }
