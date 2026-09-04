@@ -1089,10 +1089,11 @@ const TRIP_ID = 'paris-aug-2025';
 let TRIP = null;
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Auth guard — redirect to login if no session
+// Auth guard — wait for session before init
 (async function() {
     const { data: { session } } = await sb.auth.getSession();
-    if (!session) window.location.replace('../login.html');
+    if (!session) { window.location.replace('../login.html'); return; }
+    init();
 })();
 
 async function signOut() {
@@ -1851,7 +1852,6 @@ async function toggleDone(el) {
 })();
 
 // ── Boot ──────────────────────────────────────────────────────────
-init();
 
     /* ── Explore map / list toggle ── */
     function switchExploreView(view) {
