@@ -358,35 +358,68 @@
     
         /* ── Desktop layout (≥900px) ── */
         @media (min-width: 900px) {
+            html, body {
+                background: #050505;
+            }
+
             .app-shell {
-                max-width: 960px;
-                box-shadow: 0 0 120px rgba(0,0,0,0.4);
-                padding: 0 0 32px;
+                max-width: 1100px;
+                margin: 0 auto;
+                min-height: 100dvh;
+                box-shadow: 0 0 120px rgba(0,0,0,0.8);
+                padding: 0 0 48px;
             }
 
             .page-header {
-                padding: 28px 40px 20px;
+                padding: 32px 48px 24px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                background: rgba(10,10,10,0.88);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-bottom: 1px solid var(--border);
+            }
+
+            .headline {
+                font-size: clamp(28px, 3vw, 42px);
+            }
+
+            .search-bar {
+                max-width: 480px;
             }
 
             .chips {
-                padding: 0 40px 16px;
+                padding: 20px 48px 4px;
+                gap: 10px;
+            }
+
+            .chip {
+                font-size: 14px;
+                padding: 8px 20px;
             }
 
             .trips-list {
-                padding: 0 40px;
+                padding: 24px 48px 0;
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 16px;
+                gap: 20px;
                 align-items: start;
             }
 
             .section-label {
                 grid-column: 1 / -1;
+                font-size: 12px;
                 margin-bottom: 0;
             }
 
             .trip-card {
-                height: 240px;
+                height: 260px;
+                border-radius: 16px;
+            }
+
+            .tc-info {
+                padding: 18px 20px;
             }
         }
 
