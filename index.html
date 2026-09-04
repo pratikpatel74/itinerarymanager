@@ -659,11 +659,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         }
     });
 
-    // Auto-redirect if user has access to exactly one trip
-    if (allowed.length === 1) {
-        const card = document.querySelector('.trip-card[data-trip-id="' + allowed[0] + '"]');
-        if (card) { window.location.replace(card.href); return; }
-    }
 })();
 
 function toggleUserMenu(e) {
