@@ -430,7 +430,7 @@
 
     <div class="page-header">
         <div class="header-top">
-            <div class="greeting">Good to see you, <strong>Pratik!</strong></div>
+            <div class="greeting">Good to see you, <strong id="greeting-name"></strong></div>
             <div class="avatar-wrapper">
                 <button class="avatar-ring" id="avatar-btn" onclick="toggleUserMenu(event)" title="Account">PP</button>
                 <div class="user-menu" id="user-menu" hidden>
@@ -458,7 +458,7 @@
         <div class="section-label" data-section="upcoming">Upcoming</div>
 
         <!-- Brussels -->
-        <a class="trip-card" href="brussels-2026/" data-tags="upcoming brussels">
+        <a class="trip-card" href="brussels-2026/" data-tags="upcoming brussels" data-trip-id="brussels-nov-2026">
             <div class="tc-photo" id="brussels-card-photo">
                 <div class="tc-slide active" style="background-image:url('https://images.unsplash.com/photo-1607894379039-89be884f69df?auto=format&fit=crop&w=800&q=80')"></div>
                 <div class="tc-slide" style="background-image:url('https://images.unsplash.com/photo-1548092304-e0205cb0031b?auto=format&fit=crop&w=800&q=80')"></div>
@@ -501,7 +501,7 @@
         <div class="section-label" data-section="past" style="padding-top:8px;">Past</div>
 
         <!-- Paris -->
-        <a class="trip-card" href="paris-2025/" data-tags="past paris">
+        <a class="trip-card" href="paris-2025/" data-tags="past paris" data-trip-id="paris-aug-2025">
             <div class="tc-photo" id="paris-card-photo">
                 <div class="tc-slide active" style="background-image:url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80')"></div>
                 <div class="tc-slide" style="background-image:url('https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80')"></div>
@@ -633,21 +633,40 @@ const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const USER_PROFILES = {
-    'pratikpatel74@hotmail.com':  { initials: 'PP', name: 'Pratik' },
-    'nishapatel@hotmail.co.uk':   { initials: 'NP', name: 'Nisha' },
-    'sanjay@skmdesign.co.uk':     { initials: 'SM', name: 'Sanjay' },
-};
-
 (async function() {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { window.location.replace('login.html'); return; }
-    const email = session.user.email.toLowerCase();
-    const profile = USER_PROFILES[email] || { initials: email[0].toUpperCase(), name: email };
+
+    // Fetch profile from Supabase
+    const { data: profile } = await sb.from('profiles')
+        .select('name, initials, allowed_trips')
+        .eq('user_id', session.user.id)
+        .single();
+
+    const name     = profile?.name     || session.user.email.split('@')[0];
+    const initials = profile?.initials || session.user.email[0].toUpperCase();
+    const allowed  = profile?.allowed_trips || [];
+
+    // Update UI
     const avatarBtn = document.getElementById('avatar-btn');
-    if (avatarBtn) avatarBtn.textContent = profile.initials;
+    if (avatarBtn) avatarBtn.textContent = initials;
+    const greetEl = document.getElementById('greeting-name');
+    if (greetEl) greetEl.textContent = name + '!';
     const emailEl = document.getElementById('user-menu-email');
-    if (emailEl) emailEl.textContent = profile.name + ' · ' + session.user.email;
+    if (emailEl) emailEl.textContent = name + ' · ' + session.user.email;
+
+    // Hide trip cards the user isn't allowed to see
+    document.querySelectorAll('.trip-card[data-trip-id]').forEach(card => {
+        if (allowed.length && !allowed.includes(card.dataset.tripId)) {
+            card.hidden = true;
+        }
+    });
+
+    // Auto-redirect if user has access to exactly one trip
+    if (allowed.length === 1) {
+        const card = document.querySelector('.trip-card[data-trip-id="' + allowed[0] + '"]');
+        if (card) { window.location.replace(card.href); return; }
+    }
 })();
 
 function toggleUserMenu(e) {
