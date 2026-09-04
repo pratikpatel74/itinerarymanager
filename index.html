@@ -355,6 +355,41 @@
         line-height: 1;
         text-decoration: none;
     }
+    
+        /* ── Desktop layout (≥900px) ── */
+        @media (min-width: 900px) {
+            .app-shell {
+                max-width: 960px;
+                box-shadow: 0 0 120px rgba(0,0,0,0.4);
+                padding: 0 0 32px;
+            }
+
+            .page-header {
+                padding: 28px 40px 20px;
+            }
+
+            .chips {
+                padding: 0 40px 16px;
+            }
+
+            .trips-list {
+                padding: 0 40px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                align-items: start;
+            }
+
+            .section-label {
+                grid-column: 1 / -1;
+                margin-bottom: 0;
+            }
+
+            .trip-card {
+                height: 240px;
+            }
+        }
+
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>

@@ -731,6 +731,81 @@
     }
     .row-edit-btn:hover { color:var(--gold); background:var(--surface2); }
     .ef-textarea { resize:vertical; min-height:72px; }
+    
+        /* ── Desktop layout (≥900px) ── */
+        @media (min-width: 900px) {
+            .app-shell {
+                max-width: 100%;
+                box-shadow: none;
+                display: grid;
+                grid-template-columns: 220px 1fr;
+                grid-template-rows: 180px auto 1fr;
+                height: 100dvh;
+                overflow: hidden;
+            }
+
+            .app-hero {
+                grid-column: 1 / -1;
+                grid-row: 1;
+                height: 180px;
+                min-height: unset;
+                max-height: 180px;
+            }
+
+            .tab-bar-top {
+                grid-column: 1;
+                grid-row: 2 / 4;
+                flex-direction: column;
+                border-bottom: none;
+                border-right: 1px solid var(--border);
+                padding: 12px 0;
+                align-items: stretch;
+                overflow-y: auto;
+                background: var(--surface);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+            }
+
+            .tab-btn-top {
+                flex-direction: row;
+                gap: 10px;
+                justify-content: flex-start;
+                text-align: left;
+                padding: 13px 20px;
+                border-bottom: none !important;
+                border-left: 3px solid transparent;
+                border-radius: 0;
+                font-size: 14px;
+                min-width: unset;
+            }
+
+            .tab-btn-top.active {
+                border-left-color: var(--gold);
+                border-bottom-color: transparent !important;
+                background: rgba(201,162,39,0.09);
+                color: var(--gold);
+            }
+
+            .tab-btn-top .tab-icon {
+                font-size: 16px;
+                min-width: 20px;
+            }
+
+            .sync-bar {
+                grid-column: 2;
+                grid-row: 2;
+            }
+
+            .content-area {
+                grid-column: 2;
+                grid-row: 3;
+                padding: 28px 48px 32px;
+                max-width: none;
+            }
+
+            #app-flag { display: none !important; }
+        }
+
     </style>
 </head>
 <body>

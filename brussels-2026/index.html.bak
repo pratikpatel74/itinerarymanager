@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=no">
-    <title>Paris 2025 · Trip Guide</title>
+    <title>Brussels 2026 · Trip Guide</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous"></script>
@@ -33,8 +33,9 @@
         --radius:     14px;
         --tab-h:      60px;
 
-        --navy:    #C9A227;
-        --parch:   #242426;
+        /* legacy aliases so inline var() references in preserved HTML still work */
+        --navy:    #C9A227;   /* links/accents in dark theme → gold */
+        --parch:   #242426;   /* background surfaces → dark surface2 */
         --slate:   #8E8E93;
         --sub-old: #8E8E93;
         --border-old: rgba(255,255,255,0.08);
@@ -45,6 +46,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Body + shell ── */
     html, body {
         height: 100%;
         overflow: hidden;
@@ -54,6 +56,7 @@
         -webkit-font-smoothing: antialiased;
     }
 
+    /* Centered 480px shell */
     .app-shell {
         max-width: 480px;
         margin: 0 auto;
@@ -72,7 +75,7 @@
         position: relative;
         height: 186px;
         overflow: hidden;
-        background: #0D0A18;
+        background: #080E23;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -87,9 +90,9 @@
     .hero-gradient {
         position: absolute; inset: 0; z-index: 1;
         background:
-            linear-gradient(180deg, rgba(13,10,24,0.18) 0%, rgba(13,10,24,0.86) 58%, #0D0A18 100%),
-            radial-gradient(ellipse at 65% 30%, rgba(100,80,180,0.35) 0%, transparent 55%),
-            radial-gradient(ellipse at 28% 70%, rgba(201,162,39,0.06) 0%, transparent 48%);
+            linear-gradient(180deg, rgba(8,14,35,0.15) 0%, rgba(8,14,35,0.88) 58%, #080E23 100%),
+            radial-gradient(ellipse at 68% 28%, rgba(50,70,130,0.55) 0%, transparent 58%),
+            radial-gradient(ellipse at 25% 65%, rgba(201,162,39,0.06) 0%, transparent 48%);
     }
     .hero-top-row, .hero-mid { position: relative; z-index: 2; }
 
@@ -123,23 +126,6 @@
         letter-spacing: 0px;
         padding: 6px 12px;
         border-radius: 20px;
-        background: rgba(255,255,255,0.09);
-        color: rgba(255,255,255,0.55);
-        border: 1px solid rgba(255,255,255,0.12);
-    }
-    .hero-signout {
-        background: none;
-        border: none;
-        color: rgba(255,255,255,0.5);
-        cursor: pointer;
-        padding: 4px;
-        display: flex;
-        align-items: center;
-        transition: color 0.15s;
-    }
-    .hero-signout:hover { color: rgba(255,255,255,0.9); }
-
-    .hero-pill.upcoming {
         background: rgba(0,0,0,0.35);
         color: white;
         backdrop-filter: blur(10px);
@@ -314,6 +300,7 @@
     .it-item:first-child { border-top: none; }
     .it-item:active { background: rgba(255,255,255,0.04); }
 
+    /* done state */
     .it-item.done { background: var(--green-lt); }
     .it-item.done .it-name { text-decoration: line-through; color: var(--sub); opacity: 0.65; }
     .it-item.done .it-detail { opacity: 0.45; }
@@ -444,6 +431,22 @@
     .resto-btn-primary { background: var(--gold); color: #0A0A0A; font-weight: 700; }
     .resto-btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 
+    /* ── Meal sub-tabs ── */
+    .meal-tabs { display: flex; gap: 6px; padding: 0 0 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .meal-tabs::-webkit-scrollbar { display: none; }
+    .meal-tab-btn {
+        display: flex; align-items: center; gap: 5px; padding: 7px 14px;
+        border-radius: 20px; border: 1px solid var(--border);
+        background: var(--surface); color: var(--sub);
+        font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+        -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s, border-color 0.15s; flex-shrink: 0;
+        font-family: 'DM Sans', sans-serif;
+    }
+    .meal-tab-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .meal-tab-btn.active { background: var(--gold); color: #0A0A0A; border-color: var(--gold); }
+    .meal-panel { display: none; }
+    .meal-panel.active { display: block; }
+
     /* ── Sync toast ── */
     #sync-toast {
         position: absolute; top: 8px; right: 12px;
@@ -455,12 +458,13 @@
     #sync-toast.synced { background: rgba(42,122,82,0.25); color: var(--green-text); }
     #sync-toast.error  { background: rgba(239,68,68,0.2); color: #F87171; }
 
+    /* ── inline overrides for preserved HTML ── */
     .card p { color: var(--sub); }
     .card p strong { color: var(--text); }
     ul li { color: var(--sub); }
     ul li strong { color: var(--text); }
 
-    /* ── Drilldown indicator ── */
+    /* ── Drilldown indicator on items ── */
     .it-item.has-detail { cursor: pointer; }
     .it-chevron {
         display: flex; align-items: center;
@@ -493,6 +497,7 @@
     }
     .sheet.open { transform: translateY(0); }
 
+    /* drag handle */
     .sheet-handle {
         width: 36px; height: 4px; border-radius: 2px;
         background: var(--sub2);
@@ -500,6 +505,7 @@
         flex-shrink: 0;
     }
 
+    /* sheet header */
     .sheet-header {
         flex-shrink: 0;
         padding: 14px 16px 12px;
@@ -534,12 +540,14 @@
         -webkit-tap-highlight-color: transparent;
     }
 
+    /* sheet scrollable body */
     .sheet-body {
         flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
         padding: 14px 16px 32px;
         display: flex; flex-direction: column; gap: 14px;
     }
 
+    /* sheet section */
     .sheet-section-label {
         font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
         text-transform: uppercase; color: var(--sub2);
@@ -593,6 +601,7 @@
         font-size: 12px; font-weight: 700; text-decoration: none;
     }
 
+    /* sheet CTA */
     .sheet-cta {
         display: flex; align-items: center; justify-content: center;
         gap: 6px; width: 100%;
@@ -602,6 +611,7 @@
         -webkit-tap-highlight-color: transparent;
     }
 
+    /* notes */
     .sheet-notes {
         background: var(--surface2); border-radius: 12px;
         padding: 11px 14px; font-size: 12px; color: var(--sub);
@@ -691,23 +701,7 @@
     .leaflet-bar a { background: #1C1C1E !important; color: #F2F2F2 !important; border-color: rgba(255,255,255,0.1) !important; }
     .leaflet-bar a:hover { background: #2a2a2c !important; }
 
-    /* ── Meal sub-tabs ── */
-    .meal-tabs { display: flex; gap: 6px; padding: 0 0 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-    .meal-tabs::-webkit-scrollbar { display: none; }
-    .meal-tab-btn {
-        display: flex; align-items: center; gap: 5px; padding: 7px 14px;
-        border-radius: 20px; border: 1px solid var(--border);
-        background: var(--surface); color: var(--sub);
-        font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
-        -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s, border-color 0.15s; flex-shrink: 0;
-        font-family: 'DM Sans', sans-serif;
-    }
-    .meal-tab-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
-    .meal-tab-btn.active { background: var(--gold); color: #0A0A0A; border-color: var(--gold); }
-    .meal-panel { display: none; }
-    .meal-panel.active { display: block; }
-
-    /* ── Add / Edit buttons ── */
+    /* ── Explore / Eat CRUD ─────────────────────────────────────────── */
     .add-row-btn {
         display:block; width:100%; margin-top:10px; padding:10px;
         background:transparent; border:1.5px dashed var(--border);
@@ -724,81 +718,7 @@
         border-radius:6px;
     }
     .row-edit-btn:hover { color:var(--gold); background:var(--surface2); }
-    
-        /* ── Desktop layout (≥900px) ── */
-        @media (min-width: 900px) {
-            .app-shell {
-                max-width: 100%;
-                box-shadow: none;
-                display: grid;
-                grid-template-columns: 220px 1fr;
-                grid-template-rows: 180px auto 1fr;
-                height: 100dvh;
-                overflow: hidden;
-            }
-
-            .app-hero {
-                grid-column: 1 / -1;
-                grid-row: 1;
-                height: 180px;
-                min-height: unset;
-                max-height: 180px;
-            }
-
-            .tab-bar-top {
-                grid-column: 1;
-                grid-row: 2 / 4;
-                flex-direction: column;
-                border-bottom: none;
-                border-right: 1px solid var(--border);
-                padding: 12px 0;
-                align-items: stretch;
-                overflow-y: auto;
-                background: var(--surface);
-                backdrop-filter: blur(24px);
-                -webkit-backdrop-filter: blur(24px);
-            }
-
-            .tab-btn-top {
-                flex-direction: row;
-                gap: 10px;
-                justify-content: flex-start;
-                text-align: left;
-                padding: 13px 20px;
-                border-bottom: none !important;
-                border-left: 3px solid transparent;
-                border-radius: 0;
-                font-size: 14px;
-                min-width: unset;
-            }
-
-            .tab-btn-top.active {
-                border-left-color: var(--gold);
-                border-bottom-color: transparent !important;
-                background: rgba(201,162,39,0.09);
-                color: var(--gold);
-            }
-
-            .tab-btn-top .tab-icon {
-                font-size: 16px;
-                min-width: 20px;
-            }
-
-            .sync-bar {
-                grid-column: 2;
-                grid-row: 2;
-            }
-
-            .content-area {
-                grid-column: 2;
-                grid-row: 3;
-                padding: 28px 48px 32px;
-                max-width: none;
-            }
-
-            #app-flag { display: none !important; }
-        }
-
+    .ef-textarea { resize:vertical; min-height:72px; }
     </style>
 </head>
 <body>
@@ -809,35 +729,36 @@
 
     <!-- ── Hero header ── -->
     <div class="app-hero" id="app-hero">
-        <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80')"></div>
-        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80')"></div>
-        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80')"></div>
-        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1431274172761-fca41d930114?auto=format&fit=crop&w=800&q=80')"></div>
-        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1609971757431-439cf7b4141b?auto=format&fit=crop&w=800&q=80')"></div>
-        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1509439581779-6298f75bf6e5?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1607894379039-89be884f69df?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1548092304-e0205cb0031b?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1559113202-c916b8e44373?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1575845664732-ee40fdc525a3?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1607179780236-b5d5eed4f6d6?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1626013969117-8c13864fdb2d?auto=format&fit=crop&w=800&q=80')"></div>
         <div class="hero-gradient"></div>
         <div class="hero-top-row">
-            <a class="hero-back" href="../"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Our Trips</a>
-            <div class="hero-pill">Past</div>
+            <a class="hero-back" href="../"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg> Our Trips</a>
+            <div class="hero-pill">Upcoming</div>
         </div>
         <div class="hero-mid">
             <div class="hero-flag-badge">
-                <!-- France: blue / white / red vertical thirds -->
+                <!-- Belgium: black / yellow / red vertical thirds -->
                 <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
-                    <clipPath id="cl-fr"><circle cx="20" cy="20" r="20"/></clipPath>
-                    <g clip-path="url(#cl-fr)">
-                        <rect width="40" height="40" fill="#FFFFFF"/>
-                        <rect x="0" y="0" width="13.33" height="40" fill="#002395"/>
-                        <rect x="26.67" y="0" width="13.33" height="40" fill="#ED2939"/>
+                    <clipPath id="cl-be"><circle cx="20" cy="20" r="20"/></clipPath>
+                    <g clip-path="url(#cl-be)">
+                        <rect width="40" height="40" fill="#1A1A1A"/>
+                        <rect x="13.33" y="0" width="13.34" height="40" fill="#F5D800"/>
+                        <rect x="26.67" y="0" width="13.33" height="40" fill="#EF3340"/>
                     </g>
                 </svg>
             </div>
             <div class="hero-body">
-                <div class="hero-city" id="app-title">Paris Guide</div>
-                <div class="hero-dates" id="app-subtitle">7–10 August · The Patels</div>
+                <div class="hero-city" id="app-title">Brussels Guide</div>
+                <div class="hero-dates" id="app-subtitle">12–15 November · Patels + Mistrys</div>
             </div>
         </div>
     </div>
+    <!-- hidden flag element so JS can still update it -->
     <div id="app-flag" hidden></div>
 
     <!-- ── Top tabs ── -->
@@ -855,7 +776,7 @@
             <div class="sync-dot"></div>
             <span id="sync-text">Live sync on</span>
         </div>
-        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v1</span>
+        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v16</span>
     </div>
 
     <!-- ── Scrollable content ── -->
@@ -863,39 +784,43 @@
 
         <!-- ══ DAYS TAB ══ -->
         <div class="tab-panel active" id="panel-days">
-            <!-- Rendered by JS -->
+            <!-- Rendered by JS from TRIP.days config -->
         </div>
 
         <!-- ══ JOURNEY TAB ══ -->
         <div class="tab-panel" id="panel-journey">
             <div class="card">
-                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>Outbound — Thursday 7th Aug</div>
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19L19 5"/><polyline points="9 5 19 5 19 15"/></svg>Outbound — Thursday 12th Nov</div>
                 <div class="timeline">
-                    <div class="timeline-event"><span class="t-time">09:12</span> Departs <strong>Leicester</strong></div>
-                    <div class="timeline-event"><span class="t-time">10:27</span> Arrive <strong>London St Pancras</strong></div>
-                    <div class="timeline-event"><span class="t-time">11:30</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
-                    <div class="timeline-event"><span class="t-time">12:31</span> Eurostar Departs St Pancras</div>
-                    <div class="timeline-event"><span class="t-time">15:49</span> Arrive <strong>Paris Gare du Nord</strong> <span class="badge">+1 hr CET</span></div>
-                    <div class="timeline-event"><span class="t-time">~16:30</span> Check-in Hôtel du Bois Champs-Elysées</div>
+                    <div class="timeline-event"><span class="t-time">09:25</span> Taxi departs for <strong>Leicester Station</strong></div>
+                    <div class="timeline-event"><span class="t-time">10:12</span> Departs <strong>Leicester</strong></div>
+                    <div class="timeline-event"><span class="t-time">11:27</span> Arrive <strong>London St Pancras</strong></div>
+                    <div class="timeline-event"><span class="t-time">11:45</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
+                    <div class="timeline-event"><span class="t-time">13:01</span> Eurostar Departs St Pancras</div>
+                    <div class="timeline-event"><span class="t-time">16:06</span> Arrive <strong>Brussels Midi</strong> <span class="badge">+1 hr CET</span></div>
+                    <div class="timeline-event"><span class="t-time">16:15</span> Taxi — Brussels Midi → Hotel Aris (~15 mins)</div>
+                    <div class="timeline-event"><span class="t-time">16:30</span> Check-in Hotel Aris Grand Place</div>
                 </div>
             </div>
             <div class="card">
-                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7 7 17"/><path d="M17 17H7V7"/></svg>Return — Monday 10th Aug</div>
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5L5 19"/><polyline points="15 19 5 19 5 9"/></svg>Return — Sunday 15th Nov</div>
                 <div class="timeline">
-                    <div class="timeline-event"><span class="t-time">~11:00</span> Hotel Check-out &amp; depart for Gare du Nord</div>
-                    <div class="timeline-event"><span class="t-time">11:30</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
-                    <div class="timeline-event"><span class="t-time">12:42</span> Eurostar Departs <strong>Paris Gare du Nord</strong></div>
-                    <div class="timeline-event"><span class="t-time">14:00</span> Arrive <strong>London St Pancras</strong> <span class="badge">UK Time</span></div>
-                    <div class="timeline-event"><span class="t-time">15:05</span> Train Departs St Pancras</div>
-                    <div class="timeline-event"><span class="t-time">16:15</span> Arrive <strong>Leicester</strong></div>
+                    <div class="timeline-event"><span class="t-time">10:15</span> Hotel Check-out</div>
+                    <div class="timeline-event"><span class="t-time">10:20</span> Taxi departs for <strong>Brussels Midi</strong></div>
+                    <div class="timeline-event"><span class="t-time">10:41</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
+                    <div class="timeline-event"><span class="t-time">11:56</span> Eurostar Departs <strong>Brussels Midi</strong></div>
+                    <div class="timeline-event"><span class="t-time">12:57</span> Arrive <strong>London St Pancras</strong> <span class="badge">UK Time</span></div>
+                    <div class="timeline-event"><span class="t-time">14:42</span> EMR Departs St Pancras</div>
+                    <div class="timeline-event"><span class="t-time">15:30</span> Arrive <strong>Market Harborough</strong></div>
+                    <div class="timeline-event"><span class="t-time">15:35</span> Taxi — Market Harborough → Home (~25 mins)</div>
+                    <div class="timeline-event"><span class="t-time">16:00</span> Arrive home</div>
                 </div>
             </div>
             <div class="card">
-                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg>Gare du Nord → Hotel</div>
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="13" rx="3"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="9" y1="3" x2="9" y2="9"/><line x1="15" y1="3" x2="15" y2="9"/><path d="M7 16l-2 4"/><path d="M17 16l2 4"/><line x1="5" y1="20" x2="19" y2="20"/></svg>Midi Station → Hotel</div>
                 <div style="font-size: 13px; display: grid; gap: 10px; color: var(--text);">
-                    <div><strong>Metro (Fastest)</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">Metro line 2: Gare du Nord → Charles de Gaulle-Étoile (20 mins). Hotel is 5 min walk from the Arc de Triomphe.</p></div>
-                    <div><strong>Taxi / Uber</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">Available outside Gare du Nord. ~30 mins, €25–€35 depending on traffic.</p></div>
-                    <div><strong>RER B + Metro</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">Not recommended for this hotel — Metro line 2 is the quickest option.</p></div>
+                    <div><strong>Local Train (Fastest)</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">SNCB train: Bruxelles-Midi → Bruxelles-Central (4 mins, every 5 mins). Hotel is 3 min walk from Central Station.</p></div>
+                    <div><strong>Taxi / Uber</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">Available outside Midi terminal. ~10–15 mins, €10–€15.</p></div>
                 </div>
             </div>
         </div>
@@ -903,14 +828,14 @@
         <!-- ══ EXPLORE TAB ══ -->
         <div class="tab-panel" id="panel-explore">
             <div class="card">
-                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/></svg>Nearby Attractions</div>
-                                <div class="explore-view-toggle">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><line x1="3" y1="9" x2="3" y2="20"/><line x1="21" y1="9" x2="21" y2="20"/><rect x="3" y="19" width="18" height="2" rx="0.5"/><line x1="7" y1="9" x2="7" y2="19"/><line x1="12" y1="9" x2="12" y2="19"/><line x1="17" y1="9" x2="17" y2="19"/></svg>Nearby Attractions</div>
+                <div class="explore-view-toggle">
                     <button class="evt-btn active" id="evtList" onclick="switchExploreView('list')">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/><path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/></svg>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
                         List
                     </button>
                     <button class="evt-btn" id="evtMap" onclick="switchExploreView('map')">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
                         Map
                     </button>
                 </div>
@@ -918,7 +843,7 @@
                 <p style="font-size: 11px; color: var(--sub); margin-bottom: 10px;">Tap name for website · Tap Map for walking directions from hotel.</p>
                 <div id="explore-list-inner"></div>
                 <button class="add-row-btn" onclick="openXSheet(null)">+ Add Attraction</button>
-                </div><!-- /explore-list-view -->
+                                </div><!-- /explore-list-view -->
                 <div id="explore-map-view" style="display:none;">
                     <div id="attractions-map"></div>
                     <p class="explore-map-hint">Tap a pin to see details</p>
@@ -928,104 +853,108 @@
 
         <!-- ══ EAT TAB ══ -->
         <div class="tab-panel" id="panel-eat">
-            <div class="card">
-                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>Where to Eat</div>
-                <p style="font-size: 11px; color: var(--sub); margin-bottom: 12px;">Tap name for website · Tap Directions for Google Maps route.</p>
-                <div class="meal-tabs">
-                    <button class="meal-tab-btn active" id="mealtab-breakfast" onclick="switchMeal('breakfast')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></svg>
-                        Breakfast
-                    </button>
-                    <button class="meal-tab-btn" id="mealtab-lunch" onclick="switchMeal('lunch')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
-                        Lunch
-                    </button>
-                    <button class="meal-tab-btn" id="mealtab-dinner" onclick="switchMeal('dinner')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"/><path d="m4 16 2-8h12l2 8"/><path d="M12 4c-1.1 0-2 .9-2 2v2h4V6c0-1.1-.9-2-2-2z"/></svg>
-                        Dinner
-                    </button>
-                    <button class="meal-tab-btn" id="mealtab-snacks" onclick="switchMeal('snacks')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6l3 7H6L9 2z"/><path d="M3 9h18v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><path d="M12 9v9"/></svg>
-                        Snacks
-                    </button>
-                </div>
+            <div class="card" style="margin-bottom: 12px;">
+                <p style="font-size: 12px; color: var(--sub); line-height: 1.6;">All places are near <strong style="color:var(--text);">Hotel Aris Grand Place</strong>. Tap <strong style="color:var(--text);">Directions</strong> for a walking route or <strong style="color:var(--text);">Menu</strong> to browse before you go.</p>
+            </div>
+            <div class="meal-tabs">
+                <button class="meal-tab-btn active" id="mealtab-breakfast" onclick="switchMeal('breakfast')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>
+                    Breakfast
+                </button>
+                <button class="meal-tab-btn" id="mealtab-lunch" onclick="switchMeal('lunch')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v4a3 3 0 0 0 3 3v11"/><path d="M5 3v18"/><path d="M11 3v18"/><path d="M16 3v4c0 2 2 3 2 5v9"/></svg>
+                    Lunch
+                </button>
+                <button class="meal-tab-btn" id="mealtab-dinner" onclick="switchMeal('dinner')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    Dinner
+                </button>
+                <button class="meal-tab-btn" id="mealtab-snacks" onclick="switchMeal('snacks')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h2a2 2 0 0 1 0 4h-2"/><path d="M2 8h16v8a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="5"/><line x1="10" y1="2" x2="10" y2="5"/><line x1="14" y1="2" x2="14" y2="5"/></svg>
+                    Snacks
+                </button>
             </div>
             <!-- Breakfast -->
             <div class="meal-panel active" id="meal-breakfast">
-                <div class="card">
                 <div id="meal-list-breakfast"></div>
                 <button class="add-row-btn" onclick="openRSheet(null,'breakfast')">+ Add Place</button>
-                </div>
             </div>
             <!-- Lunch -->
             <div class="meal-panel" id="meal-lunch">
-                <div class="card">
                 <div id="meal-list-lunch"></div>
                 <button class="add-row-btn" onclick="openRSheet(null,'lunch')">+ Add Place</button>
-                </div>
             </div>
             <!-- Dinner -->
             <div class="meal-panel" id="meal-dinner">
-                <div class="card">
                 <div id="meal-list-dinner"></div>
                 <button class="add-row-btn" onclick="openRSheet(null,'dinner')">+ Add Place</button>
-                </div>
             </div>
             <!-- Snacks -->
             <div class="meal-panel" id="meal-snacks">
-                <div class="card">
                 <div id="meal-list-snacks"></div>
                 <button class="add-row-btn" onclick="openRSheet(null,'snacks')">+ Add Place</button>
-                </div>
             </div>
         </div>
 
-                <!-- ══ INFO TAB ══ -->
+        <!-- ══ INFO TAB ══ -->
         <div class="tab-panel" id="panel-info">
             <div class="card">
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a6 6 0 0 1 12 0v2"/><circle cx="17" cy="7" r="2.5"/><path d="M21 21v-1.5a4 4 0 0 0-3-3.87"/></svg>Passengers</div>
                 <div class="passenger-list">
                     <div class="passenger-item">Pratik Patel</div>
                     <div class="passenger-item">Nisha Patel</div>
-                    <div class="passenger-item">Maya Patel</div>
-                    <div class="passenger-item">Aarjan Patel</div>
-                    <div class="passenger-item">Harendra Patel</div>
-                    <div class="passenger-item">Ilaben Patel</div>
+                    <div class="passenger-item">Sanjay Mistry</div>
+                    <div class="passenger-item">Divya Mistry</div>
                 </div>
             </div>
             <div class="card">
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2" fill="currentColor" stroke="none"/></svg>Confirmation Codes</div>
                 <div class="ref-grid">
-                    <div class="ref-item"><span class="ref-label">Hotel (Expedia)</span><span class="ref-code">72076823141769</span></div>
-                    <div class="ref-item"><span class="ref-label">Hotel Confirmation</span><span class="ref-code">1BRFN5</span></div>
+                    <div class="ref-item"><span class="ref-label">Hotel (Expedia)</span><span class="ref-code">72078682955721</span></div>
+                    <div class="ref-item"><span class="ref-label">Eurostar Return</span><span class="ref-code">WRFH37</span></div>
+                    <div class="ref-item"><span class="ref-label">EMR Outbound</span><span class="ref-code">045833975476</span></div>
+                    <div class="ref-item"><span class="ref-label">EMR Return</span><span class="ref-code">892399035850</span></div>
                 </div>
             </div>
             <div class="card">
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="19" rx="1"/><path d="M9 22V13h6v9"/><rect x="8.5" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="13" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="8.5" y="10" width="2.5" height="2.5" rx=".5"/><rect x="13" y="10" width="2.5" height="2.5" rx=".5"/></svg>Hotel</div>
-                <p style="font-family:'DM Sans',system-ui,sans-serif; font-weight:700; font-size:15px; color:var(--text);">Hôtel du Bois Champs-Elysées</p>
-                <p style="font-size: 12px; color: var(--sub); margin: 4px 0 10px;">11 Rue du Dôme, 75116 Paris</p>
+                <p style="font-family:'DM Sans',system-ui,sans-serif; font-weight:700; font-size:15px; color:var(--text);">Hotel Aris Grand Place</p>
+                <p style="font-size: 12px; color: var(--sub); margin: 4px 0 10px;">Grasmarkt / Rue du Marché aux Herbes 78-80, 1000 Brussels</p>
                 <div style="font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; color: var(--text);">
-                    <div><strong>Nights:</strong> 3 (7–10 Aug)</div><div><strong>Rooms:</strong> 2 rooms</div>
-                    <div><strong>Guests:</strong> 4 adults</div><div><strong>Total:</strong> £807.20</div>
-                    <div><strong>Check-in:</strong> From 15:00</div><div><strong>Check-out:</strong> By 12:00</div>
+                    <div><strong>Rooms:</strong> 2× Double</div><div><strong>Board:</strong> Room Only</div>
+                    <div><strong>Check-in:</strong> From 15:00</div><div><strong>Check-out:</strong> By 11:00</div>
                 </div>
-                <a href="https://www.hoteldubois.com" target="_blank" class="btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> Hotel Website</a>
-                <a href="https://www.google.com/maps/search/?api=1&query=Hotel+du+Bois+11+Rue+du+Dome+Paris" target="_blank" class="btn btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> Google Maps</a>
+                <a href="https://www.arbanyhotels.com" target="_blank" class="btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Official Website</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Hotel+Aris+Grand+Place+Brussels" target="_blank" class="btn btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Google Maps</a>
+                <a href="tel:+3225144300" class="btn btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> +32 2 514 4300</a>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>Cost Breakdown</div>
+                <table class="cost-table">
+                    <thead><tr><th>Item</th><th>Total</th><th>Per Couple</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Hotel</strong> <span class="badge-paid">PAID</span></td><td>£685.25</td><td>£342.63</td></tr>
+                        <tr><td><strong>Eurostar</strong> <span class="badge-paid">PAID</span></td><td>£560.00</td><td>£280.00</td></tr>
+                        <tr><td><strong>EMR Trains</strong> <span class="badge-paid">PAID</span></td><td>£160.00</td><td>£80.00</td></tr>
+                        <tr><td><strong>City Tax</strong> <em style="font-size:11px;color:var(--sub);">(pay at hotel)</em></td><td>£28.82</td><td>£14.41</td></tr>
+                        <tr class="total-row"><td>TOTAL</td><td>£1,434.07</td><td>£717.04</td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 11px; color: var(--sub); margin-top: 8px;">Split 50/50 — £717.04 per couple · £358.52 per person. City tax due at check-in only.</p>
             </div>
             <div class="card">
                 <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 1 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"/></svg>Travel Notes</div>
                 <ul style="font-size: 12px; padding-left: 18px; line-height: 1.9; color: var(--sub);">
-                    <li>France is <strong style="color:var(--text);">1 hour ahead</strong> of UK time (CEST in August).</li>
-                    <li>Arrive at St Pancras by <strong style="color:var(--text);">11:30</strong> for Eurostar security.</li>
-                    <li>All 6 passports required for Eurostar boarding.</li>
-                    <li>Paris Metro: buy a <strong style="color:var(--text);">carnet</strong> (10 tickets) — more economical for a group.</li>
+                    <li>Belgium is <strong style="color:var(--text);">1 hour ahead</strong> of UK time (CET).</li>
+                    <li>Arrive at St Pancras by <strong style="color:var(--text);">11:45</strong> for Eurostar security.</li>
+                    <li>All 4 passports required for check-in and transit.</li>
                 </ul>
             </div>
         </div>
 
     </div><!-- /content-area -->
 
-    <!-- ── Bottom sheet ── -->
+    <!-- ── Event detail bottom sheet ── -->
     <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeSheet()"></div>
     <div class="sheet" id="event-sheet">
         <div class="sheet-handle"></div>
@@ -1036,7 +965,7 @@
                 <div class="sheet-name" id="sh-name"></div>
                 <div class="sheet-meta" id="sh-meta"></div>
             </div>
-            <div class="sheet-close" onclick="closeSheet()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>
+            <div class="sheet-close" onclick="closeSheet()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
         </div>
         <div class="sheet-body" id="sh-body"></div>
     </div>
@@ -1074,13 +1003,13 @@
     </div>
     <input type="hidden" id="x-edit-id">
     <div style="padding:16px 16px 0;overflow-y:auto;flex:1;">
-        <div class="ef-field"><div class="ef-label">Name</div><input class="ef-input" id="x-edit-name" placeholder="e.g. Eiffel Tower"></div>
-        <div class="ef-field"><div class="ef-label">Distance / Travel</div><input class="ef-input" id="x-edit-dist" placeholder="e.g. 1.5km &#xB7; 18 min walk"></div>
+        <div class="ef-field"><div class="ef-label">Name</div><input class="ef-input" id="x-edit-name" placeholder="e.g. Grand Place"></div>
+        <div class="ef-field"><div class="ef-label">Distance / Travel</div><input class="ef-input" id="x-edit-dist" placeholder="e.g. 100m &#xB7; 1&#x2013;2 min walk"></div>
         <div class="ef-field"><div class="ef-label">Website URL</div><input class="ef-input" id="x-edit-url" type="url" placeholder="https://"></div>
         <div class="ef-field"><div class="ef-label">Google Maps URL</div><input class="ef-input" id="x-edit-maps" type="url" placeholder="https://maps.google.com/..."></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-            <div class="ef-field"><div class="ef-label">Latitude</div><input class="ef-input" id="x-edit-lat" placeholder="48.8584"></div>
-            <div class="ef-field"><div class="ef-label">Longitude</div><input class="ef-input" id="x-edit-lng" placeholder="2.2945"></div>
+            <div class="ef-field"><div class="ef-label">Latitude</div><input class="ef-input" id="x-edit-lat" placeholder="50.8467"></div>
+            <div class="ef-field"><div class="ef-label">Longitude</div><input class="ef-input" id="x-edit-lng" placeholder="4.3528"></div>
         </div>
         <div class="ef-field"><div class="ef-label">Sort Order</div><input class="ef-input" id="x-edit-sort" type="number" placeholder="0"></div>
         <button id="x-del-btn" onclick="openXDelSheet(document.getElementById('x-edit-id').value)" style="display:none;width:100%;background:transparent;border:1.5px solid #FF453A;color:#FF453A;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin:4px 0 12px;">Delete Attraction</button>
@@ -1124,14 +1053,14 @@
         </div>
         <div class="ef-field"><div class="ef-label">Name</div><input class="ef-input" id="r-edit-name" placeholder="Restaurant name"></div>
         <div class="ef-field"><div class="ef-label">Website URL</div><input class="ef-input" id="r-edit-website" type="url" placeholder="https://"></div>
-        <div class="ef-field"><div class="ef-label">Address</div><input class="ef-input" id="r-edit-address" placeholder="Street, Paris"></div>
+        <div class="ef-field"><div class="ef-label">Address</div><input class="ef-input" id="r-edit-address" placeholder="Street, City"></div>
         <div class="ef-field"><div class="ef-label">Distance</div><input class="ef-input" id="r-edit-dist" placeholder="e.g. ~2 min walk"></div>
         <div class="ef-field"><div class="ef-label">Hours</div><input class="ef-input" id="r-edit-hours" placeholder="e.g. Mon&#x2013;Fri 09:00&#x2013;22:00"></div>
         <div class="ef-field"><div class="ef-label">Description / Highlights</div><textarea class="ef-input ef-textarea" id="r-edit-desc" placeholder="Key dishes, standout notes..."></textarea></div>
-        <div class="ef-field"><div class="ef-label">Phone</div><input class="ef-input" id="r-edit-phone" type="tel" placeholder="+33..."></div>
+        <div class="ef-field"><div class="ef-label">Phone</div><input class="ef-input" id="r-edit-phone" type="tel" placeholder="+32..."></div>
         <div class="ef-field"><div class="ef-label">Menu URL</div><input class="ef-input" id="r-edit-menu" type="url" placeholder="https://"></div>
         <div class="ef-field"><div class="ef-label">Directions URL</div><input class="ef-input" id="r-edit-directions" type="url" placeholder="https://maps.google.com/..."></div>
-        <div class="ef-field"><div class="ef-label">Tags (comma-separated)</div><input class="ef-input" id="r-edit-tags" placeholder="e.g. French Bistro, Vegan options, &#x20AC;&#x20AC;"></div>
+        <div class="ef-field"><div class="ef-label">Tags (comma-separated)</div><input class="ef-input" id="r-edit-tags" placeholder="e.g. Breakfast &amp; Brunch, Vegan options, &#x20AC;&#x20AC;"></div>
         <div class="ef-field"><div class="ef-label">Sort Order</div><input class="ef-input" id="r-edit-sort" type="number" placeholder="0"></div>
         <button id="r-del-btn" onclick="openRDelSheet(document.getElementById('r-edit-id').value)" style="display:none;width:100%;background:transparent;border:1.5px solid #FF453A;color:#FF453A;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin:4px 0 12px;">Delete Place</button>
     </div>
@@ -1160,22 +1089,9 @@
 const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
 
-const TRIP_ID = 'paris-aug-2025';
+const TRIP_ID = 'brussels-nov-2026';
 let TRIP = null;
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// Auth guard — use onAuthStateChange so JWT is ready before first query
-sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'INITIAL_SESSION') {
-        if (!session) { window.location.replace('../login.html'); return; }
-        init();
-    }
-});
-
-async function signOut() {
-    await sb.auth.signOut();
-    window.location.replace('../login.html');
-}
 
 function formatDate(dateStr) {
     const d = new Date(dateStr + 'T12:00:00');
@@ -1345,7 +1261,7 @@ function renderDays() {
                     </div>
                     ${inEdit
                         ? editBtns(row, isFirst, isLast, day.dbId)
-                        : (rich ? `<div class="it-chevron"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>` : '')}
+                        : (rich ? `<div class="it-chevron"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>` : '')}
                 </div>`;
             } else if (row.type === 'empty') {
                 html += `<div class="day-empty" style="display:flex;align-items:center;justify-content:space-between;">
@@ -1364,7 +1280,7 @@ function renderDays() {
 
         if (inEdit) {
             html += `<button class="day-add-btn" onclick="openAddSheet('${day.dbId}')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Add Item
             </button>`;
         }
@@ -1503,7 +1419,7 @@ function buildFormHtml(row) {
 
         <div class="ef-expander">
             <div class="ef-exp-head${locName?' open':''}" onclick="efToggleExp(this)">
-                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> Location</span><span class="ef-exp-arrow">›</span>
+                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Location</span><span class="ef-exp-arrow">›</span>
             </div>
             <div class="ef-exp-body${locName?' open':''}">
                 <div class="ef-field"><div class="ef-label">Place name</div><input class="ef-input" id="ef-loc-name" type="text" value="${esc(locName)}"></div>
@@ -1524,7 +1440,7 @@ function buildFormHtml(row) {
 
         <div class="ef-expander">
             <div class="ef-exp-head${checklist.length?' open':''}" onclick="efToggleExp(this)">
-                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m16 9-5.5 5.5L8 12"/></svg> Checklist</span><span class="ef-exp-arrow">›</span>
+                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Checklist</span><span class="ef-exp-arrow">›</span>
             </div>
             <div class="ef-exp-body${checklist.length?' open':''}">
                 <div id="ef-cl-list">${clHtml}</div>
@@ -1534,7 +1450,7 @@ function buildFormHtml(row) {
 
         <div class="ef-expander">
             <div class="ef-exp-head${notes?' open':''}" onclick="efToggleExp(this)">
-                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Notes</span><span class="ef-exp-arrow">›</span>
+                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Notes</span><span class="ef-exp-arrow">›</span>
             </div>
             <div class="ef-exp-body${notes?' open':''}">
                 <div class="ef-field"><textarea class="ef-input ef-textarea" id="ef-notes" placeholder="Internal notes…">${esc(notes)}</textarea></div>
@@ -1751,14 +1667,14 @@ function openSheet(key) {
 
     const meta = document.getElementById('sh-meta');
     meta.innerHTML = day
-        ? `<span class="sheet-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg> ${day.date}</span>`
+        ? `<span class="sheet-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${day.date}</span>`
         : '';
 
     const body = document.getElementById('sh-body');
     let html = '';
 
     if (item.cta) {
-        html += `<a href="${item.cta.url}" target="_blank" class="sheet-cta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg> ${item.cta.label}</a>`;
+        html += `<a href="${item.cta.url}" target="_blank" class="sheet-cta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> ${item.cta.label}</a>`;
     }
 
     if (item.location) {
@@ -1766,9 +1682,9 @@ function openSheet(key) {
         html += `<div>
             <div class="sheet-section-label">Location</div>
             <div class="sheet-location">
-                <div class="sheet-loc-name"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> ${loc.name}</div>
+                <div class="sheet-loc-name"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${loc.name}</div>
                 <div class="sheet-loc-addr">${loc.address}</div>
-                ${loc.mapsUrl ? `<a href="${loc.mapsUrl}" target="_blank" class="sheet-loc-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg> Get Directions</a>` : ''}
+                ${loc.mapsUrl ? `<a href="${loc.mapsUrl}" target="_blank" class="sheet-loc-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg> Get Directions</a>` : ''}
             </div>
         </div>`;
     }
@@ -1780,7 +1696,7 @@ function openSheet(key) {
         item.checklist.forEach(ck => {
             const done = !!_doneState[ck.key];
             html += `<div class="cl-item${done ? ' done' : ''}" data-ck="${ck.key}">
-                <div class="cl-box"><span class="cl-tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+                <div class="cl-box"><span class="cl-tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
                 <div class="cl-label">${ck.label}</div>
             </div>`;
         });
@@ -1867,8 +1783,8 @@ const _localWriteAt = {};
 function showToast(type) {
     const el = document.getElementById('sync-toast');
     el.innerHTML = type === 'synced'
-        ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Synced'
-        : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Offline';
+        ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Synced'
+        : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Offline';
     el.className = 'show ' + type;
     clearTimeout(el._t);
     el._t = setTimeout(() => el.classList.remove('show'), 2000);
@@ -1928,6 +1844,7 @@ async function toggleDone(el) {
 })();
 
 // ── Boot ──────────────────────────────────────────────────────────
+init();
 
     /* ── Explore map / list toggle ── */
     function switchExploreView(view) {
@@ -1946,12 +1863,10 @@ async function toggleDone(el) {
     }
 
     var _exploreMapInit = false;
-    var _exploreMap = null;
     function initExploreMap() {
         if (_exploreMapInit) return;
         _exploreMapInit = true;
-        var map = L.map('attractions-map', { zoomControl: true }).setView([48.8729, 2.2954], 14);
-        _exploreMap = map;
+        var map = L.map('attractions-map', { zoomControl: true }).setView([50.8467, 4.3528], 15);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             attribution: '\u00a9 <a href="https://www.openstreetmap.org/copyright">OSM</a> \u00a9 <a href="https://carto.com/">CARTO</a>',
             subdomains: 'abcd', maxZoom: 19
@@ -1961,8 +1876,8 @@ async function toggleDone(el) {
             html: '<div style="width:30px;height:30px;border-radius:50%;background:#C9A227;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;">&#x1F3E8;</div>',
             className: '', iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -18]
         });
-        L.marker([48.8729, 2.2954], {icon: hotelIcon}).addTo(map)
-            .bindPopup('<strong>H\u00f4tel du Bois</strong><span class="pop-dist">Your base</span>');
+        L.marker([50.8473, 4.3530], {icon: hotelIcon}).addTo(map)
+            .bindPopup('<strong>Hotel Aris Grand Place</strong><span class="pop-dist">Your base</span>');
 
         function pinIcon(n) {
             return L.divIcon({
@@ -1978,6 +1893,7 @@ async function toggleDone(el) {
         });
     }
 
+
     /* ── HTML escape helper ── */
     function escH(s) {
         return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -1985,6 +1901,7 @@ async function toggleDone(el) {
 
     /* ── EXPLORE (Attractions) CRUD ───────────────────────────────────── */
     var EXPLORE_DB = [];
+    var _exploreMap = null;
 
     async function loadExplore() {
         var res = await sb.from('explore_attractions')
@@ -2010,8 +1927,8 @@ async function toggleDone(el) {
         }
         var walkSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>';
         el.innerHTML = EXPLORE_DB.map(function(a) {
-            var mUrl = a.maps_url || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(a.name + ' Paris'));
-            var mapLabel = (a.dist_text || '').toLowerCase().indexOf('metro') >= 0 || (a.dist_text || '').toLowerCase().indexOf('rer') >= 0 ? 'Transit' : 'Map';
+            var mUrl = a.maps_url || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(a.name + ' Brussels'));
+            var mapLabel = (a.dist_text || '').toLowerCase().indexOf('metro') >= 0 ? 'Transit' : 'Map';
             return '<div class="attraction-item" data-xid="' + a.id + '">' +
                 '<div class="attraction-info">' +
                 '<div><a href="' + escH(a.website_url || '#') + '" target="_blank" class="attraction-name-link">' + escH(a.name) + '</a></div>' +
@@ -2019,7 +1936,7 @@ async function toggleDone(el) {
                 '</div>' +
                 '<div style="display:flex;gap:4px;align-items:center;">' +
                 '<a href="' + escH(mUrl) + '" target="_blank" class="map-link">' + mapLabel + '</a>' +
-                '<button class="row-edit-btn" onclick="openXSheet(\'' + a.id + '\')" title="Edit">' + PENCIL_SVG + '</button>' +
+                '<button class="row-edit-btn" onclick="openXSheet(' + JSON.stringify(a.id) + ')" title="Edit">' + PENCIL_SVG + '</button>' +
                 '</div></div>';
         }).join('');
     }
@@ -2124,22 +2041,22 @@ async function toggleDone(el) {
             var tagsHtml = (r.tags || []).map(function(t){ return '<span class="resto-tag">' + escH(t) + '</span>'; }).join('');
             var bodyRows = '';
             if (r.walk_text)
-                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text">' + escH(r.walk_text || '') + '</div></div>';
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text">' + escH(r.walk_text || '') + '</div></div>';
             if (r.hours)
-                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="resto-row-text">' + escH(r.hours) + '</div></div>';
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="resto-row-text">' + escH(r.hours) + '</div></div>';
             if (r.description)
                 bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">' + escH(r.description) + '</div></div>';
             if (r.phone)
                 bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:' + escH(r.phone) + '">' + escH(r.phone) + '</a></div></div>';
             var actHtml = '';
-            if (r.menu_url) actHtml += '<a href="' + escH(r.menu_url) + '" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg> Menu</a>';
-            if (r.maps_url) actHtml += '<a href="' + escH(r.maps_url) + '" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> Directions</a>';
+            if (r.menu_url) actHtml += '<a href="' + escH(r.menu_url) + '" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Menu</a>';
+            if (r.maps_url) actHtml += '<a href="' + escH(r.maps_url) + '" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Directions</a>';
             return '<div class="resto-card" data-rid="' + r.id + '">' +
                 '<div class="resto-header">' +
                 '<div class="resto-name"><a href="' + escH(r.website_url || '#') + '" target="_blank">' + escH(r.name) + '</a></div>' +
                 '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">' +
                 '<div class="resto-tags">' + tagsHtml + '</div>' +
-                '<button class="row-edit-btn" onclick="openRSheet(\'' + r.id + '\',\'' + r.meal_type + '\')" title="Edit">' + PENCIL_SVG + '</button>' +
+                '<button class="row-edit-btn" onclick="openRSheet(' + JSON.stringify(r.id) + ',\'' + r.meal_type + '\')" title="Edit">' + PENCIL_SVG + '</button>' +
                 '</div></div>' +
                 (bodyRows ? '<div class="resto-body">' + bodyRows + '</div>' : '') +
                 (actHtml ? '<div class="resto-actions">' + actHtml + '</div>' : '') +
@@ -2235,7 +2152,6 @@ async function toggleDone(el) {
         closeRDelSheet();
         await loadEat();
     }
-
 
 </script>
 </body>
