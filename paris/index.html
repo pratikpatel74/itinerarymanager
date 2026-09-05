@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🇫🇷 Paris · City Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap">
+    <style>
+    :root {
+        --gold:#C9A227;--gold-lt:rgba(201,162,39,0.15);--gold-md:rgba(201,162,39,0.3);
+        --bg:#0A0A0A;--surface:#1C1C1E;--surface2:#242426;--border:rgba(255,255,255,0.08);
+        --text:#F2F2F2;--sub:#8E8E93;--sub2:#48484A;
+        --green:#2A7A52;--green-lt:rgba(42,122,82,0.14);--green-text:#4ADE80;
+        --radius:14px;--tab-h:60px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;overflow:hidden;background:#0A0A0A;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;}
+
+    .app-shell{max-width:480px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);box-shadow:0 0 80px rgba(0,0,0,0.8);position:relative;}
+
+    /* ── Hero ── */
+    .app-hero{flex-shrink:0;position:relative;height:186px;overflow:hidden;background:#080808;}
+    .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.2s ease;}
+    .hero-slide.active{opacity:1;}
+    .hero-gradient{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.25) 0%,rgba(0,0,0,0.55) 100%);pointer-events:none;}
+    .hero-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;padding:16px 20px 14px;}
+    .hero-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(139,92,246,0.25);color:#C4B5FD;border:1px solid rgba(139,92,246,0.35);margin-bottom:8px;}
+    .back-btn{position:absolute;top:14px;left:14px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;z-index:10;}
+    .hero-mid{display:flex;align-items:center;gap:10px;}
+    .hero-flag-badge{width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,0.22);box-shadow:0 2px 10px rgba(0,0,0,0.45);background:#111;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .hero-city{font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.3px;line-height:1.1;text-shadow:0 1px 8px rgba(0,0,0,0.5);}
+    .hero-dates{font-size:12px;color:rgba(255,255,255,0.65);margin-top:3px;}
+
+    /* ── Tabs ── */
+    .tab-bar-top{display:flex;overflow-x:auto;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;scrollbar-width:none;}
+    .tab-bar-top::-webkit-scrollbar{display:none;}
+    .tab-btn-top{flex-shrink:0;padding:0 18px;height:var(--tab-h);border:none;background:none;color:var(--sub);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2.5px solid transparent;transition:color .15s,border-color .15s;}
+    .tab-btn-top.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+    .content-area{flex:1;overflow-y:auto;padding:16px 16px 80px;scrollbar-width:none;}
+    .content-area::-webkit-scrollbar{display:none;}
+    .tab-panel{display:none;}.tab-panel.active{display:block;}
+
+    /* ── Cards ── */
+    .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:12px;}
+    .card-title{font-size:12px;font-weight:600;color:var(--sub);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+    /* ── Attraction items ── */
+    .attraction-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+    .attraction-item:last-child{border-bottom:none;}
+    .attraction-info{flex:1;min-width:0;}
+    .attraction-name-link{font-size:14px;font-weight:500;color:var(--text);text-decoration:none;display:block;}
+    .attraction-name-link:hover{color:var(--gold);}
+    .attraction-dist{font-size:11px;color:var(--sub);margin-top:2px;display:flex;align-items:center;gap:4px;}
+    .attraction-cat{font-size:10px;font-weight:600;letter-spacing:0.4px;padding:2px 7px;border-radius:10px;margin-left:6px;}
+    .cat-icon{background:rgba(201,162,39,0.12);color:var(--gold);}
+    .cat-arch{background:rgba(139,92,246,0.12);color:#C4B5FD;}
+    .cat-museum{background:rgba(59,130,246,0.12);color:#93C5FD;}
+    .cat-food{background:rgba(236,72,153,0.12);color:#F9A8D4;}
+    .map-link{flex-shrink:0;font-size:11px;font-weight:600;color:var(--gold);text-decoration:none;padding:4px 10px;border:1px solid var(--gold-md);border-radius:8px;margin-left:8px;white-space:nowrap;}
+    .map-link:hover{background:var(--gold-lt);}
+
+    /* ── Info grid ── */
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+    .info-tile{background:var(--surface2);border-radius:10px;padding:12px;border:1px solid var(--border);}
+    .info-tile-label{font-size:10px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+    .info-tile-val{font-size:14px;font-weight:600;color:var(--text);}
+    .info-tile-sub{font-size:11px;color:var(--sub);margin-top:2px;}
+
+    /* ── Desktop sidebar ── */
+    @media(min-width:900px){
+        .app-shell{max-width:100%;box-shadow:none;display:grid;grid-template-columns:220px 1fr;grid-template-rows:180px auto 1fr;height:100dvh;overflow:hidden;}
+        .app-hero{grid-column:1/-1;grid-row:1;height:180px;}
+        .tab-bar-top{grid-column:1;grid-row:2/4;flex-direction:column;border-bottom:none;border-right:1px solid var(--border);padding:12px 0;align-items:stretch;height:auto;overflow-y:auto;}
+        .tab-btn-top{flex-direction:row;gap:10px;justify-content:flex-start;text-align:left;padding:13px 20px;border-bottom:none!important;border-left:3px solid transparent;height:auto;}
+        .tab-btn-top.active{border-left-color:var(--gold);background:rgba(201,162,39,0.09);color:var(--gold);}
+        .content-area{grid-column:2;grid-row:2/4;padding:28px 48px 32px;}
+    }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+
+    <!-- Hero -->
+    <div class="app-hero">
+        <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1431274172761-fca41d930114?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1609971757431-439cf7b4141b?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1509439581779-6298f75bf6e5?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-gradient"></div>
+        <a class="back-btn" href="../" aria-label="Back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </a>
+        <div class="hero-content">
+            <div class="hero-pill">Recommended</div>
+            <div class="hero-mid">
+                <div class="hero-flag-badge">
+                    <!-- France: blue / white / red vertical thirds -->
+                    <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
+                        <clipPath id="cl-fr"><circle cx="20" cy="20" r="20"/></clipPath>
+                        <g clip-path="url(#cl-fr)">
+                            <rect width="40" height="40" fill="#FFFFFF"/>
+                            <rect x="0" y="0" width="13.33" height="40" fill="#002395"/>
+                            <rect x="26.67" y="0" width="13.33" height="40" fill="#ED2939"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="hero-body">
+                    <div class="hero-city">Paris</div>
+                    <div class="hero-dates">Île-de-France · City Guide</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <nav class="tab-bar-top">
+        <button class="tab-btn-top active" onclick="switchTab('explore')">Explore</button>
+        <button class="tab-btn-top" onclick="switchTab('info')">City Info</button>
+    </nav>
+
+    <!-- Content -->
+    <div class="content-area">
+
+        <!-- EXPLORE -->
+        <div class="tab-panel active" id="panel-explore">
+            <div class="card">
+                <div class="card-title">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                    Top Attractions
+                </div>
+                <div id="explore-list"></div>
+            </div>
+        </div>
+
+        <!-- CITY INFO -->
+        <div class="tab-panel" id="panel-info">
+            <div class="info-grid">
+                <div class="info-tile"><div class="info-tile-label">Country</div><div class="info-tile-val">France</div><div class="info-tile-sub">Île-de-France region</div></div>
+                <div class="info-tile"><div class="info-tile-label">Language</div><div class="info-tile-val">French</div><div class="info-tile-sub">English in tourist areas</div></div>
+                <div class="info-tile"><div class="info-tile-label">Currency</div><div class="info-tile-val">Euro (€)</div><div class="info-tile-sub">Cards widely accepted</div></div>
+                <div class="info-tile"><div class="info-tile-label">Time Zone</div><div class="info-tile-val">CET / CEST</div><div class="info-tile-sub">UTC+1 / UTC+2</div></div>
+                <div class="info-tile"><div class="info-tile-label">Airport</div><div class="info-tile-val">CDG / ORY</div><div class="info-tile-sub">RER B · ~30 min</div></div>
+                <div class="info-tile"><div class="info-tile-label">Best Time</div><div class="info-tile-val">Apr – Jun</div><div class="info-tile-sub">Sep–Oct also ideal</div></div>
+            </div>
+            <div class="card">
+                <div class="card-title">Getting Around</div>
+                <p style="font-size:13px;color:var(--sub);line-height:1.7;">The <strong style="color:var(--text)">Paris Métro</strong> (16 lines) runs until 1am and is the fastest way around the city. Buy a <strong style="color:var(--text)">Navigo Easy card</strong> and top up with t+ tickets or a weekly pass. <strong style="color:var(--text)">RER B</strong> links CDG airport directly to the centre. Vélib' bike-share is perfect for riverside rides along the Seine. The historic arrondissements are very walkable.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Neighbourhoods</div>
+                <p style="font-size:13px;color:var(--sub);line-height:1.7;"><strong style="color:var(--text)">Le Marais</strong> – Jewish quarter, galleries, Place des Vosges. <strong style="color:var(--text)">Montmartre</strong> – artists' village, Sacré-Cœur, sweeping city views. <strong style="color:var(--text)">Saint-Germain-des-Prés</strong> – Left Bank cafés, literary history. <strong style="color:var(--text)">Champs-Élysées</strong> – grand boulevard, Arc de Triomphe, luxury shopping. <strong style="color:var(--text)">Canal Saint-Martin</strong> – hip tree-lined canal, indie restaurants.</p>
+            </div>
+        </div>
+
+    </div><!-- /content-area -->
+</div><!-- /app-shell -->
+
+<script>
+const SPOTS = [
+    { name:'Eiffel Tower', cat:'icon', catLabel:'Landmark', dist:'Iron lattice tower, 330m — the symbol of Paris', url:'https://www.toureiffel.paris', maps:'https://maps.google.com/?q=Eiffel+Tower+Paris' },
+    { name:'The Louvre', cat:'museum', catLabel:'Museum', dist:'World\'s largest art museum — home of the Mona Lisa', url:'https://www.louvre.fr', maps:'https://maps.google.com/?q=Louvre+Museum+Paris' },
+    { name:'Notre-Dame Cathedral', cat:'arch', catLabel:'Architecture', dist:'Gothic masterpiece on Île de la Cité, now restored', url:'https://www.notredamedeparis.fr', maps:'https://maps.google.com/?q=Notre+Dame+Cathedral+Paris' },
+    { name:'Musée d\'Orsay', cat:'museum', catLabel:'Museum', dist:'Impressionist masterpieces in a Beaux-Arts station', url:'https://www.musee-orsay.fr', maps:'https://maps.google.com/?q=Musee+d+Orsay+Paris' },
+    { name:'Sacré-Cœur', cat:'arch', catLabel:'Architecture', dist:'White basilica atop Montmartre with panoramic views', url:'https://www.sacre-coeur-montmartre.com', maps:'https://maps.google.com/?q=Sacre+Coeur+Paris' },
+    { name:'Palace of Versailles', cat:'icon', catLabel:'Historic', dist:'Royal palace and gardens — 30 min from Paris', url:'https://www.chateauversailles.fr', maps:'https://maps.google.com/?q=Palace+of+Versailles' },
+    { name:'Arc de Triomphe', cat:'icon', catLabel:'Landmark', dist:'Monument at the western end of the Champs-Élysées', url:'https://www.paris-arc-de-triomphe.fr', maps:'https://maps.google.com/?q=Arc+de+Triomphe+Paris' },
+    { name:'Sainte-Chapelle', cat:'arch', catLabel:'Architecture', dist:'Gothic chapel with floor-to-ceiling stained glass', url:'https://www.sainte-chapelle.fr', maps:'https://maps.google.com/?q=Sainte+Chapelle+Paris' },
+    { name:'Centre Pompidou', cat:'museum', catLabel:'Museum', dist:'Modern & contemporary art in an "inside-out" building', url:'https://www.centrepompidou.fr', maps:'https://maps.google.com/?q=Centre+Pompidou+Paris' },
+    { name:'Musée Rodin', cat:'museum', catLabel:'Museum', dist:'The Thinker and more, set in beautiful gardens', url:'https://www.musee-rodin.fr', maps:'https://maps.google.com/?q=Musee+Rodin+Paris' },
+];
+
+const CAT_CLS = { icon:'cat-icon', arch:'cat-arch', museum:'cat-museum', food:'cat-food' };
+const walkSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>';
+
+document.getElementById('explore-list').innerHTML = SPOTS.map(s =>
+    `<div class="attraction-item">
+        <div class="attraction-info">
+            <a href="${s.url}" target="_blank" class="attraction-name-link">${s.name}
+                <span class="attraction-cat ${CAT_CLS[s.cat]}">${s.catLabel}</span>
+            </a>
+            <div class="attraction-dist">${walkSvg} ${s.dist}</div>
+        </div>
+        <a href="${s.maps}" target="_blank" class="map-link">Map</a>
+    </div>`
+).join('');
+
+function switchTab(id) {
+    document.querySelectorAll('.tab-btn-top').forEach((b,i) => {
+        const panels = ['explore','info'];
+        b.classList.toggle('active', panels[i] === id);
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+}
+
+// Hero slideshow
+(function() {
+    const slides = Array.from(document.querySelectorAll('.hero-slide'));
+    let cur = 0;
+    setInterval(() => {
+        slides[cur].classList.remove('active');
+        cur = (cur + 1) % slides.length;
+        slides[cur].classList.add('active');
+    }, 4000);
+})();
+
+// Auth guard
+const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'INITIAL_SESSION' && !session) window.location.replace('../login.html');
+});
+</script>
+</body>
+</html>
