@@ -739,7 +739,7 @@
                 box-shadow: none;
                 display: grid;
                 grid-template-columns: 220px 1fr;
-                grid-template-rows: 180px auto 1fr;
+                grid-template-rows: 180px auto auto 1fr;
                 height: 100dvh;
                 overflow: hidden;
             }
@@ -754,7 +754,7 @@
 
             .tab-bar-top {
                 grid-column: 1;
-                grid-row: 2 / 4;
+                grid-row: 3 / 5;
                 flex-direction: column;
                 border-bottom: none;
                 border-right: 1px solid var(--border);
@@ -793,17 +793,23 @@
 
             .sync-bar {
                 grid-column: 2;
-                grid-row: 2;
+                grid-row: 3;
             }
 
             .content-area {
                 grid-column: 2;
-                grid-row: 3;
+                grid-row: 4;
                 padding: 28px 48px 32px;
                 max-width: none;
             }
 
             #app-flag { display: none !important; }
+
+            .countdown-strip {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+            }
         }
 
 
