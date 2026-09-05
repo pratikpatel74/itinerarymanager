@@ -224,6 +224,10 @@
     }
     .trip-card:active { transform: scale(0.97); }
     .trip-card.hidden { display: none; }
+    .trip-card--next {
+        box-shadow: 0 0 0 1.5px var(--gold), 0 0 20px rgba(201,162,39,0.28);
+        outline: none;
+    }
 
     /* Photo backgrounds */
     .tc-photo {
@@ -457,7 +461,7 @@
         <div class="section-label" data-section="upcoming">Upcoming</div>
 
         <!-- Brussels -->
-        <a class="trip-card" href="brussels-2026/" data-tags="upcoming brussels" data-trip-id="brussels-nov-2026">
+        <a class="trip-card trip-card--next" href="brussels-2026/" data-tags="upcoming brussels" data-trip-id="brussels-nov-2026">
             <div class="tc-photo" id="brussels-card-photo">
                 <div class="tc-slide active" style="background-image:url('https://images.unsplash.com/photo-1607894379039-89be884f69df?auto=format&fit=crop&w=800&q=80')"></div>
                 <div class="tc-slide" style="background-image:url('https://images.unsplash.com/photo-1548092304-e0205cb0031b?auto=format&fit=crop&w=800&q=80')"></div>
