@@ -799,6 +799,59 @@
             #app-flag { display: none !important; }
         }
 
+    /* ── Trip countdown strip ── */
+    .countdown-strip {
+        flex-shrink: 0;
+        background: #111518;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+        padding: 9px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .cd-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--sub);
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        flex-shrink: 0;
+    }
+    .cd-units {
+        display: flex;
+        align-items: center;
+    }
+    .cd-unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 44px;
+    }
+    .cd-num {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.5px;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+    }
+    .cd-unit-label {
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--sub);
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        margin-top: 2px;
+    }
+    .cd-sep {
+        font-size: 16px;
+        font-weight: 300;
+        color: var(--gold);
+        opacity: 0.55;
+        padding: 0 1px;
+        margin-bottom: 10px;
+        line-height: 1;
+    }
     </style>
 </head>
 <body>
@@ -839,6 +892,32 @@
         </div>
     </div>
     <div id="app-flag" hidden></div>
+
+    <!-- ── Departure countdown ── -->
+    <div class="countdown-strip">
+        <div class="cd-label">Departing in</div>
+        <div class="cd-units">
+            <div class="cd-unit">
+                <div class="cd-num" id="cd-days">--</div>
+                <div class="cd-unit-label">days</div>
+            </div>
+            <div class="cd-sep">·</div>
+            <div class="cd-unit">
+                <div class="cd-num" id="cd-hrs">--</div>
+                <div class="cd-unit-label">hrs</div>
+            </div>
+            <div class="cd-sep">·</div>
+            <div class="cd-unit">
+                <div class="cd-num" id="cd-mins">--</div>
+                <div class="cd-unit-label">mins</div>
+            </div>
+            <div class="cd-sep">·</div>
+            <div class="cd-unit">
+                <div class="cd-num" id="cd-secs">--</div>
+                <div class="cd-unit-label">secs</div>
+            </div>
+        </div>
+    </div>
 
     <!-- ── Top tabs ── -->
     <div class="tab-bar-top">
@@ -1161,6 +1240,11 @@ const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
 
 const TRIP_ID = 'paris-aug-2025';
+// ── TRIP CONFIG — update these when duplicating for a new trip ──
+const DEPARTURE_DATE  = '2026-08-07';  // YYYY-MM-DD — countdown expires midnight of this day
+const TRIP_START_TIME = '12:00';       // HH:MM — first itinerary item (strip hides while travelling)
+const TRIP_END_DATE   = '2026-08-10';  // YYYY-MM-DD — last day; "Trip Completed" shows after this
+// ─────────────────────────────────────────────────────────────────
 let TRIP = null;
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -2236,6 +2320,69 @@ async function toggleDone(el) {
         await loadEat();
     }
 
+
+
+// ── Departure countdown ──────────────────────────────────────────
+(function() {
+    const departure  = new Date(DEPARTURE_DATE + 'T00:00:00');
+    const tripStart  = new Date(DEPARTURE_DATE + 'T' + TRIP_START_TIME + ':00');
+    const tripEnd    = new Date(TRIP_END_DATE   + 'T23:59:59');
+    const strip      = document.querySelector('.countdown-strip');
+    const cdLabel    = strip ? strip.querySelector('.cd-label') : null;
+    const cdUnits    = strip ? strip.querySelector('.cd-units') : null;
+    const els = {
+        days: document.getElementById('cd-days'),
+        hrs:  document.getElementById('cd-hrs'),
+        mins: document.getElementById('cd-mins'),
+        secs: document.getElementById('cd-secs')
+    };
+
+    const ic = (d, col) => '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + col + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;">' + d + '</svg>';
+    const gold = 'var(--gold)';
+    const green = '#4ADE80';
+    const iconPlane = ic('<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>', gold);
+    const iconTrain = ic('<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/><path d="m9 15-1-1"/><path d="m15 15 1-1"/><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/>', gold);
+    const iconShip  = ic('<path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 19A11.6 11.6 0 0 0 21 13l-8.188-3.639a2 2 0 0 0-1.624 0L3 13.001a11.6 11.6 0 0 0 2.81 7.76"/><path d="M2 13h20"/><path d="M12 5v8"/><path d="M8 6v2"/><path d="M16 6v2"/>', gold);
+    const iconBus   = ic('<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/>', gold);
+    const iconCheck = ic('<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>', green);
+    const bonVoyageHtml  = '<span style="display:inline-flex;gap:5px;margin-right:7px;">' + iconPlane + iconTrain + iconShip + iconBus + '</span>';
+    const completedHtml  = '<span style="margin-right:6px;">' + iconCheck + '</span>';
+
+    function setLabel(html, text, color) {
+        if (cdUnits) cdUnits.style.display = 'none';
+        if (cdLabel) {
+            cdLabel.style.fontSize = '13px';
+            cdLabel.style.letterSpacing = '0px';
+            cdLabel.style.textTransform = 'none';
+            cdLabel.style.color = color || 'var(--text)';
+            cdLabel.innerHTML = html + text;
+        }
+    }
+
+    let rendered = '';
+    function tick() {
+        const now  = new Date();
+        if (now > tripEnd) {
+            if (rendered !== 'done') { setLabel(completedHtml, 'Trip Completed', '#4ADE80'); rendered = 'done'; }
+            return;
+        }
+        if (now >= tripStart) {
+            if (strip) strip.style.display = 'none';
+            return;
+        }
+        const diff = departure - now;
+        if (diff <= 0) {
+            if (rendered !== 'bon') { setLabel(bonVoyageHtml, 'Bon Voyage!', 'var(--text)'); rendered = 'bon'; }
+            return;
+        }
+        if (els.days) els.days.textContent = String(Math.floor(diff / 86400000)).padStart(2,'0');
+        if (els.hrs)  els.hrs.textContent  = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
+        if (els.mins) els.mins.textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+        if (els.secs) els.secs.textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+    }
+    tick();
+    setInterval(tick, 1000);
+})();
 
 </script>
 </body>
