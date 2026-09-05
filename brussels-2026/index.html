@@ -1256,7 +1256,10 @@
 const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
 
-const TRIP_ID = 'brussels-nov-2026';
+// ── TRIP CONFIG — update these when duplicating for a new trip ──
+const TRIP_ID        = 'brussels-nov-2026';  // matches Supabase trips.id
+const DEPARTURE_DATE = '2026-11-12';         // YYYY-MM-DD — countdown expires midnight of this day
+// ─────────────────────────────────────────────────────────────────
 let TRIP = null;
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -2335,8 +2338,8 @@ async function toggleDone(el) {
 
 // ── Departure countdown ──────────────────────────────────────────
 (function() {
-    const departure  = new Date('2026-11-12T00:00:00'); // midnight → countdown hits zero
-    const tripStart  = new Date('2026-11-12T09:25:00'); // 09:25 taxi → strip disappears
+    const departure  = new Date(DEPARTURE_DATE + 'T00:00:00'); // midnight → countdown hits zero
+    const tripStart  = new Date(DEPARTURE_DATE + 'T09:25:00'); // first itinerary item → strip disappears
     const strip      = document.querySelector('.countdown-strip');
     const cdLabel    = strip ? strip.querySelector('.cd-label') : null;
     const cdUnits    = strip ? strip.querySelector('.cd-units') : null;

@@ -211,11 +211,18 @@ function switchTab(id) {
 })();
 
 // Auth guard
+const CITY_ID = 'paris-recommended';
 const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'INITIAL_SESSION' && !session) window.location.replace('../login.html');
+sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'INITIAL_SESSION') {
+        if (!session) { window.location.replace('../login.html'); return; }
+        const { data: profile } = await sb.from('profiles').select('allowed_trips').eq('user_id', session.user.id).single();
+        if (!profile || !profile.allowed_trips || !profile.allowed_trips.includes(CITY_ID)) {
+            window.location.replace('../'); return;
+        }
+    }
 });
 </script>
 </body>
