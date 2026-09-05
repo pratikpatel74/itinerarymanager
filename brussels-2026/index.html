@@ -2335,19 +2335,47 @@ async function toggleDone(el) {
 
 // ── Departure countdown ──────────────────────────────────────────
 (function() {
-    const departure = new Date('2026-11-12T00:00:00');
+    const departure  = new Date('2026-11-12T00:00:00'); // midnight → countdown hits zero
+    const tripStart  = new Date('2026-11-12T09:25:00'); // 09:25 taxi → strip disappears
+    const strip      = document.querySelector('.countdown-strip');
+    const cdLabel    = strip ? strip.querySelector('.cd-label') : null;
+    const cdUnits    = strip ? strip.querySelector('.cd-units') : null;
     const els = {
         days: document.getElementById('cd-days'),
         hrs:  document.getElementById('cd-hrs'),
         mins: document.getElementById('cd-mins'),
         secs: document.getElementById('cd-secs')
     };
+
+    // Lucide transport icons
+    const ic = (d) => '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;color:var(--gold);">' + d + '</svg>';
+    const iconPlane = ic('<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>');
+    const iconTrain = ic('<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/><path d="m9 15-1-1"/><path d="m15 15 1-1"/><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/>');
+    const iconShip  = ic('<path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 19A11.6 11.6 0 0 0 21 13l-8.188-3.639a2 2 0 0 0-1.624 0L3 13.001a11.6 11.6 0 0 0 2.81 7.76"/><path d="M2 13h20"/><path d="M12 5v8"/><path d="M8 6v2"/><path d="M16 6v2"/>');
+    const iconBus   = ic('<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/>');
+    const iconsHtml = '<span style="display:inline-flex;gap:5px;margin-right:7px;">' + iconPlane + iconTrain + iconShip + iconBus + '</span>';
+
     function tick() {
-        const diff = departure - new Date();
-        if (diff <= 0) {
-            Object.values(els).forEach(e => { if(e) e.textContent = '00'; });
+        const now  = new Date();
+        // Trip has started — hide strip entirely
+        if (now >= tripStart) {
+            if (strip) strip.style.display = 'none';
             return;
         }
+        const diff = departure - now;
+        // Countdown hit zero but trip not started yet — Bon Voyage state
+        if (diff <= 0) {
+            if (cdUnits) cdUnits.style.display = 'none';
+            if (cdLabel) {
+                cdLabel.style.fontSize = '13px';
+                cdLabel.style.letterSpacing = '0px';
+                cdLabel.style.textTransform = 'none';
+                cdLabel.style.color = 'var(--text)';
+                cdLabel.innerHTML = iconsHtml + 'Bon Voyage!';
+            }
+            return;
+        }
+        // Normal countdown
         if (els.days) els.days.textContent = String(Math.floor(diff / 86400000)).padStart(2,'0');
         if (els.hrs)  els.hrs.textContent  = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
         if (els.mins) els.mins.textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
