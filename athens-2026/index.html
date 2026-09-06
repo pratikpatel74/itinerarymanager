@@ -1,0 +1,2412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <title>Athens 2026 · Trip Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap">
+    <style>
+    /* ── Tokens ── */
+    :root {
+        --gold:       #C9A227;
+        --gold-lt:    rgba(201,162,39,0.15);
+        --gold-md:    rgba(201,162,39,0.3);
+        --bg:         #0A0A0A;
+        --surface:    #1C1C1E;
+        --surface2:   #242426;
+        --border:     rgba(255,255,255,0.08);
+        --text:       #F2F2F2;
+        --sub:        #8E8E93;
+        --sub2:       #48484A;
+        --green:      #2A7A52;
+        --green-lt:   rgba(42,122,82,0.14);
+        --green-text: #4ADE80;
+        --blue-dot:   #3B82F6;
+        --gold-dot:   #C9A227;
+        --orange-dot: #F97316;
+        --purple-dot: #818CF8;
+        --radius:     14px;
+        --tab-h:      60px;
+
+        /* legacy aliases so inline var() references in preserved HTML still work */
+        --navy:    #C9A227;   /* links/accents in dark theme → gold */
+        --parch:   #242426;   /* background surfaces → dark surface2 */
+        --slate:   #8E8E93;
+        --sub-old: #8E8E93;
+        --border-old: rgba(255,255,255,0.08);
+        --card-bg: #1C1C1E;
+        --mist:    #48484A;
+        --text-old:#F2F2F2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Body + shell ── */
+    html, body {
+        height: 100%;
+        overflow: hidden;
+        background: #0A0A0A;
+        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Centered 480px shell */
+    .app-shell {
+        max-width: 480px;
+        margin: 0 auto;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--bg);
+        box-shadow: 0 0 80px rgba(0,0,0,0.8);
+        position: relative;
+    }
+
+    /* ── Hero header ── */
+    .app-hero {
+        flex-shrink: 0;
+        position: relative;
+        height: 186px;
+        overflow: hidden;
+        background: #080E23;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: max(14px, env(safe-area-inset-top)) 16px 16px;
+    }
+    .hero-slide {
+        position: absolute; inset: 0;
+        background-size: cover; background-position: center;
+        opacity: 0; transition: opacity 1.2s ease; z-index: 0;
+    }
+    .hero-slide.active { opacity: 1; }
+    .hero-gradient {
+        position: absolute; inset: 0; z-index: 1;
+        background:
+            linear-gradient(180deg, rgba(8,14,35,0.15) 0%, rgba(8,14,35,0.88) 58%, #080E23 100%),
+            radial-gradient(ellipse at 68% 28%, rgba(50,70,130,0.55) 0%, transparent 58%),
+            radial-gradient(ellipse at 25% 65%, rgba(201,162,39,0.06) 0%, transparent 48%);
+    }
+    .hero-top-row, .hero-mid { position: relative; z-index: 2; }
+
+    .hero-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .hero-back {
+        font-size: 13px;
+        font-weight: 600;
+        color: white;
+        text-decoration: none;
+        letter-spacing: -0.1px;
+        -webkit-tap-highlight-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(0,0,0,0.35);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.18);
+        padding: 6px 12px 6px 8px;
+        border-radius: 20px;
+    }
+
+    .hero-pill {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: rgba(0,0,0,0.35);
+        color: white;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .hero-signout {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.5);
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        transition: color 0.15s;
+    }
+    .hero-signout:hover { color: rgba(255,255,255,0.9); }
+
+    .hero-mid {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .hero-flag-badge {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid rgba(255,255,255,0.22);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+        background: #111;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .hero-body { }
+
+    .hero-city {
+        font-family: 'DM Sans', system-ui, sans-serif;
+        font-size: 30px;
+        font-weight: 700;
+        color: white;
+        line-height: 1.1;
+        letter-spacing: -1px;
+        text-shadow: 0 1px 10px rgba(0,0,0,0.5);
+    }
+
+    .hero-dates {
+        font-size: 15px;
+        color: rgba(255,255,255,0.65);
+        margin-top: 3px;
+        font-weight: 400;
+    }
+
+    /* ── Top tab bar ── */
+    .tab-bar-top {
+        flex-shrink: 0;
+        background: var(--surface);
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .tab-bar-top::-webkit-scrollbar { display: none; }
+
+    .tab-btn-top {
+        font-size: 12px; font-weight: 600;
+        padding: 12px 14px 10px;
+        white-space: nowrap;
+        color: var(--sub);
+        border-bottom: 3px solid transparent;
+        flex-shrink: 0;
+        background: none;
+        border-top: none; border-left: none; border-right: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: color 0.15s, border-color 0.15s;
+        letter-spacing: 0.3px;
+    }
+    .tab-btn-top.active {
+        color: var(--text);
+        border-bottom-color: var(--gold);
+    }
+
+    /* ── Sync indicator ── */
+    .sync-bar {
+        flex-shrink: 0;
+        background: var(--surface);
+        padding: 6px 16px;
+        display: flex; align-items: center; gap: 6px;
+        font-size: 10px; color: var(--green-text); font-weight: 600;
+        border-bottom: 1px solid var(--border);
+    }
+    .sync-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--green-text); flex-shrink: 0;
+        animation: blink 2s infinite;
+    }
+    .sync-bar.error { color: #F87171; }
+    .sync-bar.error .sync-dot { background: #F87171; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+    /* ── Scrollable content ── */
+    .content-area {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 12px 12px 8px;
+        background: var(--bg);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Generic card ── */
+    .card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 14px; margin-bottom: 14px;
+        border: 1px solid var(--border);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    .card-title {
+        font-size: 13px; font-weight: 700;
+        color: var(--gold);
+        text-transform: uppercase; letter-spacing: 0.7px;
+        margin-bottom: 10px;
+        display: flex; align-items: center; gap: 6px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 8px;
+    }
+    .card-title svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* ── Day cards ── */
+    .day-card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        margin-bottom: 10px; overflow: hidden;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+        border: 1px solid var(--border);
+    }
+    .day-header {
+        border-left: 4px solid var(--gold);
+        padding: 12px 14px;
+        cursor: pointer;
+        display: flex; justify-content: space-between; align-items: center;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        background: var(--surface);
+    }
+    .day-date {
+        font-family: 'DM Sans', system-ui, sans-serif;
+        font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.2;
+        letter-spacing: -0.5px;
+    }
+    .day-label { font-size: 12px; color: var(--sub); margin-top: 2px; }
+    .day-chevron { color: var(--sub); font-size: 24px; transition: transform 0.2s; margin-left: 8px; flex-shrink: 0; line-height: 1; }
+    .day-card.open .day-chevron { transform: rotate(180deg); }
+    .day-body { display: none; }
+    .day-card.open .day-body { display: block; }
+
+    .day-empty {
+        font-size: 12px; color: var(--sub); font-style: italic;
+        padding: 12px 14px;
+        border-top: 1px solid var(--border);
+    }
+    .day-section-label {
+        font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+        color: var(--sub2); padding: 9px 14px 3px;
+        border-top: 1px solid var(--border);
+    }
+
+    /* ── Itinerary rows ── */
+    .it-item {
+        display: flex; align-items: flex-start; gap: 0;
+        padding: 9px 14px;
+        border-top: 1px solid var(--border);
+        cursor: pointer; user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.13s;
+    }
+    .it-item:first-child { border-top: none; }
+    .it-item:active { background: rgba(255,255,255,0.04); }
+
+    /* done state */
+    .it-item.done { background: var(--green-lt); }
+    .it-item.done .it-name { text-decoration: line-through; color: var(--sub); opacity: 0.65; }
+    .it-item.done .it-detail { opacity: 0.45; }
+    .it-item.done .it-time { color: var(--green-text); opacity: 0.7; }
+    .it-item.done .it-dot { background: var(--green-text) !important; }
+    .it-item.done .it-dot::after { content: '✓'; display: block; font-size: 9px; color: #0A0A0A; font-weight: 800; line-height: 1; text-align: center; }
+
+    .it-time {
+        font-size: 12px; font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        color: var(--gold); width: 42px; flex-shrink: 0;
+        padding-top: 3px; line-height: 1;
+    }
+    .it-dot-wrap {
+        width: 44px; flex-shrink: 0; margin-left: -8px;
+        display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+        padding-top: 2px; min-height: 44px;
+        cursor: pointer;
+    }
+    .it-dot {
+        width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+        transition: background 0.15s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .dot-travel   { background: var(--blue-dot); }
+    .dot-activity { background: var(--gold-dot); }
+    .dot-food     { background: var(--orange-dot); }
+    .dot-sight    { background: var(--purple-dot); }
+
+    .it-content { flex: 1; min-width: 0; }
+    .it-name {
+        font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.35;
+    }
+    .it-name a { color: var(--gold); text-decoration: underline; }
+    .it-detail {
+        font-size: 12px; font-weight: 300; color: var(--sub);
+        margin-top: 2px; line-height: 1.4;
+    }
+
+    /* ── Legend ── */
+    .type-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--sub); font-weight: 400; }
+    .legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Journey timeline ── */
+    .timeline { position: relative; padding-left: 20px; margin-top: 6px; }
+    .timeline::before { content: ''; position: absolute; left: 6px; top: 4px; bottom: 4px; width: 2px; background: var(--border); }
+    .timeline-event { position: relative; margin-bottom: 13px; font-size: 13px; color: var(--text); }
+    .timeline-event:last-child { margin-bottom: 0; }
+    .timeline-event::before {
+        content: ''; position: absolute; left: -18px; top: 4px;
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--blue-dot); border: 2px solid var(--surface);
+        box-shadow: 0 0 0 1px var(--blue-dot);
+    }
+    .t-time { font-weight: 600; color: var(--gold); display: inline-block; width: 42px; font-size: 12px; font-variant-numeric: tabular-nums; }
+    .badge { background: var(--gold-lt); color: var(--gold); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+
+    /* ── Attractions ── */
+    .attraction-item {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; gap: 8px;
+    }
+    .attraction-item:last-child { border-bottom: none; }
+    .attraction-info { flex: 1; min-width: 0; }
+    .attraction-name-link { font-weight: 600; color: var(--gold); text-decoration: underline; }
+    .attraction-dist { font-size: 11px; color: var(--sub); margin-top: 2px; }
+    .map-link {
+        color: #60A5FA; text-decoration: none; font-weight: 600;
+        font-size: 12px; background: rgba(59,130,246,0.12); padding: 4px 9px; border-radius: 7px;
+        white-space: nowrap; flex-shrink: 0;
+        border: 1px solid rgba(59,130,246,0.2);
+    }
+
+    /* ── Cost table ── */
+    table.cost-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+    table.cost-table th, table.cost-table td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); color: var(--text); }
+    table.cost-table th { background: var(--surface2); color: var(--sub); font-weight: 700; font-size: 11px; }
+    table.cost-table tr.total-row td {
+        font-weight: 700; font-size: 13px;
+        background: rgba(59,130,246,0.1); border-top: 2px solid var(--blue-dot); border-bottom: none;
+    }
+    .badge-paid { background: rgba(42,122,82,0.2); color: var(--green-text); font-size: 10px; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
+
+    /* ── Passenger grid ── */
+    .passenger-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .passenger-item { background: var(--surface2); padding: 9px; border-radius: 9px; font-size: 13px; font-weight: 600; text-align: center; color: var(--text); }
+
+    /* ── Ref codes ── */
+    .ref-grid { display: grid; gap: 7px; }
+    .ref-item {
+        display: flex; justify-content: space-between; align-items: center;
+        background: var(--surface2); padding: 9px 10px; border-radius: 9px;
+        border: 1px dashed var(--border); font-size: 13px; gap: 8px;
+    }
+    .ref-label { color: var(--sub); font-size: 12px; font-weight: 300; }
+    .ref-code {
+        font-family: monospace; font-weight: 700;
+        background: rgba(14,165,233,0.15); color: #38BDF8;
+        padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        width: 100%; background: var(--gold); color: #0A0A0A;
+        text-decoration: none; padding: 10px 14px; border-radius: 9px;
+        font-size: 13px; font-weight: 700; margin-top: 8px;
+    }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); font-weight: 600; }
+
+    /* ── Restaurants ── */
+    .resto-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.3); margin-bottom: 12px; overflow: hidden; }
+    .resto-header { padding: 12px 14px 8px; border-bottom: 1px solid var(--border); }
+    .resto-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .resto-name a { color: var(--gold); text-decoration: underline; }
+    .resto-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+    .resto-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--surface2); color: var(--sub); }
+    .resto-tag.price { background: rgba(42,122,82,0.2); color: var(--green-text); }
+    .resto-body { padding: 10px 14px; display: grid; gap: 7px; }
+    .resto-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; }
+    .resto-row-icon { width: 16px; flex-shrink: 0; text-align: center; margin-top: 1px; }
+    .resto-row-text { flex: 1; color: var(--sub); line-height: 1.4; }
+    .resto-row-text strong { color: var(--text); }
+    .resto-row-text a { color: var(--gold); }
+    .resto-actions { display: flex; gap: 8px; padding: 0 14px 12px; }
+    .resto-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 8px 6px; border-radius: 9px; font-size: 12px; font-weight: 600; text-decoration: none; text-align: center; }
+    .resto-btn-primary { background: var(--gold); color: #0A0A0A; font-weight: 700; }
+    .resto-btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+    /* ── Meal sub-tabs ── */
+    .meal-tabs { display: flex; gap: 6px; padding: 0 0 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .meal-tabs::-webkit-scrollbar { display: none; }
+    .meal-tab-btn {
+        display: flex; align-items: center; gap: 5px; padding: 7px 14px;
+        border-radius: 20px; border: 1px solid var(--border);
+        background: var(--surface); color: var(--sub);
+        font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+        -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s, border-color 0.15s; flex-shrink: 0;
+        font-family: 'DM Sans', sans-serif;
+    }
+    .meal-tab-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .meal-tab-btn.active { background: var(--gold); color: #0A0A0A; border-color: var(--gold); }
+    .meal-panel { display: none; }
+    .meal-panel.active { display: block; }
+
+    /* ── Sync toast ── */
+    #sync-toast {
+        position: absolute; top: 8px; right: 12px;
+        font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 10px;
+        z-index: 200; transition: opacity 0.4s; opacity: 0; pointer-events: none;
+        display: flex; align-items: center; gap: 4px;
+    }
+    #sync-toast.show { opacity: 1; }
+    #sync-toast.synced { background: rgba(42,122,82,0.25); color: var(--green-text); }
+    #sync-toast.error  { background: rgba(239,68,68,0.2); color: #F87171; }
+
+    /* ── inline overrides for preserved HTML ── */
+    .card p { color: var(--sub); }
+    .card p strong { color: var(--text); }
+    ul li { color: var(--sub); }
+    ul li strong { color: var(--text); }
+
+    /* ── Drilldown indicator on items ── */
+    .it-item.has-detail { cursor: pointer; }
+    .it-chevron {
+        display: flex; align-items: center;
+        color: var(--sub); margin-left: 8px; flex-shrink: 0;
+        align-self: center; line-height: 1;
+    }
+
+    /* ── Bottom sheet backdrop ── */
+    .sheet-backdrop {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+        z-index: 300;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.28s ease;
+    }
+    .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    /* ── Bottom sheet panel ── */
+    .sheet {
+        position: absolute; left: 0; right: 0; bottom: 0;
+        background: var(--surface);
+        border-radius: 20px 20px 0 0;
+        border-top: 1px solid var(--border);
+        max-height: 87%;
+        display: flex; flex-direction: column;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+        z-index: 301;
+    }
+    .sheet.open { transform: translateY(0); }
+
+    /* drag handle */
+    .sheet-handle {
+        width: 36px; height: 4px; border-radius: 2px;
+        background: var(--sub2);
+        margin: 12px auto 0;
+        flex-shrink: 0;
+    }
+
+    /* sheet header */
+    .sheet-header {
+        flex-shrink: 0;
+        padding: 14px 16px 12px;
+        border-bottom: 1px solid var(--border);
+        display: flex; align-items: flex-start; gap: 10px;
+    }
+    .sheet-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        flex-shrink: 0; margin-top: 5px;
+    }
+    .sheet-hbody { flex: 1; min-width: 0; }
+    .sheet-time {
+        font-size: 12px; font-weight: 600; color: var(--gold);
+        font-variant-numeric: tabular-nums; margin-bottom: 2px;
+    }
+    .sheet-name {
+        font-family: 'DM Sans', system-ui, sans-serif;
+        font-size: 18px; font-weight: 700; color: var(--text);
+        line-height: 1.25; text-wrap: balance; letter-spacing: -0.2px;
+    }
+    .sheet-meta {
+        font-size: 12px; color: var(--sub); margin-top: 4px;
+        display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .sheet-meta-item { display: flex; align-items: center; gap: 4px; }
+    .sheet-close {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--surface2); border: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 16px; color: var(--sub); cursor: pointer;
+        flex-shrink: 0; line-height: 1;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* sheet scrollable body */
+    .sheet-body {
+        flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+        padding: 14px 16px 32px;
+        display: flex; flex-direction: column; gap: 14px;
+    }
+
+    /* sheet section */
+    .sheet-section-label {
+        font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+        text-transform: uppercase; color: var(--sub2);
+        margin-bottom: 8px;
+    }
+
+    /* checklist */
+    .checklist { display: flex; flex-direction: column; gap: 1px; }
+    .cl-item {
+        display: flex; align-items: center; gap: 10px;
+        padding: 10px 12px;
+        background: var(--surface2); border-radius: 10px;
+        cursor: pointer; user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.13s;
+        margin-bottom: 4px;
+    }
+    .cl-item:active { background: rgba(255,255,255,0.06); }
+    .cl-item.done .cl-label {
+        text-decoration: line-through; color: var(--sub); opacity: 0.6;
+    }
+    .cl-box {
+        width: 20px; height: 20px; border-radius: 6px;
+        border: 2px solid var(--sub2);
+        background: transparent; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.15s, border-color 0.15s;
+    }
+    .cl-item.done .cl-box {
+        background: var(--green); border-color: var(--green);
+    }
+    .cl-tick { display: none; align-items: center; justify-content: center; color: white; }
+    .cl-item.done .cl-tick { display: flex; }
+    .cl-label { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; line-height: 1.35; }
+
+    /* location block */
+    .sheet-location {
+        background: var(--surface2); border-radius: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        display: flex; flex-direction: column; gap: 6px;
+    }
+    .sheet-loc-name { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 5px; }
+    .sheet-loc-addr { font-size: 11px; color: var(--sub); line-height: 1.4; }
+    .sheet-loc-btn {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        margin-top: 6px;
+        background: rgba(59,130,246,0.14); color: #60A5FA;
+        border: 1px solid rgba(59,130,246,0.22);
+        padding: 9px 14px; border-radius: 9px;
+        font-size: 12px; font-weight: 700; text-decoration: none;
+    }
+
+    /* sheet CTA */
+    .sheet-cta {
+        display: flex; align-items: center; justify-content: center;
+        gap: 6px; width: 100%;
+        background: var(--gold); color: #0A0A0A;
+        padding: 12px 14px; border-radius: 10px;
+        font-size: 14px; font-weight: 700; text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* notes */
+    .sheet-notes {
+        background: var(--surface2); border-radius: 12px;
+        padding: 11px 14px; font-size: 12px; color: var(--sub);
+        border: 1px solid var(--border); line-height: 1.6;
+    }
+    .sheet-notes strong { color: var(--text); }
+
+    /* ── Edit mode / form styles ── */
+    .day-edit-toggle { padding:4px 10px; border-radius:8px; font-size:12px; font-weight:700; background:none; border:1px solid var(--border); color:var(--sub); cursor:pointer; font-family:inherit; transition:all 0.15s; flex-shrink:0; }
+    .day-edit-toggle.active { background:rgba(59,130,246,0.1); border-color:var(--blue); color:var(--blue); }
+    .it-edit-btns { display:flex; gap:1px; flex-shrink:0; align-items:center; }
+    .it-edit-btn { width:28px; height:28px; border-radius:7px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--sub); transition:all 0.15s; flex-shrink:0; }
+    .it-edit-btn:hover { background:var(--surface2); }
+    .it-edit-btn.edit:hover { color:var(--blue); }
+    .it-edit-btn.del:hover { color:#EF4444; }
+    .it-edit-btn:disabled { opacity:0.25; cursor:default; }
+    .day-add-btn { display:flex; align-items:center; gap:8px; width:100%; padding:10px 14px; margin-top:8px; background:rgba(59,130,246,0.07); border:1.5px dashed rgba(59,130,246,0.3); border-radius:10px; color:var(--blue); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:background 0.15s; }
+    .day-add-btn:hover { background:rgba(59,130,246,0.13); }
+    .ef-field { margin-bottom:14px; }
+    .ef-label { font-size:11px; font-weight:700; color:var(--sub); letter-spacing:0.5px; text-transform:uppercase; margin-bottom:6px; }
+    .ef-input { width:100%; padding:9px 12px; background:var(--surface2); border:1.5px solid var(--border); border-radius:10px; color:var(--text); font-size:14px; font-family:inherit; outline:none; transition:border-color 0.15s; box-sizing:border-box; }
+    .ef-input:focus { border-color:var(--blue); }
+    .ef-textarea { resize:vertical; min-height:60px; line-height:1.5; }
+    .ef-row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .ef-type-tabs { display:flex; gap:6px; }
+    .ef-type-tab { flex:1; padding:8px 4px; background:var(--surface2); border:1.5px solid var(--border); border-radius:9px; font-size:12px; font-weight:600; color:var(--sub); cursor:pointer; text-align:center; transition:all 0.15s; }
+    .ef-type-tab.active { background:rgba(59,130,246,0.1); border-color:var(--blue); color:var(--blue); }
+    .ef-cls-chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .ef-chip { padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; border:1.5px solid transparent; transition:all 0.15s; opacity:0.4; }
+    .ef-chip.active { opacity:1; }
+    .ef-chip.travel   { background:rgba(59,130,246,0.12);  color:#3B82F6; border-color:rgba(59,130,246,0.35); }
+    .ef-chip.activity { background:rgba(201,162,39,0.12);  color:#C9A227; border-color:rgba(201,162,39,0.35); }
+    .ef-chip.food     { background:rgba(249,115,22,0.12);  color:#F97316; border-color:rgba(249,115,22,0.35); }
+    .ef-chip.sight    { background:rgba(129,140,248,0.12); color:#818CF8; border-color:rgba(129,140,248,0.35); }
+    .ef-expander { border-top:1px solid var(--border); }
+    .ef-exp-head { display:flex; align-items:center; justify-content:space-between; padding:10px 0; cursor:pointer; user-select:none; }
+    .ef-exp-head span { font-size:13px; font-weight:600; color:var(--sub); }
+    .ef-exp-arrow { font-size:12px; color:var(--sub); transition:transform 0.2s; }
+    .ef-exp-head.open .ef-exp-arrow { transform:rotate(90deg); }
+    .ef-exp-body { display:none; padding-bottom:12px; }
+    .ef-exp-body.open { display:block; }
+    .ef-cl-row { display:flex; gap:6px; margin-bottom:6px; align-items:center; }
+    .ef-cl-row input { flex:1; padding:8px 10px; background:var(--surface2); border:1.5px solid var(--border); border-radius:9px; color:var(--text); font-size:13px; font-family:inherit; outline:none; box-sizing:border-box; }
+    .ef-cl-row input:focus { border-color:var(--blue); }
+    .ef-cl-del { background:none; border:none; color:var(--sub); cursor:pointer; padding:4px 6px; font-size:18px; line-height:1; flex-shrink:0; }
+    .ef-cl-add { font-size:13px; font-weight:600; color:var(--blue); background:none; border:none; cursor:pointer; padding:2px 0; }
+    .ef-footer { padding:12px 16px 24px; border-top:1px solid var(--border); display:flex; gap:10px; flex-shrink:0; }
+    .ef-btn-cancel { flex:1; padding:12px; background:var(--surface2); border:1.5px solid var(--border); border-radius:12px; color:var(--sub); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
+    .ef-btn-save { flex:2; padding:12px; background:var(--blue); border:none; border-radius:12px; color:#fff; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .ef-btn-save:disabled { opacity:0.5; cursor:wait; }
+    .ef-btn-del { flex:1; padding:12px; background:#EF4444; border:none; border-radius:12px; color:#fff; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+
+    /* ── Explore view toggle ── */
+    .explore-view-toggle {
+        display: flex; gap: 3px;
+        background: var(--surface2); border-radius: 10px;
+        padding: 3px; margin-bottom: 12px;
+    }
+    .evt-btn {
+        flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+        padding: 8px 12px; border-radius: 8px;
+        font-size: 12px; font-weight: 600;
+        background: transparent; border: none; cursor: pointer;
+        color: var(--sub); transition: background 0.15s, color 0.15s;
+        -webkit-tap-highlight-color: transparent; font-family: inherit;
+    }
+    .evt-btn.active {
+        background: var(--surface); color: var(--text);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    #explore-map-view { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+    #attractions-map { height: 380px; width: 100%; }
+    .explore-map-hint { font-size: 11px; color: var(--sub); text-align: center; padding: 6px 0 2px; }
+    .leaflet-popup-content-wrapper {
+        background: #1C1C1E !important; border: 1px solid rgba(255,255,255,0.1);
+        color: #F2F2F2 !important; border-radius: 10px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+    }
+    .leaflet-popup-tip { background: #1C1C1E !important; }
+    .leaflet-popup-content { margin: 10px 12px !important; font-size: 12px; line-height: 1.5; }
+    .leaflet-popup-content strong { color: #F2F2F2; font-size: 13px; display: block; margin-bottom: 2px; }
+    .leaflet-popup-content a { color: #C9A227; text-decoration: none; font-weight: 600; }
+    .pop-dist { color: #8E8E93; font-size: 11px; display: block; margin-bottom: 5px; }
+    .leaflet-container { background: #111; font-family: 'DM Sans', system-ui, sans-serif; }
+    .leaflet-control-attribution { background: rgba(10,10,10,0.75) !important; color: #666 !important; font-size: 9px !important; }
+    .leaflet-control-attribution a { color: #666 !important; }
+    .leaflet-bar a { background: #1C1C1E !important; color: #F2F2F2 !important; border-color: rgba(255,255,255,0.1) !important; }
+    .leaflet-bar a:hover { background: #2a2a2c !important; }
+
+    /* ── Explore / Eat CRUD ─────────────────────────────────────────── */
+    .add-row-btn {
+        display:block; width:100%; margin-top:10px; padding:10px;
+        background:transparent; border:1.5px dashed var(--border);
+        border-radius:10px; color:var(--sub);
+        font-size:13px; font-weight:600; font-family:inherit;
+        cursor:pointer; transition:border-color 0.15s,color 0.15s;
+        -webkit-tap-highlight-color:transparent;
+    }
+    .add-row-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .row-edit-btn {
+        flex-shrink:0; background:transparent; border:none; cursor:pointer;
+        padding:5px 6px; color:var(--sub); font-size:14px; line-height:1;
+        -webkit-tap-highlight-color:transparent; transition:color 0.15s;
+        border-radius:6px;
+    }
+    .row-edit-btn:hover { color:var(--gold); background:var(--surface2); }
+    .ef-textarea { resize:vertical; min-height:72px; }
+    
+        /* ── Desktop layout (≥900px) ── */
+        @media (min-width: 900px) {
+            .app-shell {
+                max-width: 100%;
+                box-shadow: none;
+                display: grid;
+                grid-template-columns: 220px 1fr;
+                grid-template-rows: 180px auto auto 1fr;
+                height: 100dvh;
+                overflow: hidden;
+            }
+
+            .app-hero {
+                grid-column: 1 / -1;
+                grid-row: 1;
+                height: 180px;
+                min-height: unset;
+                max-height: 180px;
+            }
+
+            .tab-bar-top {
+                grid-column: 1;
+                grid-row: 3 / 5;
+                flex-direction: column;
+                border-bottom: none;
+                border-right: 1px solid var(--border);
+                padding: 12px 0;
+                align-items: stretch;
+                overflow-y: auto;
+                background: var(--surface);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+            }
+
+            .tab-btn-top {
+                flex-direction: row;
+                gap: 10px;
+                justify-content: flex-start;
+                text-align: left;
+                padding: 13px 20px;
+                border-bottom: none !important;
+                border-left: 3px solid transparent;
+                border-radius: 0;
+                font-size: 14px;
+                min-width: unset;
+            }
+
+            .tab-btn-top.active {
+                border-left-color: var(--gold);
+                border-bottom-color: transparent !important;
+                background: rgba(201,162,39,0.09);
+                color: var(--gold);
+            }
+
+            .tab-btn-top .tab-icon {
+                font-size: 16px;
+                min-width: 20px;
+            }
+
+            .sync-bar {
+                grid-column: 2;
+                grid-row: 3;
+            }
+
+            .content-area {
+                grid-column: 2;
+                grid-row: 4;
+                padding: 28px 48px 32px;
+                max-width: none;
+            }
+
+            #app-flag { display: none !important; }
+
+            .countdown-strip {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+            }
+        }
+
+
+    /* ── Trip countdown strip ── */
+    .countdown-strip {
+        flex-shrink: 0;
+        background: #111518;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+        padding: 9px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .cd-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--sub);
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        flex-shrink: 0;
+    }
+    .cd-units {
+        display: flex;
+        align-items: center;
+    }
+    .cd-unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 44px;
+    }
+    .cd-num {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.5px;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+    }
+    .cd-unit-label {
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--sub);
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        margin-top: 2px;
+    }
+    .cd-sep {
+        font-size: 16px;
+        font-weight: 300;
+        color: var(--gold);
+        opacity: 0.55;
+        padding: 0 1px;
+        margin-bottom: 10px;
+        line-height: 1;
+    }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+
+    <div id="sync-toast"></div>
+
+    <!-- ── Hero header ── -->
+    <div class="app-hero" id="app-hero">
+        <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1555993539-1732b0258235?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1548707309-dcebeab9ea9b?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-top-row">
+            <a class="hero-back" href="../"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Our Trips</a>
+            <div class="hero-pill">Upcoming</div>
+        </div>
+        <div class="hero-mid">
+            <div class="hero-flag-badge">
+                <!-- Belgium: black / yellow / red vertical thirds -->
+                <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
+                    <clipPath id="cl-be"><circle cx="20" cy="20" r="20"/></clipPath>
+                    <g clip-path="url(#cl-be)">
+                        <rect width="40" height="40" fill="#1A1A1A"/>
+                        <rect x="13.33" y="0" width="13.34" height="40" fill="#F5D800"/>
+                        <rect x="26.67" y="0" width="13.33" height="40" fill="#EF3340"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="hero-body">
+                <div class="hero-city" id="app-title">Athens Guide</div>
+                <div class="hero-dates" id="app-subtitle">12–15 November · Patels + Mistrys</div>
+            </div>
+        </div>
+    </div>
+    <!-- hidden flag element so JS can still update it -->
+    <div id="app-flag" hidden></div>
+
+    <!-- ── Departure countdown ── -->
+    <div class="countdown-strip">
+        <div class="cd-label">Departing in</div>
+        <div class="cd-units">
+            <div class="cd-unit">
+                <div class="cd-num" id="cd-days">--</div>
+                <div class="cd-unit-label">days</div>
+            </div>
+            <div class="cd-sep">·</div>
+            <div class="cd-unit">
+                <div class="cd-num" id="cd-hrs">--</div>
+                <div class="cd-unit-label">hrs</div>
+            </div>
+            <div class="cd-sep">·</div>
+            <div class="cd-unit">
+                <div class="cd-num" id="cd-mins">--</div>
+                <div class="cd-unit-label">mins</div>
+            </div>
+            <div class="cd-sep">·</div>
+            <div class="cd-unit">
+                <div class="cd-num" id="cd-secs">--</div>
+                <div class="cd-unit-label">secs</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Top tabs ── -->
+    <div class="tab-bar-top">
+        <button class="tab-btn-top active" id="tab-days"    onclick="switchTab('days')">Days</button>
+        <button class="tab-btn-top"        id="tab-journey" onclick="switchTab('journey')">Journey</button>
+        <button class="tab-btn-top"        id="tab-explore" onclick="switchTab('explore')">Explore</button>
+        <button class="tab-btn-top"        id="tab-eat"     onclick="switchTab('eat')">Eat</button>
+        <button class="tab-btn-top"        id="tab-info"    onclick="switchTab('info')">Info</button>
+    </div>
+
+    <!-- ── Sync bar ── -->
+    <div class="sync-bar" id="sync-bar" style="justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:6px;">
+            <div class="sync-dot"></div>
+            <span id="sync-text">Live sync on</span>
+        </div>
+        <span style="font-size:10px;color:var(--sub2);letter-spacing:0.5px;">v16</span>
+    </div>
+
+    <!-- ── Scrollable content ── -->
+    <div class="content-area">
+
+        <!-- ══ DAYS TAB ══ -->
+        <div class="tab-panel active" id="panel-days">
+            <!-- Rendered by JS from TRIP.days config -->
+        </div>
+
+        <!-- ══ JOURNEY TAB ══ -->
+        <div class="tab-panel" id="panel-journey">
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>Outbound — Thursday 12th Nov</div>
+                <div class="timeline">
+                    <div class="timeline-event"><span class="t-time">09:25</span> Taxi departs for <strong>Leicester Station</strong></div>
+                    <div class="timeline-event"><span class="t-time">10:12</span> Departs <strong>Leicester</strong></div>
+                    <div class="timeline-event"><span class="t-time">11:27</span> Arrive <strong>London St Pancras</strong></div>
+                    <div class="timeline-event"><span class="t-time">11:45</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
+                    <div class="timeline-event"><span class="t-time">13:01</span> Eurostar Departs St Pancras</div>
+                    <div class="timeline-event"><span class="t-time">16:06</span> Arrive <strong>Brussels Midi</strong> <span class="badge">+1 hr CET</span></div>
+                    <div class="timeline-event"><span class="t-time">16:15</span> Taxi — Brussels Midi → Hotel Aris (~15 mins)</div>
+                    <div class="timeline-event"><span class="t-time">16:30</span> Check-in Hotel Aris Grand Place</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7 7 17"/><path d="M17 17H7V7"/></svg>Return — Sunday 15th Nov</div>
+                <div class="timeline">
+                    <div class="timeline-event"><span class="t-time">10:15</span> Hotel Check-out</div>
+                    <div class="timeline-event"><span class="t-time">10:20</span> Taxi departs for <strong>Brussels Midi</strong></div>
+                    <div class="timeline-event"><span class="t-time">10:41</span> <span class="badge">Check-in</span> Eurostar Security &amp; Passport Control</div>
+                    <div class="timeline-event"><span class="t-time">11:56</span> Eurostar Departs <strong>Brussels Midi</strong></div>
+                    <div class="timeline-event"><span class="t-time">12:57</span> Arrive <strong>London St Pancras</strong> <span class="badge">UK Time</span></div>
+                    <div class="timeline-event"><span class="t-time">14:42</span> EMR Departs St Pancras</div>
+                    <div class="timeline-event"><span class="t-time">15:30</span> Arrive <strong>Market Harborough</strong></div>
+                    <div class="timeline-event"><span class="t-time">15:35</span> Taxi — Market Harborough → Home (~25 mins)</div>
+                    <div class="timeline-event"><span class="t-time">16:00</span> Arrive home</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg>Midi Station → Hotel</div>
+                <div style="font-size: 13px; display: grid; gap: 10px; color: var(--text);">
+                    <div><strong>Local Train (Fastest)</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">SNCB train: Bruxelles-Midi → Bruxelles-Central (4 mins, every 5 mins). Hotel is 3 min walk from Central Station.</p></div>
+                    <div><strong>Taxi / Uber</strong><p style="color: var(--sub); font-size: 12px; margin-top: 3px;">Available outside Midi terminal. ~10–15 mins, €10–€15.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ EXPLORE TAB ══ -->
+        <div class="tab-panel" id="panel-explore">
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/></svg>Nearby Attractions</div>
+                <div class="explore-view-toggle">
+                    <button class="evt-btn active" id="evtList" onclick="switchExploreView('list')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/><path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/></svg>
+                        List
+                    </button>
+                    <button class="evt-btn" id="evtMap" onclick="switchExploreView('map')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg>
+                        Map
+                    </button>
+                </div>
+                <div id="explore-list-view">
+                <p style="font-size: 11px; color: var(--sub); margin-bottom: 10px;">Tap name for website · Tap Map for walking directions from hotel.</p>
+                <div id="explore-list-inner"></div>
+                <button class="add-row-btn" onclick="openXSheet(null)">+ Add Attraction</button>
+                                </div><!-- /explore-list-view -->
+                <div id="explore-map-view" style="display:none;">
+                    <div id="attractions-map"></div>
+                    <p class="explore-map-hint">Tap a pin to see details</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ EAT TAB ══ -->
+        <div class="tab-panel" id="panel-eat">
+            <div class="card" style="margin-bottom: 12px;">
+                <p style="font-size: 12px; color: var(--sub); line-height: 1.6;">All places are near <strong style="color:var(--text);">Hotel Aris Grand Place</strong>. Tap <strong style="color:var(--text);">Directions</strong> for a walking route or <strong style="color:var(--text);">Menu</strong> to browse before you go.</p>
+            </div>
+            <div class="meal-tabs">
+                <button class="meal-tab-btn active" id="mealtab-breakfast" onclick="switchMeal('breakfast')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                    Breakfast
+                </button>
+                <button class="meal-tab-btn" id="mealtab-lunch" onclick="switchMeal('lunch')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v4a3 3 0 0 0 3 3v11"/><path d="M5 3v18"/><path d="M11 3v18"/><path d="M16 3v4c0 2 2 3 2 5v9"/></svg>
+                    Lunch
+                </button>
+                <button class="meal-tab-btn" id="mealtab-dinner" onclick="switchMeal('dinner')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+                    Dinner
+                </button>
+                <button class="meal-tab-btn" id="mealtab-snacks" onclick="switchMeal('snacks')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></svg>
+                    Snacks
+                </button>
+            </div>
+            <!-- Breakfast -->
+            <div class="meal-panel active" id="meal-breakfast">
+                <div id="meal-list-breakfast"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'breakfast')">+ Add Place</button>
+            </div>
+            <!-- Lunch -->
+            <div class="meal-panel" id="meal-lunch">
+                <div id="meal-list-lunch"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'lunch')">+ Add Place</button>
+            </div>
+            <!-- Dinner -->
+            <div class="meal-panel" id="meal-dinner">
+                <div id="meal-list-dinner"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'dinner')">+ Add Place</button>
+            </div>
+            <!-- Snacks -->
+            <div class="meal-panel" id="meal-snacks">
+                <div id="meal-list-snacks"></div>
+                <button class="add-row-btn" onclick="openRSheet(null,'snacks')">+ Add Place</button>
+            </div>
+        </div>
+
+        <!-- ══ INFO TAB ══ -->
+        <div class="tab-panel" id="panel-info">
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a6 6 0 0 1 12 0v2"/><circle cx="17" cy="7" r="2.5"/><path d="M21 21v-1.5a4 4 0 0 0-3-3.87"/></svg>Passengers</div>
+                <div class="passenger-list">
+                    <div class="passenger-item">Pratik Patel</div>
+                    <div class="passenger-item">Nisha Patel</div>
+                    <div class="passenger-item">Sanjay Mistry</div>
+                    <div class="passenger-item">Divya Mistry</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2" fill="currentColor" stroke="none"/></svg>Confirmation Codes</div>
+                <div class="ref-grid">
+                    <div class="ref-item"><span class="ref-label">Hotel (Expedia)</span><span class="ref-code">72078682955721</span></div>
+                    <div class="ref-item"><span class="ref-label">Eurostar Return</span><span class="ref-code">WRFH37</span></div>
+                    <div class="ref-item"><span class="ref-label">EMR Outbound</span><span class="ref-code">045833975476</span></div>
+                    <div class="ref-item"><span class="ref-label">EMR Return</span><span class="ref-code">892399035850</span></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="19" rx="1"/><path d="M9 22V13h6v9"/><rect x="8.5" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="13" y="6.5" width="2.5" height="2.5" rx=".5"/><rect x="8.5" y="10" width="2.5" height="2.5" rx=".5"/><rect x="13" y="10" width="2.5" height="2.5" rx=".5"/></svg>Hotel</div>
+                <p style="font-family:'DM Sans',system-ui,sans-serif; font-weight:700; font-size:15px; color:var(--text);">Hotel Aris Grand Place</p>
+                <p style="font-size: 12px; color: var(--sub); margin: 4px 0 10px;">Grasmarkt / Rue du Marché aux Herbes 78-80, 1000 Brussels</p>
+                <div style="font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; color: var(--text);">
+                    <div><strong>Rooms:</strong> 2× Double</div><div><strong>Board:</strong> Room Only</div>
+                    <div><strong>Check-in:</strong> From 15:00</div><div><strong>Check-out:</strong> By 11:00</div>
+                </div>
+                <a href="https://www.arbanyhotels.com" target="_blank" class="btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> Official Website</a>
+                <a href="https://www.google.com/maps/search/?api=1&query=Hotel+Aris+Grand+Place+Brussels" target="_blank" class="btn btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> Google Maps</a>
+                <a href="tel:+3225144300" class="btn btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> +32 2 514 4300</a>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>Cost Breakdown</div>
+                <table class="cost-table">
+                    <thead><tr><th>Item</th><th>Total</th><th>Per Couple</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Hotel</strong> <span class="badge-paid">PAID</span></td><td>£685.25</td><td>£342.63</td></tr>
+                        <tr><td><strong>Eurostar</strong> <span class="badge-paid">PAID</span></td><td>£560.00</td><td>£280.00</td></tr>
+                        <tr><td><strong>EMR Trains</strong> <span class="badge-paid">PAID</span></td><td>£160.00</td><td>£80.00</td></tr>
+                        <tr><td><strong>City Tax</strong> <em style="font-size:11px;color:var(--sub);">(pay at hotel)</em></td><td>£28.82</td><td>£14.41</td></tr>
+                        <tr class="total-row"><td>TOTAL</td><td>£1,434.07</td><td>£717.04</td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 11px; color: var(--sub); margin-top: 8px;">Split 50/50 — £717.04 per couple · £358.52 per person. City tax due at check-in only.</p>
+            </div>
+            <div class="card">
+                <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 1 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"/></svg>Travel Notes</div>
+                <ul style="font-size: 12px; padding-left: 18px; line-height: 1.9; color: var(--sub);">
+                    <li>Belgium is <strong style="color:var(--text);">1 hour ahead</strong> of UK time (CET).</li>
+                    <li>Arrive at St Pancras by <strong style="color:var(--text);">11:45</strong> for Eurostar security.</li>
+                    <li>All 4 passports required for check-in and transit.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div><!-- /content-area -->
+
+    <!-- ── Event detail bottom sheet ── -->
+    <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeSheet()"></div>
+    <div class="sheet" id="event-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+            <div class="sheet-dot" id="sh-dot"></div>
+            <div class="sheet-hbody">
+                <div class="sheet-time" id="sh-time"></div>
+                <div class="sheet-name" id="sh-name"></div>
+                <div class="sheet-meta" id="sh-meta"></div>
+            </div>
+            <div class="sheet-close" onclick="closeSheet()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>
+        </div>
+        <div class="sheet-body" id="sh-body"></div>
+    </div>
+
+
+<!-- Edit / Add item sheet -->
+<div class="sheet-backdrop" id="edit-backdrop" onclick="closeEditSheet()"></div>
+<div class="sheet" id="edit-sheet" style="display:flex;flex-direction:column;">
+    <div class="sheet-handle"></div>
+    <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <div id="edit-sheet-title" style="font-family:'DM Sans',system-ui,sans-serif;font-size:18px;font-weight:700;">Add Item</div>
+        <div onclick="closeEditSheet()" style="cursor:pointer;color:var(--sub);padding:4px 8px;line-height:1;font-size:18px;">✕</div>
+    </div>
+    <div id="edit-body" style="padding:16px 16px 0;overflow-y:auto;flex:1;"></div>
+    <div class="ef-footer">
+        <button class="ef-btn-cancel" onclick="closeEditSheet()">Cancel</button>
+        <button class="ef-btn-save" id="ef-save-btn" onclick="saveItem()">Save</button>
+    </div>
+</div>
+<!-- Delete confirm sheet -->
+<div class="sheet-backdrop" id="del-backdrop" onclick="closeDelSheet()"></div>
+<div class="sheet" id="del-sheet">
+    <div class="sheet-handle"></div>
+    <div id="del-body" style="padding:24px 20px 32px;"></div>
+</div>
+
+
+<!-- Explore attraction edit sheet -->
+<div class="sheet-backdrop" id="x-backdrop" onclick="closeXSheet()"></div>
+<div class="sheet" id="x-edit-sheet" style="display:flex;flex-direction:column;">
+    <div class="sheet-handle"></div>
+    <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <div id="x-sheet-title" style="font-family:'DM Sans',system-ui,sans-serif;font-size:18px;font-weight:700;">Add Attraction</div>
+        <div onclick="closeXSheet()" style="cursor:pointer;color:var(--sub);padding:4px 8px;line-height:1;font-size:18px;">&#x2715;</div>
+    </div>
+    <input type="hidden" id="x-edit-id">
+    <div style="padding:16px 16px 0;overflow-y:auto;flex:1;">
+        <div class="ef-field"><div class="ef-label">Name</div><input class="ef-input" id="x-edit-name" placeholder="e.g. Grand Place"></div>
+        <div class="ef-field"><div class="ef-label">Distance / Travel</div><input class="ef-input" id="x-edit-dist" placeholder="e.g. 100m &#xB7; 1&#x2013;2 min walk"></div>
+        <div class="ef-field"><div class="ef-label">Website URL</div><input class="ef-input" id="x-edit-url" type="url" placeholder="https://"></div>
+        <div class="ef-field"><div class="ef-label">Google Maps URL</div><input class="ef-input" id="x-edit-maps" type="url" placeholder="https://maps.google.com/..."></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="ef-field"><div class="ef-label">Latitude</div><input class="ef-input" id="x-edit-lat" placeholder="50.8467"></div>
+            <div class="ef-field"><div class="ef-label">Longitude</div><input class="ef-input" id="x-edit-lng" placeholder="4.3528"></div>
+        </div>
+        <div class="ef-field"><div class="ef-label">Sort Order</div><input class="ef-input" id="x-edit-sort" type="number" placeholder="0"></div>
+        <button id="x-del-btn" onclick="openXDelSheet(document.getElementById('x-edit-id').value)" style="display:none;width:100%;background:transparent;border:1.5px solid #FF453A;color:#FF453A;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin:4px 0 12px;">Delete Attraction</button>
+    </div>
+    <div class="ef-footer">
+        <button class="ef-btn-cancel" onclick="closeXSheet()">Cancel</button>
+        <button class="ef-btn-save" id="x-save-btn" onclick="saveXItem()">Save</button>
+    </div>
+</div>
+
+<!-- Explore attraction delete sheet -->
+<div class="sheet-backdrop" id="x-del-backdrop" onclick="closeXDelSheet()"></div>
+<div class="sheet" id="x-del-sheet">
+    <div class="sheet-handle"></div>
+    <input type="hidden" id="x-del-id">
+    <div style="padding:24px 20px 32px;text-align:center;">
+        <p style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 8px;">Remove Attraction?</p>
+        <p id="x-del-name" style="font-size:13px;color:var(--sub);margin:0 0 20px;"></p>
+        <button id="x-del-confirm-btn" onclick="confirmXDel()" style="width:100%;background:#FF453A;color:#fff;border:none;border-radius:12px;padding:13px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">Delete</button>
+        <button onclick="closeXDelSheet()" style="width:100%;background:transparent;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-family:inherit;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer;">Cancel</button>
+    </div>
+</div>
+
+<!-- Eat restaurant edit sheet -->
+<div class="sheet-backdrop" id="r-backdrop" onclick="closeRSheet()"></div>
+<div class="sheet" id="r-edit-sheet" style="display:flex;flex-direction:column;">
+    <div class="sheet-handle"></div>
+    <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <div id="r-sheet-title" style="font-family:'DM Sans',system-ui,sans-serif;font-size:18px;font-weight:700;">Add Place</div>
+        <div onclick="closeRSheet()" style="cursor:pointer;color:var(--sub);padding:4px 8px;line-height:1;font-size:18px;">&#x2715;</div>
+    </div>
+    <input type="hidden" id="r-edit-id">
+    <div style="padding:16px 16px 0;overflow-y:auto;flex:1;">
+        <div class="ef-field"><div class="ef-label">Meal Type</div>
+            <select class="ef-input" id="r-edit-meal">
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snacks">Snacks</option>
+            </select>
+        </div>
+        <div class="ef-field"><div class="ef-label">Name</div><input class="ef-input" id="r-edit-name" placeholder="Restaurant name"></div>
+        <div class="ef-field"><div class="ef-label">Website URL</div><input class="ef-input" id="r-edit-website" type="url" placeholder="https://"></div>
+        <div class="ef-field"><div class="ef-label">Address</div><input class="ef-input" id="r-edit-address" placeholder="Street, City"></div>
+        <div class="ef-field"><div class="ef-label">Distance</div><input class="ef-input" id="r-edit-dist" placeholder="e.g. ~2 min walk"></div>
+        <div class="ef-field"><div class="ef-label">Hours</div><input class="ef-input" id="r-edit-hours" placeholder="e.g. Mon&#x2013;Fri 09:00&#x2013;22:00"></div>
+        <div class="ef-field"><div class="ef-label">Description / Highlights</div><textarea class="ef-input ef-textarea" id="r-edit-desc" placeholder="Key dishes, standout notes..."></textarea></div>
+        <div class="ef-field"><div class="ef-label">Phone</div><input class="ef-input" id="r-edit-phone" type="tel" placeholder="+32..."></div>
+        <div class="ef-field"><div class="ef-label">Menu URL</div><input class="ef-input" id="r-edit-menu" type="url" placeholder="https://"></div>
+        <div class="ef-field"><div class="ef-label">Directions URL</div><input class="ef-input" id="r-edit-directions" type="url" placeholder="https://maps.google.com/..."></div>
+        <div class="ef-field"><div class="ef-label">Tags (comma-separated)</div><input class="ef-input" id="r-edit-tags" placeholder="e.g. Breakfast &amp; Brunch, Vegan options, &#x20AC;&#x20AC;"></div>
+        <div class="ef-field"><div class="ef-label">Sort Order</div><input class="ef-input" id="r-edit-sort" type="number" placeholder="0"></div>
+        <button id="r-del-btn" onclick="openRDelSheet(document.getElementById('r-edit-id').value)" style="display:none;width:100%;background:transparent;border:1.5px solid #FF453A;color:#FF453A;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin:4px 0 12px;">Delete Place</button>
+    </div>
+    <div class="ef-footer">
+        <button class="ef-btn-cancel" onclick="closeRSheet()">Cancel</button>
+        <button class="ef-btn-save" id="r-save-btn" onclick="saveRItem()">Save</button>
+    </div>
+</div>
+
+<!-- Eat restaurant delete sheet -->
+<div class="sheet-backdrop" id="r-del-backdrop" onclick="closeRDelSheet()"></div>
+<div class="sheet" id="r-del-sheet">
+    <div class="sheet-handle"></div>
+    <input type="hidden" id="r-del-id">
+    <div style="padding:24px 20px 32px;text-align:center;">
+        <p style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 8px;">Remove Place?</p>
+        <p id="r-del-name" style="font-size:13px;color:var(--sub);margin:0 0 20px;"></p>
+        <button id="r-del-confirm-btn" onclick="confirmRDel()" style="width:100%;background:#FF453A;color:#fff;border:none;border-radius:12px;padding:13px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">Delete</button>
+        <button onclick="closeRDelSheet()" style="width:100%;background:transparent;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-family:inherit;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer;">Cancel</button>
+    </div>
+</div>
+</div><!-- /app-shell -->
+
+<script>
+// ── Supabase ──────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://ehuhqzjnikvykldasygc.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodWhxempuaWt2eWtsZGFzeWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5OTc3NzEsImV4cCI6MjEwMzU3Mzc3MX0.Kv7ko_u34u6ZTTU2QU50UULpG0bOX6jyOsA8-ry9ltU';
+
+// ── TRIP CONFIG — update these when duplicating for a new trip ──
+const TRIP_ID         = 'athens-2026';  // matches Supabase trips.id
+const DEPARTURE_DATE  = '2026-10-20';          // YYYY-MM-DD — countdown expires midnight of this day
+const TRIP_START_TIME = '12:15';               // HH:MM — first itinerary item (strip hides while travelling)
+const TRIP_END_DATE   = '2026-10-23';          // YYYY-MM-DD — last day; "Trip Completed" shows after this
+// ─────────────────────────────────────────────────────────────────
+let TRIP = null;
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Auth guard — use onAuthStateChange so JWT is ready before first query
+sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'INITIAL_SESSION') {
+        if (!session) { window.location.replace('../login.html'); return; }
+        init();
+    }
+});
+
+async function signOut() {
+    await sb.auth.signOut();
+    window.location.replace('../login.html');
+}
+
+function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T12:00:00');
+    const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const n = d.getDate();
+    const suffix = (n > 3 && n < 21) ? 'th' : ['th','st','nd','rd','th'][Math.min(n % 10, 4)];
+    return `${dayNames[d.getDay()]} ${n}${suffix} ${monthNames[d.getMonth()]}`;
+}
+
+function rowFromDb(r) {
+    if (r.type === 'empty')   return { type: 'empty',   note: r.detail || '', dbId: r.id, sort_order: r.sort_order };
+    if (r.type === 'section') return { type: 'section', label: r.name  || '', dbId: r.id, sort_order: r.sort_order };
+    return {
+        type: r.type, key: r.key, cls: r.cls, time: r.time, name: r.name,
+        detail: r.detail, duration: r.duration, notes: r.notes,
+        location: r.location_name ? { name: r.location_name, address: r.location_address, mapsUrl: r.location_maps_url } : null,
+        cta: r.cta_label ? { label: r.cta_label, url: r.cta_url } : null,
+        checklist: r.checklist || [],
+        dbId: r.id, sort_order: r.sort_order,
+    };
+}
+
+async function init() {
+    document.getElementById('panel-days').innerHTML =
+        '<div style="padding:48px 24px;text-align:center;color:var(--sub);font-size:13px;">Loading itinerary…</div>';
+
+    const [{ data: tripData }, { data: daysData }] = await Promise.all([
+        sb.from('trips').select('*').eq('id', TRIP_ID).single(),
+        sb.from('trip_days').select('*').eq('trip_id', TRIP_ID).order('day_number'),
+    ]);
+
+    const dayIds = (daysData || []).map(d => d.id);
+    const { data: itemsData } = await sb.from('trip_items').select('*').in('day_id', dayIds).order('sort_order');
+
+    TRIP = {
+        id: tripData.id,
+        name: tripData.city + ' Guide',
+        flag: tripData.flag_svg || '',
+        subtitle: tripData.subtitle || '',
+        days: (daysData || []).map(day => ({
+            id: 'day-' + day.day_number,
+            dbId: day.id,
+            open: day.expanded_default,
+            date: formatDate(day.date),
+            label: day.label || '',
+            rows: (itemsData || []).filter(r => r.day_id === day.id).map(rowFromDb),
+        })),
+    };
+
+    document.getElementById('app-flag').textContent     = TRIP.flag;
+    document.getElementById('app-title').textContent    = TRIP.name;
+    document.getElementById('app-subtitle').textContent = TRIP.subtitle;
+    document.title = TRIP.flag + ' ' + TRIP.name + ' · Trip Guide';
+
+    renderDays();
+    loadDone();
+    loadExplore();
+    loadEat();
+
+    sb.channel('itinerary-sync-' + TRIP.id)
+        .on('postgres_changes', {
+            event: '*', schema: 'public', table: 'itinerary_done',
+            filter: 'trip_id=eq.' + TRIP.id
+        }, payload => {
+            if (payload.new && payload.new.item_key !== undefined) {
+                const key = payload.new.item_key;
+                if ((Date.now() - (_localWriteAt[key] || 0)) < 5000) return;
+                _doneState[key] = payload.new.done;
+                applyDoneState();
+            }
+        })
+        .subscribe();
+}
+
+// ── Render Days tab ───────────────────────────────────────────────
+const DOT_CLASS = { travel:'dot-travel', activity:'dot-activity', food:'dot-food', sight:'dot-sight' };
+const DOT_COLOR = { travel:'#3B82F6', activity:'#C9A227', food:'#F97316', sight:'#818CF8' };
+
+let ITEM_MAP    = {};
+let ROW_BY_DBID = {};
+let DAY_FOR_KEY  = {};
+let DAY_FOR_DBID = {};
+
+const _editMode = new Set();
+let _editingDbId    = null;
+let _editingDayDbId = null;
+let _deletingDbId   = null;
+
+function hasDetail(row) {
+    return !!(row.location || row.cta || (row.checklist && row.checklist.length) || row.notes);
+}
+
+const PENCIL_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>';
+const TRASH_SVG  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+const UP_SVG     = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>';
+const DOWN_SVG   = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
+function editBtns(row, isFirst, isLast, dayDbId) {
+    const canMove = row.type === 'item';
+    return `<div class="it-edit-btns" onclick="event.stopPropagation()">
+        ${canMove ? `<button class="it-edit-btn" title="Move up"   onclick="moveRow(${row.dbId},'up')"   ${isFirst?'disabled':''}>${UP_SVG}</button>
+        <button class="it-edit-btn" title="Move down" onclick="moveRow(${row.dbId},'down')" ${isLast ?'disabled':''}>${DOWN_SVG}</button>` : ''}
+        <button class="it-edit-btn edit" title="Edit"   onclick="openEditSheet(${row.dbId})">${PENCIL_SVG}</button>
+        <button class="it-edit-btn del"  title="Delete" onclick="openDelSheet(${row.dbId})">${TRASH_SVG}</button>
+    </div>`;
+}
+
+function renderDays() {
+    ITEM_MAP    = {};
+    ROW_BY_DBID = {};
+    DAY_FOR_KEY  = {};
+    DAY_FOR_DBID = {};
+
+    TRIP.days.forEach(day => {
+        DAY_FOR_DBID[day.dbId] = day;
+        (day.rows || []).forEach(row => {
+            if (row.dbId !== undefined) ROW_BY_DBID[row.dbId] = row;
+            if (row.type === 'item') {
+                ITEM_MAP[row.key] = row;
+                DAY_FOR_KEY[row.key] = day;
+            }
+            (row.checklist || []).forEach(ck => { DAY_FOR_KEY[ck.key] = day; });
+        });
+    });
+
+    let html = `
+    <div class="card" style="margin-bottom:10px;">
+        <div class="type-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#3B82F6;"></div> Travel</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#C9A227;"></div> Activity</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#F97316;"></div> Food</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#818CF8;"></div> Sight</div>
+        </div>
+        <p style="font-size:11px;color:var(--sub);">Tap dot to mark done · Tap row to see details &amp; checklist.</p>
+    </div>`;
+
+    TRIP.days.forEach(day => {
+        const inEdit = _editMode.has(day.id);
+        html += `<div class="day-card${day.open ? ' open' : ''}" id="${day.id}">
+            <div class="day-header" style="display:flex;align-items:center;gap:8px;">
+                <div style="flex:1;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleDay('${day.id}')">
+                    <div>
+                        <div class="day-date">${day.date}</div>
+                        <div class="day-label">${day.label}</div>
+                    </div>
+                    <span class="day-chevron"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </div>
+                <button class="day-edit-toggle${inEdit ? ' active' : ''}" onclick="event.stopPropagation();toggleEditMode('${day.id}')">Edit</button>
+            </div>
+            <div class="day-body">`;
+
+        day.rows.forEach((row, idx) => {
+            const isFirst = idx === 0;
+            const isLast  = idx === day.rows.length - 1;
+
+            if (row.type === 'item') {
+                const dotCls   = DOT_CLASS[row.cls] || 'dot-travel';
+                const rich     = hasDetail(row);
+                const nameHtml = row.name || '';
+                html += `<div class="it-item${rich ? ' has-detail' : ''}" data-key="${row.key}">
+                    <div class="it-time">${row.time || ''}</div>
+                    <div class="it-dot-wrap"><div class="it-dot ${dotCls}" data-done-target="${row.key}"></div></div>
+                    <div class="it-content">
+                        <div class="it-name">${nameHtml}</div>
+                        ${row.detail ? `<div class="it-detail">${row.detail}</div>` : ''}
+                    </div>
+                    ${inEdit
+                        ? editBtns(row, isFirst, isLast, day.dbId)
+                        : (rich ? `<div class="it-chevron"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>` : '')}
+                </div>`;
+            } else if (row.type === 'empty') {
+                html += `<div class="day-empty" style="display:flex;align-items:center;justify-content:space-between;">
+                    <span>${row.note || ''}</span>
+                    ${inEdit ? editBtns(row, isFirst, isLast, day.dbId) : ''}
+                </div>`;
+            } else if (row.type === 'section') {
+                html += `<div class="day-section-label" style="display:flex;align-items:center;justify-content:space-between;">
+                    <span>${row.label || ''}</span>
+                    ${inEdit ? editBtns(row, isFirst, isLast, day.dbId) : ''}
+                </div>`;
+            } else if (row.type === 'info') {
+                html += row.html || '';
+            }
+        });
+
+        if (inEdit) {
+            html += `<button class="day-add-btn" onclick="openAddSheet('${day.dbId}')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                Add Item
+            </button>`;
+        }
+
+        html += `</div></div>`;
+    });
+
+    document.getElementById('panel-days').innerHTML = html;
+
+    document.getElementById('panel-days').addEventListener('click', function(e) {
+        const el = e.target.closest('.it-item[data-key]');
+        if (!el) return;
+        const key = el.dataset.key;
+        const day = DAY_FOR_KEY[key];
+        if (day && _editMode.has(day.id)) return;
+        if (e.target.closest('.it-dot-wrap')) { toggleDone(el); return; }
+        if (e.target.closest('a')) return;
+        const rich = el.classList.contains('has-detail');
+        if (rich) { openSheet(key); return; }
+        toggleDone(el);
+    });
+
+    applyDoneState();
+}
+
+// ── Edit mode ─────────────────────────────────────────────────────
+function toggleEditMode(dayId) {
+    const wasOpen = document.getElementById(dayId) && document.getElementById(dayId).classList.contains('open');
+    if (_editMode.has(dayId)) _editMode.delete(dayId);
+    else _editMode.add(dayId);
+    renderDays();
+    if (wasOpen) {
+        const el = document.getElementById(dayId);
+        if (el && !el.classList.contains('open')) el.classList.add('open');
+    }
+}
+
+async function refreshDay(dayDbId) {
+    const { data: items } = await sb.from('trip_items').select('*').eq('day_id', dayDbId).order('sort_order');
+    const day = TRIP.days.find(d => d.dbId == dayDbId);
+    if (day) day.rows = (items || []).map(rowFromDb);
+    renderDays();
+    const dayEl = document.getElementById(day ? day.id : '');
+    if (dayEl && !dayEl.classList.contains('open')) dayEl.classList.add('open');
+}
+
+async function moveRow(dbId, direction) {
+    let day = null, idx = -1;
+    for (const d of TRIP.days) {
+        const i = d.rows.findIndex(r => r.dbId == dbId);
+        if (i >= 0) { day = d; idx = i; break; }
+    }
+    if (!day || idx < 0) return;
+    const rows = day.rows;
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= rows.length) return;
+    const row = rows[idx], swapRow = rows[swapIdx];
+    await Promise.all([
+        sb.from('trip_items').update({ sort_order: swapRow.sort_order }).eq('id', dbId),
+        sb.from('trip_items').update({ sort_order: row.sort_order }).eq('id', swapRow.dbId),
+    ]);
+    await refreshDay(day.dbId);
+}
+
+// ── Edit / Add form sheet ─────────────────────────────────────────
+function buildFormHtml(row) {
+    const isItem    = !row || row.type === 'item';
+    const isSection = row && row.type === 'section';
+    const isEmpty   = row && row.type === 'empty';
+
+    const cls   = (row && row.cls)      || 'travel';
+    const time  = (row && row.time)     || '';
+    const name  = (row && row.name)     || '';
+    const det   = (row && row.detail)   || '';
+    const dur   = (row && row.duration) || '';
+    const notes = (row && row.notes)    || '';
+
+    const loc      = row && row.location;
+    const locName  = loc ? loc.name    : '';
+    const locAddr  = loc ? loc.address : '';
+    const locMaps  = loc ? loc.mapsUrl : '';
+
+    const cta      = row && row.cta;
+    const ctaLabel = cta ? cta.label : '';
+    const ctaUrl   = cta ? cta.url   : '';
+
+    const checklist = (row && row.checklist) || [];
+
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+
+    const mkChip = (c, label) =>
+        `<div class="ef-chip ${c}${c===cls?' active':''}" onclick="efSetCls('${c}')">${label}</div>`;
+
+    const clHtml = checklist.map((ck, i) =>
+        `<div class="ef-cl-row"><input type="text" value="${esc(ck.label)}" placeholder="Item ${i+1}"><button class="ef-cl-del" onclick="this.parentElement.remove()">×</button></div>`
+    ).join('');
+
+    return `
+    <div class="ef-field">
+        <div class="ef-label">Type</div>
+        <div class="ef-type-tabs">
+            <div class="ef-type-tab${isItem   ?' active':''}" id="eft-item"    onclick="efSetType('item')">Item</div>
+            <div class="ef-type-tab${isSection?' active':''}" id="eft-section" onclick="efSetType('section')">Section</div>
+            <div class="ef-type-tab${isEmpty  ?' active':''}" id="eft-empty"   onclick="efSetType('empty')">Empty</div>
+        </div>
+    </div>
+
+    <div id="ef-item-fields" style="display:${isItem?'block':'none'}">
+        <div class="ef-field">
+            <div class="ef-label">Category</div>
+            <div class="ef-cls-chips" id="ef-cls-chips">
+                ${mkChip('travel',   '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg> Travel')}
+                ${mkChip('activity', '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg> Activity')}
+                ${mkChip('food',     '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg> Food')}
+                ${mkChip('sight',    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg> Sight')}
+            </div>
+        </div>
+        <div class="ef-row2">
+            <div class="ef-field">
+                <div class="ef-label">Time</div>
+                <input class="ef-input" id="ef-time" type="text" placeholder="09:00" value="${esc(time)}">
+            </div>
+            <div class="ef-field">
+                <div class="ef-label">Duration</div>
+                <input class="ef-input" id="ef-dur" type="text" placeholder="2 hrs" value="${esc(dur)}">
+            </div>
+        </div>
+        <div class="ef-field">
+            <div class="ef-label">Name</div>
+            <input class="ef-input" id="ef-name" type="text" placeholder="Item name" value="${esc(name)}">
+        </div>
+        <div class="ef-field">
+            <div class="ef-label">Detail / Subtitle</div>
+            <input class="ef-input" id="ef-det" type="text" placeholder="Short description" value="${esc(det)}">
+        </div>
+
+        <div class="ef-expander">
+            <div class="ef-exp-head${locName?' open':''}" onclick="efToggleExp(this)">
+                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> Location</span><span class="ef-exp-arrow">›</span>
+            </div>
+            <div class="ef-exp-body${locName?' open':''}">
+                <div class="ef-field"><div class="ef-label">Place name</div><input class="ef-input" id="ef-loc-name" type="text" value="${esc(locName)}"></div>
+                <div class="ef-field"><div class="ef-label">Address</div><input class="ef-input" id="ef-loc-addr" type="text" value="${esc(locAddr)}"></div>
+                <div class="ef-field"><div class="ef-label">Maps URL</div><input class="ef-input" id="ef-loc-maps" type="url" value="${esc(locMaps)}"></div>
+            </div>
+        </div>
+
+        <div class="ef-expander">
+            <div class="ef-exp-head${ctaLabel?' open':''}" onclick="efToggleExp(this)">
+                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> CTA Button</span><span class="ef-exp-arrow">›</span>
+            </div>
+            <div class="ef-exp-body${ctaLabel?' open':''}">
+                <div class="ef-field"><div class="ef-label">Button label</div><input class="ef-input" id="ef-cta-label" type="text" value="${esc(ctaLabel)}"></div>
+                <div class="ef-field"><div class="ef-label">URL</div><input class="ef-input" id="ef-cta-url" type="url" value="${esc(ctaUrl)}"></div>
+            </div>
+        </div>
+
+        <div class="ef-expander">
+            <div class="ef-exp-head${checklist.length?' open':''}" onclick="efToggleExp(this)">
+                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m16 9-5.5 5.5L8 12"/></svg> Checklist</span><span class="ef-exp-arrow">›</span>
+            </div>
+            <div class="ef-exp-body${checklist.length?' open':''}">
+                <div id="ef-cl-list">${clHtml}</div>
+                <button class="ef-cl-add" onclick="efAddCl()">+ Add item</button>
+            </div>
+        </div>
+
+        <div class="ef-expander">
+            <div class="ef-exp-head${notes?' open':''}" onclick="efToggleExp(this)">
+                <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Notes</span><span class="ef-exp-arrow">›</span>
+            </div>
+            <div class="ef-exp-body${notes?' open':''}">
+                <div class="ef-field"><textarea class="ef-input ef-textarea" id="ef-notes" placeholder="Internal notes…">${esc(notes)}</textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ef-section-fields" style="display:${isSection?'block':'none'}">
+        <div class="ef-field">
+            <div class="ef-label">Section label</div>
+            <input class="ef-input" id="ef-section-label" type="text" placeholder="e.g. Morning" value="${isSection ? esc(row.label||'') : ''}">
+        </div>
+    </div>
+
+    <div id="ef-empty-fields" style="display:${isEmpty?'block':'none'}">
+        <div class="ef-field">
+            <div class="ef-label">Note (optional)</div>
+            <input class="ef-input" id="ef-empty-note" type="text" placeholder="e.g. Free afternoon" value="${isEmpty ? esc(row.note||'') : ''}">
+        </div>
+    </div>
+
+    <div style="height:16px;"></div>`;
+}
+
+function efSetType(type) {
+    ['item','section','empty'].forEach(t => {
+        const tab = document.getElementById('eft-'+t);
+        const fld = document.getElementById('ef-'+t+'-fields');
+        if (tab) tab.classList.toggle('active', t===type);
+        if (fld) fld.style.display = t===type ? 'block' : 'none';
+    });
+}
+
+function efSetCls(cls) {
+    document.querySelectorAll('#ef-cls-chips .ef-chip').forEach(c => {
+        c.classList.toggle('active', c.classList.contains(cls));
+    });
+}
+
+function efToggleExp(head) {
+    head.classList.toggle('open');
+    head.nextElementSibling.classList.toggle('open');
+}
+
+function efAddCl() {
+    const list = document.getElementById('ef-cl-list');
+    const idx  = list.children.length;
+    const div  = document.createElement('div');
+    div.className = 'ef-cl-row';
+    div.innerHTML = `<input type="text" placeholder="Item ${idx+1}"><button class="ef-cl-del" onclick="this.parentElement.remove()">×</button>`;
+    list.appendChild(div);
+    div.querySelector('input').focus();
+}
+
+function openEditSheet(dbId) {
+    _editingDbId = dbId;
+    _editingDayDbId = null;
+    const row = ROW_BY_DBID[dbId];
+    document.getElementById('edit-sheet-title').textContent = 'Edit Item';
+    document.getElementById('edit-body').innerHTML = buildFormHtml(row || null);
+    document.getElementById('edit-backdrop').classList.add('open');
+    document.getElementById('edit-sheet').classList.add('open');
+}
+
+function openAddSheet(dayDbId) {
+    _editingDbId = null;
+    _editingDayDbId = dayDbId;
+    document.getElementById('edit-sheet-title').textContent = 'Add Item';
+    document.getElementById('edit-body').innerHTML = buildFormHtml(null);
+    document.getElementById('edit-backdrop').classList.add('open');
+    document.getElementById('edit-sheet').classList.add('open');
+}
+
+function closeEditSheet() {
+    document.getElementById('edit-backdrop').classList.remove('open');
+    document.getElementById('edit-sheet').classList.remove('open');
+    _editingDbId = null;
+    _editingDayDbId = null;
+}
+
+function _readForm() {
+    const activeType = ['item','section','empty'].find(t => {
+        const el = document.getElementById('eft-'+t);
+        return el && el.classList.contains('active');
+    }) || 'item';
+
+    if (activeType === 'section') {
+        return { type: 'section', name: (document.getElementById('ef-section-label')||{value:''}).value.trim() };
+    }
+    if (activeType === 'empty') {
+        return { type: 'empty', detail: (document.getElementById('ef-empty-note')||{value:''}).value.trim() };
+    }
+
+    const activeChip = document.querySelector('#ef-cls-chips .ef-chip.active');
+    const cls = activeChip
+        ? [...activeChip.classList].find(c => ['travel','activity','food','sight'].includes(c)) || 'travel'
+        : 'travel';
+
+    const g = id => (document.getElementById(id)||{value:''}).value.trim();
+
+    const locName = g('ef-loc-name'), locAddr = g('ef-loc-addr'), locMaps = g('ef-loc-maps');
+    const ctaLabel = g('ef-cta-label'), ctaUrl = g('ef-cta-url');
+
+    const clItems = [];
+    document.querySelectorAll('#ef-cl-list .ef-cl-row input').forEach((inp, i) => {
+        const label = inp.value.trim();
+        if (label) clItems.push({ key: 'cl-' + Date.now() + '-' + i, label });
+    });
+
+    return {
+        type: 'item',
+        cls,
+        time:     g('ef-time'),
+        name:     g('ef-name'),
+        detail:   g('ef-det')   || null,
+        duration: g('ef-dur')   || null,
+        notes:    g('ef-notes') || null,
+        location_name:     locName  || null,
+        location_address:  locAddr  || null,
+        location_maps_url: locMaps  || null,
+        cta_label: ctaLabel || null,
+        cta_url:   ctaUrl   || null,
+        checklist: clItems.length ? clItems : null,
+    };
+}
+
+async function saveItem() {
+    const btn = document.getElementById('ef-save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    const payload = _readForm();
+    try {
+        if (_editingDbId !== null) {
+            const { error } = await sb.from('trip_items').update(payload).eq('id', _editingDbId);
+            if (error) throw error;
+            let dayDbId = null;
+            for (const d of TRIP.days) {
+                if (d.rows.some(r => r.dbId == _editingDbId)) { dayDbId = d.dbId; break; }
+            }
+            closeEditSheet();
+            if (dayDbId !== null) await refreshDay(dayDbId);
+        } else {
+            const { data: maxRow } = await sb.from('trip_items')
+                .select('sort_order').eq('day_id', _editingDayDbId)
+                .order('sort_order', { ascending: false }).limit(1).maybeSingle();
+            const nextOrder = (maxRow ? maxRow.sort_order : 0) + 10;
+            const { error } = await sb.from('trip_items').insert({
+                ...payload,
+                day_id: _editingDayDbId,
+                sort_order: nextOrder,
+                key: payload.type === 'item' ? ('item-' + Date.now()) : null,
+            });
+            if (error) throw error;
+            const dayDbId = _editingDayDbId;
+            closeEditSheet();
+            await refreshDay(dayDbId);
+        }
+    } catch(e) {
+        alert('Error saving: ' + (e.message || String(e)));
+        btn.disabled = false;
+        btn.textContent = 'Save';
+    }
+}
+
+// ── Delete confirm sheet ──────────────────────────────────────────
+function openDelSheet(dbId) {
+    _deletingDbId = dbId;
+    const row  = ROW_BY_DBID[dbId];
+    const name = row ? (row.name || row.label || row.note || 'this item') : 'this item';
+    document.getElementById('del-body').innerHTML = `
+        <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;">Delete item?</div>
+        <div style="font-size:14px;color:var(--sub);margin-bottom:24px;">"${name}" will be permanently removed.</div>
+        <div style="display:flex;gap:10px;">
+            <button class="ef-btn-cancel" onclick="closeDelSheet()" style="flex:1;">Cancel</button>
+            <button class="ef-btn-del"    onclick="confirmDelete()" style="flex:1;">Delete</button>
+        </div>`;
+    document.getElementById('del-backdrop').classList.add('open');
+    document.getElementById('del-sheet').classList.add('open');
+}
+
+function closeDelSheet() {
+    document.getElementById('del-backdrop').classList.remove('open');
+    document.getElementById('del-sheet').classList.remove('open');
+    _deletingDbId = null;
+}
+
+async function confirmDelete() {
+    if (_deletingDbId === null) return;
+    let dayDbId = null;
+    for (const d of TRIP.days) {
+        if (d.rows.some(r => r.dbId == _deletingDbId)) { dayDbId = d.dbId; break; }
+    }
+    const { error } = await sb.from('trip_items').delete().eq('id', _deletingDbId);
+    if (error) { alert('Error: ' + error.message); return; }
+    closeDelSheet();
+    if (dayDbId !== null) await refreshDay(dayDbId);
+}
+
+// ── Bottom sheet ──────────────────────────────────────────────────
+let _sheetKey = null;
+
+function openSheet(key) {
+    const item = ITEM_MAP[key];
+    const day  = DAY_FOR_KEY[key];
+    if (!item) return;
+    _sheetKey = key;
+
+    const dotColor = DOT_COLOR[item.cls] || '#3B82F6';
+    document.getElementById('sh-dot').style.background = dotColor;
+
+    const timeStr = item.duration ? `${item.time}  ·  ${item.duration}` : item.time;
+    document.getElementById('sh-time').textContent = timeStr || '';
+    document.getElementById('sh-name').textContent = (item.name || '').replace(/^\p{Emoji}\s*/u, '');
+
+    const meta = document.getElementById('sh-meta');
+    meta.innerHTML = day
+        ? `<span class="sheet-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg> ${day.date}</span>`
+        : '';
+
+    const body = document.getElementById('sh-body');
+    let html = '';
+
+    if (item.cta) {
+        html += `<a href="${item.cta.url}" target="_blank" class="sheet-cta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg> ${item.cta.label}</a>`;
+    }
+
+    if (item.location) {
+        const loc = item.location;
+        html += `<div>
+            <div class="sheet-section-label">Location</div>
+            <div class="sheet-location">
+                <div class="sheet-loc-name"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> ${loc.name}</div>
+                <div class="sheet-loc-addr">${loc.address}</div>
+                ${loc.mapsUrl ? `<a href="${loc.mapsUrl}" target="_blank" class="sheet-loc-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg> Get Directions</a>` : ''}
+            </div>
+        </div>`;
+    }
+
+    if (item.checklist && item.checklist.length) {
+        html += `<div>
+            <div class="sheet-section-label">Checklist</div>
+            <div class="checklist" id="sh-checklist">`;
+        item.checklist.forEach(ck => {
+            const done = !!_doneState[ck.key];
+            html += `<div class="cl-item${done ? ' done' : ''}" data-ck="${ck.key}">
+                <div class="cl-box"><span class="cl-tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+                <div class="cl-label">${ck.label}</div>
+            </div>`;
+        });
+        html += `</div></div>`;
+    }
+
+    if (item.notes) {
+        html += `<div>
+            <div class="sheet-section-label">Notes</div>
+            <div class="sheet-notes">${item.notes}</div>
+        </div>`;
+    }
+
+    body.innerHTML = html;
+
+    body.querySelectorAll('.cl-item[data-ck]').forEach(el => {
+        el.addEventListener('click', async function() {
+            const ck   = el.dataset.ck;
+            const next = !_doneState[ck];
+            _doneState[ck] = next;
+            el.classList.toggle('done', next);
+            await sb.from('itinerary_done').upsert(
+                { trip_id: TRIP.id, item_key: ck, done: next, updated_at: new Date().toISOString() },
+                { onConflict: 'trip_id,item_key' }
+            );
+            if (_sheetKey) {
+                const parentItem = ITEM_MAP[_sheetKey];
+                if (parentItem && parentItem.checklist) {
+                    const parentEl = document.querySelector(`.it-item[data-key="${_sheetKey}"]`);
+                    if (next) {
+                        const allDone = parentItem.checklist.every(c => !!_doneState[c.key]);
+                        if (allDone && !_doneState[_sheetKey] && parentEl) toggleDone(parentEl);
+                    } else {
+                        if (_doneState[_sheetKey] && parentEl) toggleDone(parentEl);
+                    }
+                }
+            }
+        });
+    });
+
+    document.getElementById('sheet-backdrop').classList.add('open');
+    document.getElementById('event-sheet').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSheet() {
+    document.getElementById('sheet-backdrop').classList.remove('open');
+    document.getElementById('event-sheet').classList.remove('open');
+    _sheetKey = null;
+}
+
+function refreshSheetChecklist() {
+    if (!_sheetKey) return;
+    const item = ITEM_MAP[_sheetKey];
+    if (!item || !item.checklist) return;
+    item.checklist.forEach(ck => {
+        const el = document.querySelector(`.cl-item[data-ck="${ck.key}"]`);
+        if (el) el.classList.toggle('done', !!_doneState[ck.key]);
+    });
+}
+
+// ── Navigation ────────────────────────────────────────────────────
+function switchTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn-top').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    document.getElementById('tab-'   + name).classList.add('active');
+    document.querySelector('.content-area').scrollTop = 0;
+}
+
+function toggleDay(id) { document.getElementById(id).classList.toggle('open'); }
+
+function switchMeal(name) {
+    document.querySelectorAll('.meal-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.meal-tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('meal-'    + name).classList.add('active');
+    document.getElementById('mealtab-' + name).classList.add('active');
+}
+
+// ── Done state sync ───────────────────────────────────────────────
+let _doneState = {};
+const _localWriteAt = {};
+
+function showToast(type) {
+    const el = document.getElementById('sync-toast');
+    el.innerHTML = type === 'synced'
+        ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Synced'
+        : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Offline';
+    el.className = 'show ' + type;
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+function applyDoneState() {
+    document.querySelectorAll('.it-item[data-key]').forEach(el => {
+        el.classList.toggle('done', !!_doneState[el.dataset.key]);
+    });
+    refreshSheetChecklist();
+}
+
+async function loadDone() {
+    const fetchStart = Date.now();
+    const { data } = await sb.from('itinerary_done').select('item_key, done').eq('trip_id', TRIP.id);
+    if (data) {
+        data.forEach(row => {
+            if ((_localWriteAt[row.item_key] || 0) < fetchStart) _doneState[row.item_key] = row.done;
+        });
+        applyDoneState();
+    }
+}
+
+async function toggleDone(el) {
+    const key = el.dataset.key;
+    if (!key) return;
+    const next = !_doneState[key];
+    _doneState[key]    = next;
+    _localWriteAt[key] = Date.now();
+    el.classList.toggle('done', next);
+
+    const item    = ITEM_MAP[key];
+    const upserts = [{ trip_id: TRIP.id, item_key: key, done: next }];
+    if (next && item && item.checklist) {
+        item.checklist.forEach(ck => {
+            _doneState[ck.key]    = next;
+            _localWriteAt[ck.key] = Date.now();
+            upserts.push({ trip_id: TRIP.id, item_key: ck.key, done: next });
+        });
+        refreshSheetChecklist();
+    }
+
+    const { error } = await sb.from('itinerary_done').upsert(upserts, { onConflict: 'trip_id,item_key' });
+    showToast(error ? 'error' : 'synced');
+}
+
+// ── Hero photo slideshow ──────────────────────────────────────────
+(function() {
+    const slides = document.querySelectorAll('#app-hero .hero-slide');
+    if (!slides.length) return;
+    let cur = 0;
+    setInterval(() => {
+        slides[cur].classList.remove('active');
+        cur = (cur + 1) % slides.length;
+        slides[cur].classList.add('active');
+    }, 3000);
+})();
+
+// ── Boot ──────────────────────────────────────────────────────────
+
+    /* ── Explore map / list toggle ── */
+    function switchExploreView(view) {
+        var lv = document.getElementById('explore-list-view');
+        var mv = document.getElementById('explore-map-view');
+        var lb = document.getElementById('evtList');
+        var mb = document.getElementById('evtMap');
+        if (view === 'map') {
+            lv.style.display = 'none'; mv.style.display = 'block';
+            lb.classList.remove('active'); mb.classList.add('active');
+            initExploreMap();
+        } else {
+            lv.style.display = 'block'; mv.style.display = 'none';
+            lb.classList.add('active'); mb.classList.remove('active');
+        }
+    }
+
+    var _exploreMapInit = false;
+    function initExploreMap() {
+        if (_exploreMapInit) return;
+        _exploreMapInit = true;
+        var map = L.map('attractions-map', { zoomControl: true }).setView([50.8467, 4.3528], 15);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '\u00a9 <a href="https://www.openstreetmap.org/copyright">OSM</a> \u00a9 <a href="https://carto.com/">CARTO</a>',
+            subdomains: 'abcd', maxZoom: 19
+        }).addTo(map);
+
+        var hotelIcon = L.divIcon({
+            html: '<div style="width:30px;height:30px;border-radius:50%;background:#C9A227;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;">&#x1F3E8;</div>',
+            className: '', iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -18]
+        });
+        L.marker([50.8473, 4.3530], {icon: hotelIcon}).addTo(map)
+            .bindPopup('<strong>Hotel Aris Grand Place</strong><span class="pop-dist">Your base</span>');
+
+        function pinIcon(n) {
+            return L.divIcon({
+                html: '<div style="width:26px;height:26px;border-radius:50%;background:#1C1C1E;border:2.5px solid #C9A227;box-shadow:0 2px 6px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;color:#C9A227;font-family:system-ui,sans-serif;">' + n + '</div>',
+                className: '', iconSize: [26, 26], iconAnchor: [13, 13], popupAnchor: [0, -15]
+            });
+        }
+
+        var SPOTS = EXPLORE_DB.filter(function(a){ return a.lat && a.lng; });
+        SPOTS.forEach(function(a, i) {
+            L.marker([a.lat, a.lng], {icon: pinIcon(i + 1)}).addTo(map)
+                .bindPopup('<strong>' + escH(a.name) + '</strong><span class="pop-dist">' + escH(a.dist_text || '') + '</span><a href="' + escH(a.website_url || '#') + '" target="_blank">Website &#x2192;</a>');
+        });
+    }
+
+
+    /* ── HTML escape helper ── */
+    function escH(s) {
+        return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ── EXPLORE (Attractions) CRUD ───────────────────────────────────── */
+    var EXPLORE_DB = [];
+    var _exploreMap = null;
+
+    async function loadExplore() {
+        var res = await sb.from('explore_attractions')
+            .select('*').eq('trip_id', TRIP_ID).order('sort_order');
+        if (res.error) { console.error('loadExplore:', res.error); return; }
+        EXPLORE_DB = res.data || [];
+        renderExploreList();
+        if (_exploreMapInit) {
+            if (_exploreMap) { _exploreMap.remove(); _exploreMap = null; }
+            _exploreMapInit = false;
+            if (document.getElementById('explore-map-view').style.display !== 'none') {
+                initExploreMap();
+            }
+        }
+    }
+
+    function renderExploreList() {
+        var el = document.getElementById('explore-list-inner');
+        if (!el) return;
+        if (!EXPLORE_DB.length) {
+            el.innerHTML = '<p style="font-size:12px;color:var(--sub);text-align:center;padding:20px 0;">No attractions yet. Tap + to add one.</p>';
+            return;
+        }
+        var walkSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m6 20 4-8 2 3 1-7"/><path d="m18 20-3-7"/><path d="m7.5 11 4-2 3.5 3"/></svg>';
+        el.innerHTML = EXPLORE_DB.map(function(a) {
+            var mUrl = a.maps_url || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(a.name + ' Brussels'));
+            var mapLabel = (a.dist_text || '').toLowerCase().indexOf('metro') >= 0 ? 'Transit' : 'Map';
+            return '<div class="attraction-item" data-xid="' + a.id + '">' +
+                '<div class="attraction-info">' +
+                '<div><a href="' + escH(a.website_url || '#') + '" target="_blank" class="attraction-name-link">' + escH(a.name) + '</a></div>' +
+                '<div class="attraction-dist">' + walkSvg + ' ' + escH(a.dist_text || '') + '</div>' +
+                '</div>' +
+                '<div style="display:flex;gap:4px;align-items:center;">' +
+                '<a href="' + escH(mUrl) + '" target="_blank" class="map-link">' + mapLabel + '</a>' +
+                '<button class="row-edit-btn" onclick="openXSheet(\'' + a.id + '\')" title="Edit">' + PENCIL_SVG + '</button>' +
+                '</div></div>';
+        }).join('');
+    }
+
+    function openXSheet(id) {
+        var a = id ? EXPLORE_DB.find(function(x){ return x.id == id; }) : null;
+        document.getElementById('x-sheet-title').textContent = a ? 'Edit Attraction' : 'Add Attraction';
+        document.getElementById('x-edit-id').value   = a ? a.id : '';
+        document.getElementById('x-edit-name').value = a ? (a.name || '') : '';
+        document.getElementById('x-edit-dist').value = a ? (a.dist_text || '') : '';
+        document.getElementById('x-edit-url').value  = a ? (a.website_url || '') : '';
+        document.getElementById('x-edit-maps').value = a ? (a.maps_url || '') : '';
+        document.getElementById('x-edit-lat').value  = a ? (a.lat || '') : '';
+        document.getElementById('x-edit-lng').value  = a ? (a.lng || '') : '';
+        document.getElementById('x-edit-sort').value = a ? (a.sort_order != null ? a.sort_order : EXPLORE_DB.length) : EXPLORE_DB.length;
+        document.getElementById('x-del-btn').style.display = a ? 'block' : 'none';
+        document.getElementById('x-backdrop').classList.add('open');
+        document.getElementById('x-edit-sheet').classList.add('open');
+    }
+
+    function closeXSheet() {
+        document.getElementById('x-backdrop').classList.remove('open');
+        document.getElementById('x-edit-sheet').classList.remove('open');
+    }
+
+    async function saveXItem() {
+        var id  = document.getElementById('x-edit-id').value;
+        var lat = parseFloat(document.getElementById('x-edit-lat').value);
+        var lng = parseFloat(document.getElementById('x-edit-lng').value);
+        var payload = {
+            trip_id:       TRIP_ID,
+            name:          document.getElementById('x-edit-name').value.trim(),
+            dist_text:     document.getElementById('x-edit-dist').value.trim(),
+            website_url:   document.getElementById('x-edit-url').value.trim(),
+            maps_url:      document.getElementById('x-edit-maps').value.trim(),
+            lat:           isNaN(lat) ? null : lat,
+            lng:           isNaN(lng) ? null : lng,
+            sort_order:    parseInt(document.getElementById('x-edit-sort').value) || 0,
+        };
+        var btn = document.getElementById('x-save-btn');
+        btn.disabled = true; btn.textContent = 'Saving…';
+        var res = id
+            ? await sb.from('explore_attractions').update(payload).eq('id', id)
+            : await sb.from('explore_attractions').insert(payload);
+        btn.disabled = false; btn.textContent = 'Save';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeXSheet();
+        await loadExplore();
+    }
+
+    function openXDelSheet(id) {
+        if (!id) return;
+        var a = EXPLORE_DB.find(function(x){ return x.id == id; });
+        if (!a) return;
+        closeXSheet();
+        document.getElementById('x-del-name').textContent = a.name;
+        document.getElementById('x-del-id').value = id;
+        document.getElementById('x-del-backdrop').classList.add('open');
+        document.getElementById('x-del-sheet').classList.add('open');
+    }
+
+    function closeXDelSheet() {
+        document.getElementById('x-del-backdrop').classList.remove('open');
+        document.getElementById('x-del-sheet').classList.remove('open');
+    }
+
+    async function confirmXDel() {
+        var id = document.getElementById('x-del-id').value;
+        var btn = document.getElementById('x-del-confirm-btn');
+        btn.disabled = true; btn.textContent = 'Deleting…';
+        var res = await sb.from('explore_attractions').delete().eq('id', id);
+        btn.disabled = false; btn.textContent = 'Delete';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeXDelSheet();
+        await loadExplore();
+    }
+
+    /* ── EAT (Restaurants) CRUD ──────────────────────────────────────── */
+    var EAT_DB = {};
+
+    async function loadEat() {
+        var res = await sb.from('eat_restaurants')
+            .select('*').eq('trip_id', TRIP_ID).order('sort_order');
+        if (res.error) { console.error('loadEat:', res.error); return; }
+        EAT_DB = {};
+        (res.data || []).forEach(function(r) {
+            if (!EAT_DB[r.meal_type]) EAT_DB[r.meal_type] = [];
+            EAT_DB[r.meal_type].push(r);
+        });
+        ['breakfast','lunch','dinner','snacks'].forEach(renderEatPanel);
+    }
+
+    function renderEatPanel(mealType) {
+        var el = document.getElementById('meal-list-' + mealType);
+        if (!el) return;
+        var items = EAT_DB[mealType] || [];
+        if (!items.length) {
+            el.innerHTML = '<p style="font-size:12px;color:var(--sub);text-align:center;padding:20px 0;">No places yet. Tap + to add one.</p>';
+            return;
+        }
+        el.innerHTML = items.map(function(r) {
+            var tagsHtml = (r.tags || []).map(function(t){ return '<span class="resto-tag">' + escH(t) + '</span>'; }).join('');
+            var bodyRows = '';
+            if (r.walk_text)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div><div class="resto-row-text">' + escH(r.walk_text || '') + '</div></div>';
+            if (r.hours)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="resto-row-text">' + escH(r.hours) + '</div></div>';
+            if (r.description)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="resto-row-text">' + escH(r.description) + '</div></div>';
+            if (r.phone)
+                bodyRows += '<div class="resto-row"><div class="resto-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="resto-row-text"><a href="tel:' + escH(r.phone) + '">' + escH(r.phone) + '</a></div></div>';
+            var actHtml = '';
+            if (r.menu_url) actHtml += '<a href="' + escH(r.menu_url) + '" target="_blank" class="resto-btn resto-btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg> Menu</a>';
+            if (r.maps_url) actHtml += '<a href="' + escH(r.maps_url) + '" target="_blank" class="resto-btn resto-btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> Directions</a>';
+            return '<div class="resto-card" data-rid="' + r.id + '">' +
+                '<div class="resto-header">' +
+                '<div class="resto-name"><a href="' + escH(r.website_url || '#') + '" target="_blank">' + escH(r.name) + '</a></div>' +
+                '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">' +
+                '<div class="resto-tags">' + tagsHtml + '</div>' +
+                '<button class="row-edit-btn" onclick="openRSheet(\'' + r.id + '\',\'' + r.meal_type + '\')" title="Edit">' + PENCIL_SVG + '</button>' +
+                '</div></div>' +
+                (bodyRows ? '<div class="resto-body">' + bodyRows + '</div>' : '') +
+                (actHtml ? '<div class="resto-actions">' + actHtml + '</div>' : '') +
+                '</div>';
+        }).join('');
+    }
+
+    function _findR(id) {
+        var found = null;
+        Object.values(EAT_DB).forEach(function(arr){ arr.forEach(function(x){ if (x.id == id) found = x; }); });
+        return found;
+    }
+
+    function openRSheet(id, mealType) {
+        var r = id ? _findR(id) : null;
+        if (r) mealType = r.meal_type;
+        document.getElementById('r-sheet-title').textContent = r ? 'Edit Place' : 'Add Place';
+        document.getElementById('r-edit-id').value       = r ? r.id : '';
+        document.getElementById('r-edit-meal').value     = r ? r.meal_type : (mealType || 'breakfast');
+        document.getElementById('r-edit-name').value     = r ? (r.name || '') : '';
+        document.getElementById('r-edit-website').value  = r ? (r.website_url || '') : '';
+        document.getElementById('r-edit-address').value  = '';
+        document.getElementById('r-edit-dist').value     = r ? (r.walk_text || '') : '';
+        document.getElementById('r-edit-hours').value    = r ? (r.hours || '') : '';
+        document.getElementById('r-edit-desc').value     = r ? (r.description || '') : '';
+        document.getElementById('r-edit-phone').value    = r ? (r.phone || '') : '';
+        document.getElementById('r-edit-menu').value     = r ? (r.menu_url || '') : '';
+        document.getElementById('r-edit-directions').value = r ? (r.maps_url || '') : '';
+        document.getElementById('r-edit-tags').value     = r ? (r.tags || []).join(', ') : '';
+        document.getElementById('r-edit-sort').value     = r ? (r.sort_order != null ? r.sort_order : 0) : 0;
+        document.getElementById('r-del-btn').style.display = r ? 'block' : 'none';
+        document.getElementById('r-backdrop').classList.add('open');
+        document.getElementById('r-edit-sheet').classList.add('open');
+    }
+
+    function closeRSheet() {
+        document.getElementById('r-backdrop').classList.remove('open');
+        document.getElementById('r-edit-sheet').classList.remove('open');
+    }
+
+    async function saveRItem() {
+        var id = document.getElementById('r-edit-id').value;
+        var tagsRaw = document.getElementById('r-edit-tags').value.trim();
+        var tags = tagsRaw ? tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
+        var payload = {
+            trip_id:       TRIP_ID,
+            meal_type:     document.getElementById('r-edit-meal').value,
+            name:          document.getElementById('r-edit-name').value.trim(),
+            website_url:   document.getElementById('r-edit-website').value.trim(),
+            walk_text:     document.getElementById('r-edit-dist').value.trim(),
+            hours:         document.getElementById('r-edit-hours').value.trim(),
+            description:   document.getElementById('r-edit-desc').value.trim(),
+            phone:         document.getElementById('r-edit-phone').value.trim(),
+            menu_url:      document.getElementById('r-edit-menu').value.trim(),
+            maps_url:      document.getElementById('r-edit-directions').value.trim(),
+            tags:          tags,
+            sort_order:    parseInt(document.getElementById('r-edit-sort').value) || 0,
+        };
+        var btn = document.getElementById('r-save-btn');
+        btn.disabled = true; btn.textContent = 'Saving…';
+        var res = id
+            ? await sb.from('eat_restaurants').update(payload).eq('id', id)
+            : await sb.from('eat_restaurants').insert(payload);
+        btn.disabled = false; btn.textContent = 'Save';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeRSheet();
+        await loadEat();
+    }
+
+    function openRDelSheet(id) {
+        if (!id) return;
+        var r = _findR(id);
+        if (!r) return;
+        closeRSheet();
+        document.getElementById('r-del-name').textContent = r.name;
+        document.getElementById('r-del-id').value = id;
+        document.getElementById('r-del-backdrop').classList.add('open');
+        document.getElementById('r-del-sheet').classList.add('open');
+    }
+
+    function closeRDelSheet() {
+        document.getElementById('r-del-backdrop').classList.remove('open');
+        document.getElementById('r-del-sheet').classList.remove('open');
+    }
+
+    async function confirmRDel() {
+        var id = document.getElementById('r-del-id').value;
+        var btn = document.getElementById('r-del-confirm-btn');
+        btn.disabled = true; btn.textContent = 'Deleting…';
+        var res = await sb.from('eat_restaurants').delete().eq('id', id);
+        btn.disabled = false; btn.textContent = 'Delete';
+        if (res.error) { alert('Error: ' + res.error.message); return; }
+        closeRDelSheet();
+        await loadEat();
+    }
+
+
+// ── Departure countdown ──────────────────────────────────────────
+(function() {
+    const [sh, sm]   = TRIP_START_TIME.split(':').map(Number);
+    const departure  = new Date(DEPARTURE_DATE + 'T00:00:00');
+    const tripStart  = new Date(DEPARTURE_DATE + 'T' + TRIP_START_TIME + ':00');
+    const tripEnd    = new Date(TRIP_END_DATE   + 'T23:59:59');
+    const strip      = document.querySelector('.countdown-strip');
+    const cdLabel    = strip ? strip.querySelector('.cd-label') : null;
+    const cdUnits    = strip ? strip.querySelector('.cd-units') : null;
+    const els = {
+        days: document.getElementById('cd-days'),
+        hrs:  document.getElementById('cd-hrs'),
+        mins: document.getElementById('cd-mins'),
+        secs: document.getElementById('cd-secs')
+    };
+
+    const ic = (d, col) => '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + col + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;">' + d + '</svg>';
+    const gold = 'var(--gold)';
+    const green = '#4ADE80';
+    const iconPlane = ic('<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>', gold);
+    const iconTrain = ic('<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/><path d="m9 15-1-1"/><path d="m15 15 1-1"/><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/>', gold);
+    const iconShip  = ic('<path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 19A11.6 11.6 0 0 0 21 13l-8.188-3.639a2 2 0 0 0-1.624 0L3 13.001a11.6 11.6 0 0 0 2.81 7.76"/><path d="M2 13h20"/><path d="M12 5v8"/><path d="M8 6v2"/><path d="M16 6v2"/>', gold);
+    const iconBus   = ic('<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/>', gold);
+    const iconCheck = ic('<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>', green);
+    const bonVoyageHtml  = '<span style="display:inline-flex;gap:5px;margin-right:7px;">' + iconPlane + iconTrain + iconShip + iconBus + '</span>';
+    const completedHtml  = '<span style="margin-right:6px;">' + iconCheck + '</span>';
+
+    function setLabel(html, text, color) {
+        if (cdUnits) cdUnits.style.display = 'none';
+        if (cdLabel) {
+            cdLabel.style.fontSize = '13px';
+            cdLabel.style.letterSpacing = '0px';
+            cdLabel.style.textTransform = 'none';
+            cdLabel.style.color = color || 'var(--text)';
+            cdLabel.innerHTML = html + text;
+        }
+    }
+
+    let rendered = '';
+    function tick() {
+        const now  = new Date();
+        if (now > tripEnd) {
+            if (rendered !== 'done') { setLabel(completedHtml, 'Trip Completed', '#4ADE80'); rendered = 'done'; }
+            return;
+        }
+        if (now >= tripStart) {
+            if (strip) strip.style.display = 'none';
+            return;
+        }
+        const diff = departure - now;
+        if (diff <= 0) {
+            if (rendered !== 'bon') { setLabel(bonVoyageHtml, 'Bon Voyage!', 'var(--text)'); rendered = 'bon'; }
+            return;
+        }
+        if (els.days) els.days.textContent = String(Math.floor(diff / 86400000)).padStart(2,'0');
+        if (els.hrs)  els.hrs.textContent  = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
+        if (els.mins) els.mins.textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+        if (els.secs) els.secs.textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+    }
+    tick();
+    setInterval(tick, 1000);
+})();
+
+</script>
+</body>
+</html>
